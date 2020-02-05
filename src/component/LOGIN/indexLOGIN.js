@@ -1,21 +1,25 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
+import FormLOGIN from './formLOGIN'
+import './styleLOGIN.css'
 
 class indexLOGIN extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {};
-
+    constructor(props){
+        super(props)
+        this.state={
+        }
     }
-
+    obtieneLargoWindows(){ return window.screen.height }
     render() {
         return (
-            <div>
-                <h2>LOGIN</h2>
-                <button onClick={e=>{ this.props.history.push('/home')}}>home</button>
+            <div id='ContenedorLogin'>
+                <div id='Slider'>
+                </div>
+                <div className="FormLogin" style={{height:this.obtieneLargoWindows()+'px'}}>
+                    <FormLOGIN/>
+                </div>
             </div>
-        );
+        )
     }
 }
 

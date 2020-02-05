@@ -3,6 +3,7 @@ import {withRouter,Route} from 'react-router-dom'
 import Usuarios from '../USUARIOS/indexUSUARIOS'
 import Produccion from '../PRODUCCION/indexPRODUCCION'
 import Menu from '../MENU/indexMENU'
+import VerificaLOGIN from '../../credenciales/verificaLOGIN'
 
 class indexHOME extends React.Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class indexHOME extends React.Component {
                         <Produccion/>
                     </Route>
                 </>
+                <VerificaLOGIN/>
             </div>
         );
     }

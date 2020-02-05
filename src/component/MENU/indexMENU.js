@@ -1,30 +1,29 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
+import Menu from './MENU'
 
 class indexMENU extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {};
-
     }
 
     render() {
         return (
             <div>
-                <ol>
-                    <li>
-                        <button 
-                            onClick={e=>{ this.props.history.push(`${this.props.match.path}/usuarios`)}}
-                        >
-                            Usuarios
-                        </button>
-                    </li>
-                    <li><button onClick={e=>{ this.props.history.push(`${this.props.match.path}/produccion`)}}>Producion</button></li>
-                </ol>
+                <Menu user={this.props.UsuarioLOGIN}/>
             </div>
         );
     }
 }
 
-export default withRouter(indexMENU);
+const mapStateToProps = state =>{
+    return{
+        UsuarioLOGIN:state.UsuarioLOGIN
+    }
+}
+
+const wrapper = connect(mapStateToProps)
+const component = wrapper(indexMENU)
+export default withRouter(component)
