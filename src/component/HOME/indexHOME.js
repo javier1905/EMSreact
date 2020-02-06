@@ -14,7 +14,6 @@ class indexHOME extends React.Component {
         const rutaPadre = this.props.match.path
         return (
             <div>
-                <h2>HOME</h2>
                 <Menu/>
                 <>
                     <Route path={`${rutaPadre}/usuarios`} >

@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import findUsuarioLOGIN from '../Redux/Actions/findUsuarioLOGIN'
-import ModalEXPIRASESION from './modalEXPIRASESION'
+import IndexModalEXPIRASESION from './indexModalEXPIRASESION'
 
 class VerificaLOGIN extends React.Component
 {
@@ -34,13 +34,12 @@ class VerificaLOGIN extends React.Component
             }
             else{ this.setState({comprobacion:false}) }
         }).catch(e=>console.log(e))
-        
     }
     componentDidMount(){ this.ve() }
     componentDidUpdate(){ this.props.findUsuarioLOGIN(this.state.user) }
     render(){
         return(<div>
-            { this.state.comprobacion===true? <div></div>: <ModalEXPIRASESION/>}
+            { this.state.comprobacion===true? <div></div>: <IndexModalEXPIRASESION/>}
         </div>)
     }
 }

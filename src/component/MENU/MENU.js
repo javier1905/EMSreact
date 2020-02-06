@@ -72,7 +72,7 @@ class Menu extends React.Component {
                                         }
                                     </div>
                                     <Dropdown.Item
-                                        onClick={e=>{this.props.history.push(`/usuario`)}}
+                                        onClick={e=>{this.props.history.push(`/home/usuarios`)}}
                                         eventKey="2"
                                     >
                                         Management User
