@@ -8,8 +8,7 @@ class indexMENU extends React.Component {
         super(props);
         this.state = {};
     }
-
-    render() {
+    render() { 
         return (
             <div>
                 <Menu user={this.props.UsuarioLOGIN}/>
@@ -17,7 +16,6 @@ class indexMENU extends React.Component {
         );
     }
 }
-
 const mapStateToProps = state =>{
     return{
         UsuarioLOGIN:state.UsuarioLOGIN

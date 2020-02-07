@@ -1,4 +1,6 @@
 import React from 'react'
+import AltaPlanillaPRODUCCION from './altaPlanillaPRODUCCION'
+import './styleAltaPlanillaPRODUCCION.css'
 
 class indexALTA extends React.Component {
     constructor(props) {
@@ -8,7 +10,7 @@ class indexALTA extends React.Component {
     render() {
         return (
             <div>
-                <h2>ALTA</h2>
+                <AltaPlanillaPRODUCCION/>
             </div>
         );
     }
