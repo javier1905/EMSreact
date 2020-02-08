@@ -2,3 +2,19 @@
     border-bottom: 25px;
     text-align: center;
 }
+.contenedorRechazos > *{
+    margin: 10px;
+}
+.contenedorRechazos{
+    border-radius: 7px;
+    border: solid grey 1px;
+    margin: 20px;
+    display: inline-block;
+}
+.tipoRechazo{
+    width: 30px;
+    height: 30px;
+}
+.contCheck > *{
+    
+}
