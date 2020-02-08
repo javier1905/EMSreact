@@ -3,12 +3,12 @@
     text-align: center;
 }
 .contenedorRechazos > *{
-    margin: 10px;
+    margin: 0px;
 }
 .contenedorRechazos{
-    border-radius: 7px;
-    border: solid grey 1px;
-    margin: 20px;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
     display: inline-block;
 }
 .tipoRechazo{
@@ -17,4 +17,22 @@
 }
 .contCheck > *{
     
+}
+.contenedorFormZonas > *{
+display: inline-block;
+margin-left: 10px;
+}
+.contenedorRechazosYzonas{
+display: inline-block;
+border-radius: 7px;
+border: solid grey 1px;
+padding: 10px;
+box-sizing: border-box;
+}
+.contenedorFormZonas .zona{
+    width: 60px;
+}
+.contenedorFormZonas{
+    margin-left: 20px;
+    width: 100%;
 }
