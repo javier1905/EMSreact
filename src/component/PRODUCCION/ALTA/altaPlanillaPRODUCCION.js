@@ -80,6 +80,23 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
         catch(e){}
     }
+    verificaRechazoCoincidente = e => {
+        var cacheVecOp = this.state.vecOperarios
+        try{
+            let indexOperario = e.target.name.split(' ')[1]
+            let indexRechazo = e.target.name.split(' ')[2]
+            var idRechazo = document.getElementById(`idRechazo ${indexOperario} ${indexRechazo}`).value
+            var nombreRechazo = document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).value
+            var tipoRechazo = document.getElementById(`tipoRechazo ${indexOperario} ${indexRechazo}`).value
+            var cantidadRechazo = document.getElementById(`cantidadRechazo ${indexOperario} ${indexRechazo}`).value
+            if(idRechazo && nombreRechazo && tipoRechazo &&cantidadRechazo){
+                console.log(indexOperario)
+                console.log(cacheVecOp[indexOperario].vecRechazo)
+                console.log(cacheVecOp[indexOperario].vecRechazo.findIndex(r=>(parseInt(r.idRechazo) === parseInt(idRechazo) && r.tipo === tipoRechazo)))
+            }
+        }
+        catch(e){}
+    }
     capturaDatos = e =>{
         let nombre = e.target.name
         let value = e.target.value
@@ -103,20 +120,20 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div className='contenedor'>
                 <h1 id='PlanillaProduccion'>PlanillaProduccion</h1>
                 <Form>
                     <Row>
                         <Col>
-                        <Form.Group controlId="fsdf" style={{width:'180px'}}>
-                            <Form.Label>Fecha Produccion</Form.Label>
-                            <Form.Control onChange={this.capturaDatos} name='fechaProduccion' type="date" required/>
+                        <Form.Group size="sm" style={{width:'150px'}}>
+                            <Form.Label size="sm">Fecha Produccion</Form.Label>
+                            <Form.Control size="sm" onChange={this.capturaDatos} name='fechaProduccion' type="date" required/>
                         </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group controlId="formGsdfsdridEmail" style={{width:'180px'}}>
-                                <Form.Label>Fecha Fundicion</Form.Label>
-                                <Form.Control onChange={this.capturaDatos} name='fechaFundicion' type="date" required />
+                            <Form.Group size="sm" style={{width:'150px'}}>
+                                <Form.Label size="sm">Fecha Fundicion</Form.Label>
+                                <Form.Control size="sm" onChange={this.capturaDatos} name='fechaFundicion' type="date" required />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -128,24 +145,24 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group  controlId="sdf" style={{width:'140px'}}>
-                                <Form.Label>Turno</Form.Label>
-                                <Form.Control onChange={this.capturaDatos} name='idTurno'  as="select">
+                            <Form.Group size="sm" style={{width:'120px'}}>
+                                <Form.Label size="sm">Turno</Form.Label>
+                                <Form.Control size="sm" onChange={this.capturaDatos} name='idTurno'  as="select">
                                     <option value='1'>1 - Mañana</option>
                                     <option value='2'>2 - Tarde</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group controlId="fsfdf" style={{width:'100px'}}>
-                                <Form.Label>Hora Inicio</Form.Label>
-                                <Form.Control name='HoraInicioProduccion' type="time" style={{textAlign:'center'}}/>
+                            <Form.Group size="sm" style={{width:'100px'}}>
+                                <Form.Label size="sm">Hora Inicio</Form.Label>
+                                <Form.Control size="sm" name='HoraInicioProduccion' type="time" style={{textAlign:'center'}}/>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group controlId="sdfs" style={{width:'100px'}}>
-                                <Form.Label>Hora Fin</Form.Label>
-                                <Form.Control onChange={this.capturaDatos} type="time" />
+                            <Form.Group size="sm" style={{width:'100px'}}>
+                                <Form.Label size="sm">Hora Fin</Form.Label>
+                                <Form.Control size="sm" onChange={this.capturaDatos} type="time" />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -159,36 +176,36 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group  controlId="operacion">
-                                <Form.Label>Operacion</Form.Label>
-                                <Form.Control name='idOperacion' onChange={this.capturaDatos} as="select">
+                            <Form.Group size="sm">
+                                <Form.Label size="sm">Operacion</Form.Label>
+                                <Form.Control size="sm" style={{width:'120px'}} name='idOperacion' onChange={this.capturaDatos} as="select">
                                     <option>Granallado</option>
                                     <option>Mecanizado</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group  controlId="maquinas">
-                                <Form.Label>Maquina</Form.Label>
-                                <Form.Control name='idMaquina' onChange={this.capturaDatos} as="select">
+                            <Form.Group size="sm">
+                                <Form.Label size="sm">Maquina</Form.Label>
+                                <Form.Control size="sm" style={{width:'80px'}} name='idMaquina' onChange={this.capturaDatos} as="select">
                                     <option>IN20</option>
                                     <option>IN22</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group  controlId="piezas">
-                                <Form.Label>Pieza</Form.Label>
-                                <Form.Control name='idPieza' onChange={this.capturaDatos} as="select">
+                            <Form.Group size="sm">
+                                <Form.Label size="sm">Pieza</Form.Label>
+                                <Form.Control size="sm" style={{width:'120px'}} name='idPieza' onChange={this.capturaDatos} as="select">
                                     <option>107MQB</option>
                                     <option>107B1</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group>
-                                <Form.Label>Molde</Form.Label>
-                                <Form.Control name='idMolde' onChange={this.capturaDatos}  as="select">
+                            <Form.Group size="sm">
+                                <Form.Label size="sm">Molde</Form.Label>
+                                <Form.Control size="sm" style={{width:'100px'}} name='idMolde' onChange={this.capturaDatos}  as="select">
                                     <option>1R1</option>
                                     <option>2R2</option>
                                 </Form.Control>
@@ -197,8 +214,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group>
-                                <Form.Label>Operarios</Form.Label>
+                            <Form.Group size="sm">
+                                <Form.Label size="sm">Operarios</Form.Label>
                                 <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
                                     <Button variant="primary" size="lg" block onClick={this.addOperario}>
                                         Agregar
@@ -208,48 +225,48 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                         <Row>
                                                             <Col>
-                                                                <Form.Group>
-                                                                    <Form.Label>Legajo</Form.Label>
-                                                                    <Form.Control name={`idOperario ${i}`} onChange={this.capturaDatos}  type='number'/>
+                                                                <Form.Group size="sm">
+                                                                    <Form.Label size="sm">Legajo</Form.Label>
+                                                                    <Form.Control size="sm" name={`idOperario ${i}`} onChange={this.capturaDatos}  type='number'/>
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
-                                                                <Form.Group>
-                                                                    <Form.Label>Nombre</Form.Label>
-                                                                    <Form.Control name={`nombreOperario ${i}`} onChange={this.capturaDatos}  as="select">
+                                                                <Form.Group size="sm">
+                                                                    <Form.Label size="sm">Nombre</Form.Label>
+                                                                    <Form.Control size="sm" name={`nombreOperario ${i}`} onChange={this.capturaDatos}  as="select">
                                                                         <option>Gracia Carlos</option>
                                                                         <option>Irusta</option>
                                                                     </Form.Control>
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
-                                                                <Form.Group style={{width:'100px'}}>
-                                                                    <Form.Label>Hora Inicio</Form.Label>
-                                                                    <Form.Control name={`hsInicioOperario ${i}`} onChange={this.capturaDatos}  type="time" style={{textAlign:'center'}}/>
+                                                                <Form.Group size="sm" style={{width:'100px'}}>
+                                                                    <Form.Label size="sm">Hora Inicio</Form.Label>
+                                                                    <Form.Control size="sm" name={`hsInicioOperario ${i}`} onChange={this.capturaDatos}  type="time" style={{textAlign:'center'}}/>
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
-                                                                <Form.Group style={{width:'100px'}}>
-                                                                    <Form.Label>Hora Fin</Form.Label>
-                                                                    <Form.Control name={`hsFinOperario ${i}`} onChange={this.capturaDatos}  type="time" />
+                                                                <Form.Group size="sm" style={{width:'100px'}}>
+                                                                    <Form.Label size="sm">Hora Fin</Form.Label>
+                                                                    <Form.Control size="sm" name={`hsFinOperario ${i}`} onChange={this.capturaDatos}  type="time" />
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
-                                                                <Form.Group style={{width:'100px'}}>
-                                                                    <Form.Label>Produccion</Form.Label>
-                                                                    <Form.Control name='produccionOperario' onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
+                                                                <Form.Group size="sm" style={{width:'100px'}}>
+                                                                    <Form.Label size="sm">Produccion</Form.Label>
+                                                                    <Form.Control size="sm" name='produccionOperario' onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
-                                                                <Form.Group style={{width:'100px'}}>
-                                                                    <Form.Label>Calorias</Form.Label>
-                                                                    <Form.Control name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" />
+                                                                <Form.Group size="sm" style={{width:'100px'}}>
+                                                                    <Form.Label size="sm">Calorias</Form.Label>
+                                                                    <Form.Control size="sm" name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" />
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
-                                                                <Form.Group>
-                                                                    <Form.Label>Add Rechazos</Form.Label>
-                                                                    <Button name={i} onClick={this.addRechazo}>
+                                                                <Form.Group size="sm">
+                                                                    <Form.Label size="sm">Add Rechazos</Form.Label>
+                                                                    <Button size="sm" name={i} onClick={this.addRechazo}>
                                                                         Add rechazos
                                                                     </Button>
                                                                 </Form.Group>
@@ -261,48 +278,72 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                 return <div key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
                                                                     <Row style={{margin:'0px', padding:'0px'}}>
                                                                         <div className='contenedorRechazos'>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Id rechazo</Form.Label>
-                                                                                <Form.Control name={`idRechazo ${i} ${indexRechazo}`} type='number'/>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Id rechazo</Form.Label>
+                                                                                <Form.Control
+                                                                                    id={`idRechazo ${i} ${indexRechazo}`}
+                                                                                    size="sm"
+                                                                                    name={`idRechazo ${i} ${indexRechazo}`}
+                                                                                    type='number'
+                                                                                    onBlur={this.verificaRechazoCoincidente}
+                                                                                />
                                                                             </Form.Group>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Nombre rechazo</Form.Label>
-                                                                                <Form.Control name={`nombreRechazo ${i} ${indexRechazo}`} as='select'>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Nombre rechazo</Form.Label>
+                                                                                <Form.Control
+                                                                                    id={`nombreRechazo ${i} ${indexRechazo}`}
+                                                                                    size="sm"
+                                                                                    name={`nombreRechazo ${i} ${indexRechazo}`}
+                                                                                    as='select'
+                                                                                    onBlur={this.verificaRechazoCoincidente}
+                                                                                >
                                                                                     <option>Rechupe</option>
                                                                                     <option>Fizura</option>
                                                                                 </Form.Control>
                                                                             </Form.Group>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Tipo Rech</Form.Label>
-                                                                                <Form.Control name={`tipoRechazo ${i} ${indexRechazo}`} as='select'>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Tipo Rech</Form.Label>
+                                                                                <Form.Control
+                                                                                    id={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                    size="sm"
+                                                                                    name={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                    as='select'
+                                                                                    onBlur={this.verificaRechazoCoincidente}
+                                                                                >
                                                                                     <option>Rechazo</option>
                                                                                     <option>Scrap</option>
                                                                                 </Form.Control>
                                                                             </Form.Group>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Cantidad</Form.Label>
-                                                                                <Form.Control name={`cantidadRechazo ${i} ${indexRechazo}`} type='number'/>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Cantidad</Form.Label>
+                                                                                <Form.Control
+                                                                                    id={`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                    size="sm"
+                                                                                    name={`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                    type='number'
+                                                                                    onBlur={this.verificaRechazoCoincidente}
+                                                                                />
                                                                             </Form.Group>
                                                                         </div>
                                                                     </Row>
                                                                     <Row>
                                                                         <div className='contenedorFormZonas'>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Letra</Form.Label>
-                                                                                <Form.Control id={`letraZona ${i} ${indexRechazo}`} className='zona' type='text'/>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Letra</Form.Label>
+                                                                                <Form.Control size="sm" id={`letraZona ${i} ${indexRechazo}`} className='zona' type='text'/>
                                                                             </Form.Group>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Numero</Form.Label>
-                                                                                <Form.Control id={`numeroZona ${i} ${indexRechazo}`} className='zona' type='number'/>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Numero</Form.Label>
+                                                                                <Form.Control size="sm" id={`numeroZona ${i} ${indexRechazo}`} className='zona' type='number'/>
                                                                             </Form.Group>
-                                                                            <Form.Group>
-                                                                                <Form.Label>Cantidad</Form.Label>
-                                                                                <Form.Control id={`cantidadZona ${i} ${indexRechazo}`} className='zona' type='number'/>
+                                                                            <Form.Group size="sm">
+                                                                                <Form.Label size="sm">Cantidad</Form.Label>
+                                                                                <Form.Control size="sm" id={`cantidadZona ${i} ${indexRechazo}`} className='zona' type='number'/>
                                                                             </Form.Group>
-                                                                            <Form.Group>
-                                                                                <Button name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
+                                                                            <Form.Group size="sm">
+                                                                                <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
                                                                             </Form.Group>
-                                                                            <Table>
+                                                                            <Table size="sm">
                                                                                 <thead>
                                                                                     <tr>
                                                                                         <td>Letra</td>

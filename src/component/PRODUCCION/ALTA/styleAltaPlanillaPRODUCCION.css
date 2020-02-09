@@ -1,9 +1,15 @@
+.contenedor *{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
 #PlanillaProduccion{
     border-bottom: 25px;
     text-align: center;
 }
 .contenedorRechazos > *{
     margin: 0px;
+    padding: 0px;
 }
 .contenedorRechazos{
     margin: 0px;
@@ -15,9 +21,6 @@
     width: 30px;
     height: 30px;
 }
-.contCheck > *{
-    
-}
 .contenedorFormZonas > *{
 display: inline-block;
 margin-left: 10px;
@@ -28,11 +31,13 @@ border-radius: 7px;
 border: solid grey 1px;
 padding: 10px;
 box-sizing: border-box;
+width: auto;
 }
 .contenedorFormZonas .zona{
     width: 60px;
 }
 .contenedorFormZonas{
-    margin-left: 20px;
-    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: auto;
 }
