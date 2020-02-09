@@ -33,6 +33,22 @@ padding: 10px;
 box-sizing: border-box;
 width: auto;
 }
+.Scrap{
+    display: inline-block;
+    border-radius: 7px;
+    border: solid red 1px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: auto;
+    }
+.Rechazo{
+    display: inline-block;
+    border-radius: 7px;
+    border: solid yellow 1px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: auto;
+}
 .contenedorFormZonas .zona{
     width: 60px;
 }

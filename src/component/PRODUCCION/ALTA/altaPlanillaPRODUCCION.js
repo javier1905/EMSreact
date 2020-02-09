@@ -39,6 +39,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             idRechazo:undefined,
             nombreRechazo:undefined,
             tipo:undefined,
+            cantidadRechazo:undefined,
             vecZonas:[]
         }
         if(this.state.vecOperarios[indexOperario]){
@@ -56,7 +57,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
             letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`).value
             numero = document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`).value
             cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`).value
-            console.log(letra,numero,cantidad)
             var vecZONA = cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas
             if(vecZONA.length === 0){
                 var newZona = { letra,numero,cantidad }
@@ -83,19 +83,44 @@ class AltaPlanillaPRODUCCION extends React.Component {
     verificaRechazoCoincidente = e => {
         var cacheVecOp = this.state.vecOperarios
         try{
-            let indexOperario = e.target.name.split(' ')[1]
-            let indexRechazo = e.target.name.split(' ')[2]
+            let indexOperario = parseInt(e.target.name.split(' ')[1])
+            let indexRechazo = parseInt(e.target.name.split(' ')[2])
             var idRechazo = document.getElementById(`idRechazo ${indexOperario} ${indexRechazo}`).value
             var nombreRechazo = document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).value
             var tipoRechazo = document.getElementById(`tipoRechazo ${indexOperario} ${indexRechazo}`).value
             var cantidadRechazo = document.getElementById(`cantidadRechazo ${indexOperario} ${indexRechazo}`).value
-            if(idRechazo && nombreRechazo && tipoRechazo &&cantidadRechazo){
-                console.log(indexOperario)
-                console.log(cacheVecOp[indexOperario].vecRechazo)
-                console.log(cacheVecOp[indexOperario].vecRechazo.findIndex(r=>(parseInt(r.idRechazo) === parseInt(idRechazo) && r.tipo === tipoRechazo)))
+            if(idRechazo && nombreRechazo && tipoRechazo && cantidadRechazo){ // VERIFICO QUE TODOS LOS CAMPOS DE DEL RECHAZO ANALIZADO ESTEN COMPLETOS
+                cacheVecOp[indexOperario].vecRechazo.map((rech,indice) => {// RECORRO EL VEC RECHAZOS DE ESE OPERARIO
+                    if(rech.idRechazo !== undefined && rech.nombreRechazo !== undefined && rech.tipo !== undefined && rech.cantidadRechazo !== undefined){
+                        if(indice !== indexRechazo){ // indice { coincidencia } indexRechazo { analizado }
+                            if(rech.idRechazo === idRechazo && rech.tipo === tipoRechazo){ // COINCIDENCIA
+                                if(cacheVecOp[indexOperario].vecRechazo[indexRechazo].vecZonas.length){ // SI EL RECHAZO QUE ESTOY  ANALIZO TIENE CARAGAS ZONAS
+                                    cacheVecOp[indexOperario].vecRechazo[indexRechazo].vecZonas.map((zona,indiceZona)=>{ // RECORRO EL VECTOR DE ZONAS EL RECHAZO ANALIZADO
+                                        if(cacheVecOp[indexOperario].vecRechazo[indice].vecZonas.find(zo=>(zo.letra === zona.letra && zo.numero === zona.numero))){ // SI COINCIDE las ZONAS
+                                            var indiceCOINCIDENCIA = cacheVecOp[indexOperario].vecRechazo[indice].vecZonas.findIndex(zo=>(zo.letra === zona.letra && zo.numero === zona.numero))
+                                            cacheVecOp[indexOperario].vecRechazo[indice].vecZonas[indiceCOINCIDENCIA].cantidad = parseInt(cacheVecOp[indexOperario].vecRechazo[indice].vecZonas[indiceCOINCIDENCIA].cantidad) + parseInt(zona.cantidad) // sumo las cantidades
+                                        }
+                                        else{ // SI NO COINCIDEN LAS ZONAS SE LA AGREGO
+                                            cacheVecOp[indexOperario].vecRechazo[indice].vecZonas = [...cacheVecOp[indexOperario].vecRechazo[indice].vecZonas,zona]
+                                        }
+                                        return <React.Fragment></React.Fragment>
+                                    })
+                                }
+                                // sumar cantidad de rechazo
+                                console.log(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo,'cantidad original ',cantidadRechazo, ' cantidad a sumar')
+                                cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo = parseInt(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo) + parseInt(cantidadRechazo)
+                                cacheVecOp[indexOperario].vecRechazo.splice(indexRechazo,1)
+                                document.getElementById(`cantidadRechazo ${indexOperario} ${indice}`).value = cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo
+                                this.setState({vecOperarios:cacheVecOp})
+                                return undefined
+                            }
+                        }
+                    }
+                    return undefined
+                })
             }
         }
-        catch(e){}
+        catch(e){ console.log(e)}
     }
     capturaDatos = e =>{
         let nombre = e.target.name
@@ -104,19 +129,36 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre === 'fechaFundicion'){this.setState({fechaFundicion:value})}
         if(nombre === 'idTurno'){this.setState({idTurno:value})}
         if(nombre === 'HoraInicioProduccion'){this.setState({HoraInicioProduccion:value})}
+        if(nombre === 'HoraFinProduccion'){this.setState({HoraFinProduccion:value})}
         if(nombre === 'idOperacion'){this.setState({idOperacion:value})}
         if(nombre === 'idMaquina'){this.setState({idMaquina:value})}
         if(nombre === 'idPieza'){this.setState({idPieza:value})}
         if(nombre === 'idMolde'){this.setState({idMolde:value})}
+        var indexOperario
+        if(nombre.split(' ')[1]){indexOperario = parseInt(nombre.split(' ')[1])}
+        var indexRechazo
+        if(nombre.split(' ')[2]){indexRechazo = parseInt(nombre.split(' ')[2]) }
+        var vecOperariosCache = this.state.vecOperarios
         try{
-            if(nombre.split(' ')[0] === 'idOperario'){
-                var index = parseInt(nombre.split(' ')[1])
-                var listaOperarios = this.state.vecOperarios
-                listaOperarios[index].idOperario = value
-                this.setState({vecOperarios:listaOperarios})
+            if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value }
+            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value }
+            if(nombre.split(' ')[0] === 'hsInicioOperario'){ vecOperariosCache[indexOperario].horaInicio = value }
+            if(nombre.split(' ')[0] === 'hsFinOperario'){ vecOperariosCache[indexOperario].horaFin = value }
+            if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
+            if(nombre.split(' ')[0] === 'caloriasOperario'){ vecOperariosCache[indexOperario].calorias = value }
+            if(nombre.split(' ')[0] === 'idRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value}
+            if(nombre.split(' ')[0] === 'nombreRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value}
+            if(nombre.split(' ')[0] === 'tipoRechazo'){
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].tipo = value
+                var div = document.getElementById(`contenedorRechazosYzonas ${parseInt(nombre.split(' ')[1])} ${parseInt(nombre.split(' ')[2])}`)
+                if(value === 'Scrap'){div.setAttribute('class','Scrap') }
+                else if( value === 'Rechazo'){ div.setAttribute('class','Rechazo') }
+                else{ div.setAttribute('class','contenedorRechazosYzonas') }
             }
+            if(nombre.split(' ')[0] === 'cantidadRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].cantidadRechazo = value}
+            this.setState({vecOperarios:vecOperariosCache})
         }
-        catch(e){}
+        catch(e){console.log(e)}
     }
     render() {
         return (
@@ -156,13 +198,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         <Col>
                             <Form.Group size="sm" style={{width:'100px'}}>
                                 <Form.Label size="sm">Hora Inicio</Form.Label>
-                                <Form.Control size="sm" name='HoraInicioProduccion' type="time" style={{textAlign:'center'}}/>
+                                <Form.Control size="sm" name='HoraInicioProduccion' type="time" onChange={this.capturaDatos}/>
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group size="sm" style={{width:'100px'}}>
                                 <Form.Label size="sm">Hora Fin</Form.Label>
-                                <Form.Control size="sm" onChange={this.capturaDatos} type="time" />
+                                <Form.Control size="sm" name='HoraFinProduccion' onChange={this.capturaDatos} type="time" />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -221,7 +263,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         Agregar
                                     </Button>
                                     {
-                                        this.state.vecOperarios.map((o,i)=>{
+                                        this.state.vecOperarios.map((o,i)=>{  // RECORRE VEC OPERARIOS
                                             return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                         <Row>
                                                             <Col>
@@ -254,13 +296,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                             <Col>
                                                                 <Form.Group size="sm" style={{width:'100px'}}>
                                                                     <Form.Label size="sm">Produccion</Form.Label>
-                                                                    <Form.Control size="sm" name='produccionOperario' onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
+                                                                    <Form.Control size="sm" name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
                                                                 <Form.Group size="sm" style={{width:'100px'}}>
                                                                     <Form.Label size="sm">Calorias</Form.Label>
-                                                                    <Form.Control size="sm" name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" />
+                                                                    <Form.Control size="sm" name={`caloriasOperario ${i}`} onChange={this.capturaDatos} type="number" />
                                                                 </Form.Group>
                                                             </Col>
                                                             <Col>
@@ -272,31 +314,36 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                 </Form.Group>
                                                             </Col>
                                                         </Row>
-                                                        {
+                                                        { // RECORRE VECTO RECHAZOS
                                                             this.state.vecOperarios[i].vecRechazo ?
                                                             this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
-                                                                return <div key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
+                                                                return <div id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
                                                                     <Row style={{margin:'0px', padding:'0px'}}>
                                                                         <div className='contenedorRechazos'>
                                                                             <Form.Group size="sm">
                                                                                 <Form.Label size="sm">Id rechazo</Form.Label>
                                                                                 <Form.Control
+                                                                                    defaultValue={rech.idRechazo}
                                                                                     id={`idRechazo ${i} ${indexRechazo}`}
                                                                                     size="sm"
                                                                                     name={`idRechazo ${i} ${indexRechazo}`}
                                                                                     type='number'
+                                                                                    onChange = {this.capturaDatos}
                                                                                     onBlur={this.verificaRechazoCoincidente}
                                                                                 />
                                                                             </Form.Group>
                                                                             <Form.Group size="sm">
                                                                                 <Form.Label size="sm">Nombre rechazo</Form.Label>
                                                                                 <Form.Control
+                                                                                    defaultValue={rech.nombreRechazo}
                                                                                     id={`nombreRechazo ${i} ${indexRechazo}`}
                                                                                     size="sm"
                                                                                     name={`nombreRechazo ${i} ${indexRechazo}`}
                                                                                     as='select'
+                                                                                    onChange = {this.capturaDatos}
                                                                                     onBlur={this.verificaRechazoCoincidente}
                                                                                 >
+                                                                                    <option>{undefined}</option>
                                                                                     <option>Rechupe</option>
                                                                                     <option>Fizura</option>
                                                                                 </Form.Control>
@@ -304,12 +351,15 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             <Form.Group size="sm">
                                                                                 <Form.Label size="sm">Tipo Rech</Form.Label>
                                                                                 <Form.Control
+                                                                                    defaultValue={rech.tipo}
                                                                                     id={`tipoRechazo ${i} ${indexRechazo}`}
                                                                                     size="sm"
                                                                                     name={`tipoRechazo ${i} ${indexRechazo}`}
                                                                                     as='select'
+                                                                                    onChange = {this.capturaDatos}
                                                                                     onBlur={this.verificaRechazoCoincidente}
                                                                                 >
+                                                                                    <option>{undefined}</option>
                                                                                     <option>Rechazo</option>
                                                                                     <option>Scrap</option>
                                                                                 </Form.Control>
@@ -317,10 +367,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             <Form.Group size="sm">
                                                                                 <Form.Label size="sm">Cantidad</Form.Label>
                                                                                 <Form.Control
+                                                                                    defaultValue={rech.cantidadRechazo}
                                                                                     id={`cantidadRechazo ${i} ${indexRechazo}`}
                                                                                     size="sm"
                                                                                     name={`cantidadRechazo ${i} ${indexRechazo}`}
                                                                                     type='number'
+                                                                                    onChange = {this.capturaDatos}
                                                                                     onBlur={this.verificaRechazoCoincidente}
                                                                                 />
                                                                             </Form.Group>
