@@ -93,7 +93,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 cacheVecOp[indexOperario].vecRechazo.map((rech,indice) => {// RECORRO EL VEC RECHAZOS DE ESE OPERARIO
                     if(rech.idRechazo !== undefined && rech.nombreRechazo !== undefined && rech.tipo !== undefined && rech.cantidadRechazo !== undefined){
                         if(indice !== indexRechazo){ // indice { coincidencia } indexRechazo { analizado }
-                            if(rech.idRechazo === idRechazo && rech.tipo === tipoRechazo){ // COINCIDENCIA
+                            if(rech.idRechazo === idRechazo && rech.tipo === tipoRechazo){ // COINCIDENCIA ENTRE EL RECHAZO ANALIZADO Y EL VEC RECHAZO DE ESE OPERARIO
                                 if(cacheVecOp[indexOperario].vecRechazo[indexRechazo].vecZonas.length){ // SI EL RECHAZO QUE ESTOY  ANALIZO TIENE CARAGAS ZONAS
                                     cacheVecOp[indexOperario].vecRechazo[indexRechazo].vecZonas.map((zona,indiceZona)=>{ // RECORRO EL VECTOR DE ZONAS EL RECHAZO ANALIZADO
                                         if(cacheVecOp[indexOperario].vecRechazo[indice].vecZonas.find(zo=>(zo.letra === zona.letra && zo.numero === zona.numero))){ // SI COINCIDE las ZONAS
@@ -428,6 +428,40 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                 </div>
                             </Form.Group>
                         </Col>
+                    </Row>
+                     <Row clasName='contenedorParadasMaquina'>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
+                        <div clasName='contenedorParadasMaquina'>
+                            <h2>Paradas de Maquina</h2>
+                            <Row>
+                                <div>
+                                    <Form.Group>
+                                        <Form.Label size='sm'>Id</Form.Label>
+                                        <Form.Control type='text' size='sm'/>
+                                    </Form.Group>
+                                </div>
+                            </Row>
+                            <Row>
+                                <Table>
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Nombre</th>
+                                            <th>Desde</th>
+                                            <th>Hasta</th>
+                                            <th>Duracion</th>
+                                            <th>Tipo</th>
+                                            <th>Editar</th>
+                                            <th>Eliminar</th>                                        
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+
+                                        }
+                                    </tbody>
+                                </Table>
+                            </Row>                    
+                        </div>
                     </Row>
                 </Form>
             </div>
