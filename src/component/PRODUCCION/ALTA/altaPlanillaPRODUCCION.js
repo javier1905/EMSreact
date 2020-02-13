@@ -15,7 +15,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
             idMaquina:undefined,
             idPieza:undefined,
             idMolde:undefined,
-            vecOperarios:[]
+            vecOperarios:[],
+            vecOperaciones:[],
+            vecMaquinas:[],
+            vecPiezas:[],
+            vecMoldes:[]
         };
     }
     addOperario = e =>{
@@ -130,9 +134,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre === 'idTurno'){this.setState({idTurno:value})}
         if(nombre === 'HoraInicioProduccion'){this.setState({HoraInicioProduccion:value})}
         if(nombre === 'HoraFinProduccion'){this.setState({HoraFinProduccion:value})}
-        if(nombre === 'idOperacion'){this.setState({idOperacion:value})}
-        if(nombre === 'idMaquina'){this.setState({idMaquina:value})}
-        if(nombre === 'idPieza'){this.setState({idPieza:value})}
+        if(nombre === 'idOperacion'){this.setState({idOperacion:value});this.getMaquinasXoperacion(value)}
+        if(nombre === 'idMaquina'){this.setState({idMaquina:value});this.getPiezasXmaquina(value)}
+        if(nombre === 'idPieza'){this.setState({idPieza:value});this.getMoldesXpieza(value)}
         if(nombre === 'idMolde'){this.setState({idMolde:value})}
         var indexOperario
         if(nombre.split(' ')[1]){indexOperario = parseInt(nombre.split(' ')[1])}
@@ -159,6 +163,53 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.setState({vecOperarios:vecOperariosCache})
         }
         catch(e){console.log(e)}
+    }
+    getOperaciones = () =>{
+        fetch('https://ems-node-api.herokuapp.com/api/operaciones',{
+            method:'GET',
+            headers: new Headers({
+                'Accept': 'Applitaction/json',
+                'Content-Type': 'Application/json'
+            })   
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{return this.setState({vecOperaciones:json})})
+    }
+    getMaquinasXoperacion = idOperacion =>{
+        fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`,{
+            method:'GET',
+            headers: new Headers({
+                'Accept': 'Applitaction/json',
+                'Content-Type': 'Application/json'
+            })   
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{return this.setState({vecMaquinas:json})})
+    }
+    getPiezasXmaquina = idMaquina =>{
+        fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}`,{
+            method:'GET',
+            headers: new Headers({
+                'Accept': 'Applitaction/json',
+                'Content-Type': 'Application/json'
+            })   
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{return this.setState({vecPiezas:json})})
+    }
+    getMoldesXpieza = idPieza =>{
+        fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{
+            method:'GET',
+            headers: new Headers({
+                'Accept': 'Applitaction/json',
+                'Content-Type': 'Application/json'
+            })   
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{return this.setState({vecMoldes:json})})
+    }
+    componentDidMount(){
+        this.getOperaciones()
     }
     render() {
         return (
@@ -221,8 +272,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Operacion</Form.Label>
                                 <Form.Control size="sm" style={{width:'120px'}} name='idOperacion' onChange={this.capturaDatos} as="select">
-                                    <option>Granallado</option>
-                                    <option>Mecanizado</option>
+                                    {
+                                        this.state.vecOperaciones.map((ope,indiceOperacion)=>{
+                                            return <option key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</option>
+                                        })
+                                    }                                    
                                 </Form.Control>
                             </Form.Group>
                         </Col>
@@ -230,8 +284,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Maquina</Form.Label>
                                 <Form.Control size="sm" style={{width:'80px'}} name='idMaquina' onChange={this.capturaDatos} as="select">
-                                    <option>IN20</option>
-                                    <option>IN22</option>
+                                    {
+                                        this.state.vecMaquinas.map((maq,indiceMaquina)=>{
+                                            return <option key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</option>
+                                        })
+                                    }    
                                 </Form.Control>
                             </Form.Group>
                         </Col>
@@ -239,8 +296,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Pieza</Form.Label>
                                 <Form.Control size="sm" style={{width:'120px'}} name='idPieza' onChange={this.capturaDatos} as="select">
-                                    <option>107MQB</option>
-                                    <option>107B1</option>
+                                    <option value="-1"></option>
+                                    {
+                                        this.state.vecPiezas.map((pie,indicePieza)=>{
+                                            return <option key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</option>
+                                        })
+                                    }    
                                 </Form.Control>
                             </Form.Group>
                         </Col>
@@ -248,8 +309,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Molde</Form.Label>
                                 <Form.Control size="sm" style={{width:'100px'}} name='idMolde' onChange={this.capturaDatos}  as="select">
-                                    <option>1R1</option>
-                                    <option>2R2</option>
+                                    <option value={undefined}></option>
+                                    {
+                                        this.state.vecMoldes.map((mol,indiceMolde)=>{
+                                            return <option key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</option>
+                                        })
+                                    } 
                                 </Form.Control>
                             </Form.Group>
                         </Col>
@@ -429,8 +494,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             </Form.Group>
                         </Col>
                     </Row>
-                     <Row clasName='contenedorParadasMaquina'>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
-                        <div clasName='contenedorParadasMaquina'>
+                     <Row className='contenedorParadasMaquina'>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
+                        <div className='contenedorParadasMaquina'>
                             <h2>Paradas de Maquina</h2>
                             <Row>
                                 <div>
