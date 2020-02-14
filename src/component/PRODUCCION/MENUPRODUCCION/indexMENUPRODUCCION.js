@@ -1,40 +1,103 @@
 import React from 'react'
-import {ListGroup,Nav} from 'react-bootstrap'
 import {withRouter} from 'react-router-dom'
 import './styleMENUPRODUCCION.css'
+
+import { makeStyles } from '@material-ui/core/styles';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Collapse from '@material-ui/core/Collapse';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
+import SendIcon from '@material-ui/icons/Send';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import StarBorder from '@material-ui/icons/StarBorder';
 
 class indexMENUPRODUCCION extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        };
+            open:false
+        }
     }
-    adminRUTAS = e =>{
+    adminRUTAS = e =>{ console.log(e.target.children)
         const rutaOrigen = this.props.match.path
         if(e.target.name === 'alta') this.props.history.push(`${rutaOrigen}/alta`)
         if(e.target.name === 'baja') this.props.history.push(`${rutaOrigen}/baja`)
         if(e.target.name === 'lista') this.props.history.push(`${rutaOrigen}/lista`)
      
     }
+
+      handleClick = () => {
+        this.setState({open:!this.state.open})
+      }
+      
+        
+        
     render() {
-        const styleItems = {paddingTop:'0px',paddingBottom:'0px'}
-        const styleItemsSUBTITLE = {paddingTop:'2px',paddingBottom:'2px'}
+        const useStyles = makeStyles(theme => ({
+            root: {
+              width: '100%',
+              maxWidth: 360,
+              backgroundColor: theme.palette.background.paper,
+            },
+            nested: {
+              paddingLeft: theme.spacing(4),
+            },
+        }))
+        const classes = useStyles   
         return (
             <div id='contenedorMENU'>
-                <ListGroup>
-                    <ListGroup.Item><Nav.Link disabled><h4>Produccion</h4></Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItemsSUBTITLE}><Nav.Link disabled><h6>Planillas Op</h6></Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='alta' onClick={this.adminRUTAS}>Alta</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='baja' onClick={this.adminRUTAS}>Baja</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='lista' onClick={this.adminRUTAS}>Listar</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItemsSUBTITLE}><Nav.Link disabled><h6>Reportes</h6></Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='otros' onClick={this.adminRUTAS}>Otros</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='alta' onClick={this.adminRUTAS}>About</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='alta' onClick={this.adminRUTAS}>Client</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='alta' onClick={this.adminRUTAS}>Susee</Nav.Link></ListGroup.Item>
-                    <ListGroup.Item style={styleItems}><Nav.Link name='alta' onClick={this.adminRUTAS}>Alta</Nav.Link></ListGroup.Item>
-                </ListGroup>
-            </div>
+                <List
+                component="nav"
+                aria-labelledby="nested-list-subheader"
+                subheader={
+                    <ListSubheader component="div" id="nested-list-subheader">
+                    Produccion
+                    </ListSubheader>
+                }
+                className={classes.root}
+                >
+                    <ListItem name='alta' onClick={e=>{this.props.history.push(`${this.props.match.path}/alta`)}} button>
+                        <ListItemIcon>
+                        <SendIcon />
+                        </ListItemIcon>
+                        <ListItemText name='alta' primary="Alta"/>
+                    </ListItem>
+                    <ListItem button onClick={e=>{this.props.history.push(`${this.props.match.path}/baja`)}}>
+                        <ListItemIcon>
+                        <DraftsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Baja" />
+                    </ListItem>
+                    <ListItem button onClick={e=>{this.props.history.push(`${this.props.match.path}/Lista`)}}>
+                        <ListItemIcon>
+                        <DraftsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Lista" />
+                    </ListItem>
+                    <ListItem button onClick={this.handleClick}>
+                        <ListItemIcon>
+                        <InboxIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Inbox" />
+                        {this.state.open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+                    <Collapse in={this.state.open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItem button className={classes.nested}>
+                                <ListItemIcon>
+                                <StarBorder />
+                                </ListItemIcon>
+                                <ListItemText primary="Starred" />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+                </List>
+                </div>       
         );
     }
 }
