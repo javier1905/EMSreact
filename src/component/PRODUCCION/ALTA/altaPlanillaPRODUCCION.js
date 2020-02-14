@@ -1,11 +1,13 @@
 import React from 'react'
 import {Form,Col,Row,Button,Table} from 'react-bootstrap'
+import IndexPARADASMAQUINA from './PARADASMAQUINA/indexPARADASMAQUINA'
 import './styleAltaPlanillaPRODUCCION.css'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
+            show:false,
             fechaProduccion:undefined,
             fechaFundicion:undefined,
             idTurno:undefined,
@@ -20,7 +22,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecMaquinas:[],
             vecPiezas:[],
             vecMoldes:[]
-        };
+        }
+        this.cbx_operacion = React.createRef()
+        this.cbx_maquina = React.createRef()
+        this.cbx_pieza = React.createRef()
+        this.cbx_molde = React.createRef()
     }
     addOperario = e =>{
         let Op = {
@@ -134,8 +140,16 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre === 'idTurno'){this.setState({idTurno:value})}
         if(nombre === 'HoraInicioProduccion'){this.setState({HoraInicioProduccion:value})}
         if(nombre === 'HoraFinProduccion'){this.setState({HoraFinProduccion:value})}
-        if(nombre === 'idOperacion'){this.setState({idOperacion:value});this.getMaquinasXoperacion(value)}
-        if(nombre === 'idMaquina'){this.setState({idMaquina:value});this.getPiezasXmaquina(value)}
+        if(nombre === 'idOperacion'){
+            this.setState({idOperacion:value})
+            this.getMaquinasXoperacion(value)
+            this.setState({idMaquina:undefined,idPieza:undefined,idMolde:undefined})
+        }
+        if(nombre === 'idMaquina'){
+            this.setState({idMaquina:value})
+            this.getPiezasXmaquina(value)
+            this.setState({idPieza:undefined,idMolde:undefined})
+        }
         if(nombre === 'idPieza'){this.setState({idPieza:value});this.getMoldesXpieza(value)}
         if(nombre === 'idMolde'){this.setState({idMolde:value})}
         var indexOperario
@@ -170,10 +184,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
             headers: new Headers({
                 'Accept': 'Applitaction/json',
                 'Content-Type': 'Application/json'
-            })   
+            })
         })
         .then(dato=>{return dato.json()})
-        .then(json=>{return this.setState({vecOperaciones:json})})
+        .then(json=>{
+            this.setState({vecOperaciones:json})
+            return this.cbx_operacion.current.value = undefined
+        })
     }
     getMaquinasXoperacion = idOperacion =>{
         fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`,{
@@ -181,10 +198,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
             headers: new Headers({
                 'Accept': 'Applitaction/json',
                 'Content-Type': 'Application/json'
-            })   
+            })
         })
         .then(dato=>{return dato.json()})
-        .then(json=>{return this.setState({vecMaquinas:json})})
+        .then(json=>{
+            this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[]})
+            return this.cbx_maquina.current.value = undefined
+        })
     }
     getPiezasXmaquina = idMaquina =>{
         fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}`,{
@@ -192,10 +212,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
             headers: new Headers({
                 'Accept': 'Applitaction/json',
                 'Content-Type': 'Application/json'
-            })   
+            })
         })
         .then(dato=>{return dato.json()})
-        .then(json=>{return this.setState({vecPiezas:json})})
+        .then(json=>{
+            this.cbx_molde.current.value = undefined
+            this.setState({vecPiezas:json,vecMoldes:[]})
+            return this.cbx_pieza.current.value = undefined
+        })
     }
     getMoldesXpieza = idPieza =>{
         fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{
@@ -203,13 +227,19 @@ class AltaPlanillaPRODUCCION extends React.Component {
             headers: new Headers({
                 'Accept': 'Applitaction/json',
                 'Content-Type': 'Application/json'
-            })   
+            })
         })
         .then(dato=>{return dato.json()})
-        .then(json=>{return this.setState({vecMoldes:json})})
+        .then(json=>{
+            this.setState({vecMoldes:json})
+            return this.cbx_molde.current.value = undefined
+        })
     }
     componentDidMount(){
         this.getOperaciones()
+    }
+    cerrarModal = () => {
+        this.setState({show:false})
     }
     render() {
         return (
@@ -217,27 +247,19 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 <h1 id='PlanillaProduccion'>PlanillaProduccion</h1>
                 <Form>
                     <Row>
-                        <Col>
-                        <Form.Group size="sm" style={{width:'150px'}}>
-                            <Form.Label size="sm">Fecha Produccion</Form.Label>
-                            <Form.Control size="sm" onChange={this.capturaDatos} name='fechaProduccion' type="date" required/>
-                        </Form.Group>
-                        </Col>
-                        <Col>
+                        <div className='contenedorFechas'>
+                            <Form.Group size="sm" style={{width:'150px'}}>
+                                <Form.Label size="sm">Fecha Produccion</Form.Label>
+                                <Form.Control size="sm" onChange={this.capturaDatos} name='fechaProduccion' type="date" required/>
+                            </Form.Group>
                             <Form.Group size="sm" style={{width:'150px'}}>
                                 <Form.Label size="sm">Fecha Fundicion</Form.Label>
                                 <Form.Control size="sm" onChange={this.capturaDatos} name='fechaFundicion' type="date" required />
                             </Form.Group>
-                        </Col>
-                        <Col>
-                        </Col>
-                        <Col>
-                        </Col>
-                        <Col>
-                        </Col>
+                        </div>
                     </Row>
                     <Row>
-                        <Col>
+                        <div className='contenedorFechas'>
                             <Form.Group size="sm" style={{width:'120px'}}>
                                 <Form.Label size="sm">Turno</Form.Label>
                                 <Form.Control size="sm" onChange={this.capturaDatos} name='idTurno'  as="select">
@@ -245,82 +267,62 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     <option value='2'>2 - Tarde</option>
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
-                        <Col>
                             <Form.Group size="sm" style={{width:'100px'}}>
                                 <Form.Label size="sm">Hora Inicio</Form.Label>
                                 <Form.Control size="sm" name='HoraInicioProduccion' type="time" onChange={this.capturaDatos}/>
                             </Form.Group>
-                        </Col>
-                        <Col>
                             <Form.Group size="sm" style={{width:'100px'}}>
                                 <Form.Label size="sm">Hora Fin</Form.Label>
                                 <Form.Control size="sm" name='HoraFinProduccion' onChange={this.capturaDatos} type="time" />
                             </Form.Group>
-                        </Col>
-                        <Col>
-                        </Col>
-                        <Col>
-                        </Col>
-                        <Col>
-                        </Col>
-                        <Col>
-                        </Col>
+                        </div>
                     </Row>
                     <Row>
-                        <Col>
+                        <div className='contenedorFechas'>
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Operacion</Form.Label>
-                                <Form.Control size="sm" style={{width:'120px'}} name='idOperacion' onChange={this.capturaDatos} as="select">
+                                <Form.Control ref={this.cbx_operacion} size="sm" style={{width:'120px'}} name='idOperacion' onChange={this.capturaDatos} as="select">
                                     {
                                         this.state.vecOperaciones.map((ope,indiceOperacion)=>{
                                             return <option key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</option>
                                         })
-                                    }                                    
+                                    }
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
-                        <Col>
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Maquina</Form.Label>
-                                <Form.Control size="sm" style={{width:'80px'}} name='idMaquina' onChange={this.capturaDatos} as="select">
+                                <Form.Control ref={this.cbx_maquina} size="sm" style={{width:'80px'}} name='idMaquina' onChange={this.capturaDatos} as="select">
                                     {
                                         this.state.vecMaquinas.map((maq,indiceMaquina)=>{
                                             return <option key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</option>
                                         })
-                                    }    
+                                    }
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
-                        <Col>
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Pieza</Form.Label>
-                                <Form.Control size="sm" style={{width:'120px'}} name='idPieza' onChange={this.capturaDatos} as="select">
-                                    <option value="-1"></option>
+                                <Form.Control ref={this.cbx_pieza} size="sm" style={{width:'120px'}} name='idPieza' onChange={this.capturaDatos} as="select">
                                     {
                                         this.state.vecPiezas.map((pie,indicePieza)=>{
                                             return <option key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</option>
                                         })
-                                    }    
+                                    }
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
-                        <Col>
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Molde</Form.Label>
-                                <Form.Control size="sm" style={{width:'100px'}} name='idMolde' onChange={this.capturaDatos}  as="select">
-                                    <option value={undefined}></option>
+                                <Form.Control ref={this.cbx_molde} size="sm" style={{width:'100px'}} name='idMolde' onChange={this.capturaDatos}  as="select">
                                     {
                                         this.state.vecMoldes.map((mol,indiceMolde)=>{
                                             return <option key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</option>
                                         })
-                                    } 
+                                    }
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
+                        </div>
                     </Row>
                     <Row>
-                        <Col>
+                        <div className='contenedorOperarios'>
                             <Form.Group size="sm">
                                 <Form.Label size="sm">Operarios</Form.Label>
                                 <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
@@ -383,10 +385,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                             this.state.vecOperarios[i].vecRechazo ?
                                                             this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
                                                                 return <div id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
-                                                                    <Row style={{margin:'0px', padding:'0px'}}>
                                                                         <div className='contenedorRechazos'>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Id rechazo</Form.Label>
+                                                                            <Form.Group size="sm" style={{width:'60px'}}>
+                                                                                <Form.Label size="sm">Id rech</Form.Label>
                                                                                 <Form.Control
                                                                                     defaultValue={rech.idRechazo}
                                                                                     id={`idRechazo ${i} ${indexRechazo}`}
@@ -398,7 +399,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 />
                                                                             </Form.Group>
                                                                             <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Nombre rechazo</Form.Label>
+                                                                                <Form.Label size="sm">Defecto</Form.Label>
                                                                                 <Form.Control
                                                                                     defaultValue={rech.nombreRechazo}
                                                                                     id={`nombreRechazo ${i} ${indexRechazo}`}
@@ -439,11 +440,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                     type='number'
                                                                                     onChange = {this.capturaDatos}
                                                                                     onBlur={this.verificaRechazoCoincidente}
+                                                                                    style={{width:'65px'}}
                                                                                 />
                                                                             </Form.Group>
                                                                         </div>
-                                                                    </Row>
-                                                                    <Row>
                                                                         <div className='contenedorFormZonas'>
                                                                             <Form.Group size="sm">
                                                                                 <Form.Label size="sm">Letra</Form.Label>
@@ -481,8 +481,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 </tbody>
                                                                             </Table>
                                                                         </div>
-                                                                    </Row>
-                                                                </div>
+                                                                    </div>
                                                             })
                                                             :
                                                             <div></div>
@@ -492,40 +491,57 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     }
                                 </div>
                             </Form.Group>
-                        </Col>
+                        </div>
                     </Row>
-                     <Row className='contenedorParadasMaquina'>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
+                     <Row>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
                         <div className='contenedorParadasMaquina'>
                             <h2>Paradas de Maquina</h2>
-                            <Row>
-                                <div>
-                                    <Form.Group>
-                                        <Form.Label size='sm'>Id</Form.Label>
-                                        <Form.Control type='text' size='sm'/>
-                                    </Form.Group>
-                                </div>
-                            </Row>
-                            <Row>
-                                <Table>
-                                    <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Nombre</th>
-                                            <th>Desde</th>
-                                            <th>Hasta</th>
-                                            <th>Duracion</th>
-                                            <th>Tipo</th>
-                                            <th>Editar</th>
-                                            <th>Eliminar</th>                                        
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
+                            <div className='contenedorFormPardasMaquina'>
+                                <Form.Group style={{width:'65px'}}>
+                                    <Form.Label size='sm'>Id</Form.Label>
+                                    <Form.Control type='text' size='sm'/>
+                                </Form.Group>
+                                <Form.Group style={{width:'400px'}}>
+                                    <Form.Label size='sm'>Parada maquina</Form.Label>
+                                    <Form.Control disabled type='text' size='sm'/>
+                                </Form.Group>
+                                <Form.Group style={{width:'40px'}}>
+                                    <Form.Label size='sm'></Form.Label>
+                                    <Button size='sm' style={{display:'block'}} onClick={e=>this.setState({show:true})}>Add</Button>
+                                    <IndexPARADASMAQUINA show={this.state.show} cerrarModal={this.cerrarModal}/>
+                                </Form.Group>
+                                <Form.Group style={{width:'80px',display:'inlineBlock'}}>
+                                    <Form.Label size='sm'>Desde</Form.Label>
+                                    <Form.Control type='time' size='sm'/>
+                                </Form.Group>
+                                <Form.Group style={{width:'80px'}}>
+                                    <Form.Label size='sm'>Hasta</Form.Label>
+                                    <Form.Control type='time' size='sm'/>
+                                </Form.Group>
+                                <Form.Group style={{width:'(80px'}}>
+                                    <Form.Label size='sm'></Form.Label>
+                                    <Button size='sm' style={{display:'block'}}>Cargar</Button>
+                                </Form.Group>
+                            </div>
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Nombre</th>
+                                        <th>Desde</th>
+                                        <th>Hasta</th>
+                                        <th>Duracion</th>
+                                        <th>Tipo</th>
+                                        <th>Editar</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
 
-                                        }
-                                    </tbody>
-                                </Table>
-                            </Row>                    
+                                    }
+                                </tbody>
+                            </Table>
                         </div>
                     </Row>
                 </Form>

@@ -8,11 +8,12 @@
     text-align: center;
 }
 .contenedorRechazos > *{
-    margin: 0px;
-    padding: 0px;
+    margin-right: 10px;
+    display: inline-block;
 }
 .contenedorRechazos{
-    margin: 0px;
+    
+    margin-right:20px;
     padding: 0px;
     box-sizing: border-box;
     display: inline-block;
@@ -32,6 +33,7 @@ border: solid grey 1px;
 padding: 10px;
 box-sizing: border-box;
 width: auto;
+margin-right: 10px;
 }
 .Scrap{
     display: inline-block;
@@ -58,8 +60,19 @@ width: auto;
     width: auto;
 }
 .contenedorParadasMaquina{
-    border: solid grey 1px;
     border-radius: 7px;
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
+    width: 100%;
+}
+.contenedorFechas >*{
+    display: inline-block;
+    margin-right: 10px;
+}
+.contenedorOperarios{
+    width: 100%;
+}
+.contenedorFormPardasMaquina >*{
+    display: inline-block;
+    margin-right: 10px;
 }
