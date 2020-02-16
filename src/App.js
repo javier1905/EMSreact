@@ -5,6 +5,7 @@ import Home from './component/HOME/indexHOME'
 import {Provider} from 'react-redux'
 import store from './Redux/store'
 import {CssBaseline} from '@material-ui/core'
+import 'typeface-roboto'
 
 function App() {
   return (

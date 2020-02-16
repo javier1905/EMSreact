@@ -1,15 +1,22 @@
 import React from 'react'
 import {Form,Col,Row,Button,Table} from 'react-bootstrap'
-import IndexPARADASMAQUINA from './PARADASMAQUINA/indexPARADASMAQUINA'
 import './styleAltaPlanillaPRODUCCION.css'
+import 'date-fns';
+import Grid from '@material-ui/core/Grid';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker,} from '@material-ui/pickers';
+import { makeStyles } from '@material-ui/core/styles'
+import {TextField} from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab'
+// import { format } from 'date-fns'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             show:false,
-            fechaProduccion:undefined,
-            fechaFundicion:undefined,
+            fechaProduccion:new Date(),
+            fechaFundicion:new Date(),
             idTurno:undefined,
             HoraInicioProduccion:undefined,
             HoraFinProduccion:undefined,
@@ -23,11 +30,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecPiezas:[],
             vecMoldes:[]
         }
+      
         this.cbx_operacion = React.createRef()
         this.cbx_maquina = React.createRef()
         this.cbx_pieza = React.createRef()
         this.cbx_molde = React.createRef()
     }
+    handleDateChange = date => { this.setState({fechaProduccion:date})}
+    capturaFechaFundicion = date => { this.setState({fechaFundicion:date})}
     addOperario = e =>{
         let Op = {
             idOperario:undefined,
@@ -135,8 +145,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
     capturaDatos = e =>{
         let nombre = e.target.name
         let value = e.target.value
-        if(nombre === 'fechaProduccion'){this.setState({fechaProduccion:value})}
-        if(nombre === 'fechaFundicion'){this.setState({fechaFundicion:value})}
         if(nombre === 'idTurno'){this.setState({idTurno:value})}
         if(nombre === 'HoraInicioProduccion'){this.setState({HoraInicioProduccion:value})}
         if(nombre === 'HoraFinProduccion'){this.setState({HoraFinProduccion:value})}
@@ -189,7 +197,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{
             this.setState({vecOperaciones:json})
-            return this.cbx_operacion.current.value = undefined
+            try{
+                return this.cbx_operacion.current.value = undefined
+            }
+            catch(e){}
+            
         })
     }
     getMaquinasXoperacion = idOperacion =>{
@@ -241,21 +253,53 @@ class AltaPlanillaPRODUCCION extends React.Component {
     cerrarModal = () => {
         this.setState({show:false})
     }
+    useStyles = makeStyles(theme => ({
+        root: {
+            flexGrow: 1
+        }
+    }))
     render() {
+        const classes = this.useStyles
         return (
-            <div className='contenedor'>
-                <h1 id='PlanillaProduccion'>PlanillaProduccion</h1>
+            <div>
+                <h1 id=''>PlanillaProduccion</h1>
                 <Form>
                     <Row>
-                        <div className='contenedorFechas'>
-                            <Form.Group size="sm" style={{width:'150px'}}>
-                                <Form.Label size="sm">Fecha Produccion</Form.Label>
-                                <Form.Control size="sm" onChange={this.capturaDatos} name='fechaProduccion' type="date" required/>
-                            </Form.Group>
-                            <Form.Group size="sm" style={{width:'150px'}}>
-                                <Form.Label size="sm">Fecha Fundicion</Form.Label>
-                                <Form.Control size="sm" onChange={this.capturaDatos} name='fechaFundicion' type="date" required />
-                            </Form.Group>
+                        <div className={classes.root}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <Grid container justify="space-around">
+                                    <KeyboardDatePicker
+                                        style={{marginRight:'10px'}}
+                                        required={true}
+                                        size='small'
+                                        variant='standard'
+                                        margin="normal"
+                                        id="dtp_fechaProduccion"
+                                        label="Fecha Produccion"
+                                        format="dd/MM/yyyy"
+                                        value={this.state.fechaProduccion}
+                                        onChange={this.handleDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                    <KeyboardDatePicker
+                                
+                                        required={true}
+                                        size='small'
+                                        variant="outlined"
+                                        margin="normal"
+                                        id="dtp_fechaFundicion"
+                                        label="Fecha Fundicion"
+                                        format="dd/MM/yyyy"
+                                        value={this.state.fechaFundicion}
+                                        onChange={this.capturaFechaFundicion}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </Grid>
+                            </MuiPickersUtilsProvider>
                         </div>
                     </Row>
                     <Row>
@@ -497,19 +541,15 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         <div className='contenedorParadasMaquina'>
                             <h2>Paradas de Maquina</h2>
                             <div className='contenedorFormPardasMaquina'>
-                                <Form.Group style={{width:'65px'}}>
-                                    <Form.Label size='sm'>Id</Form.Label>
-                                    <Form.Control type='text' size='sm'/>
-                                </Form.Group>
-                                <Form.Group style={{width:'400px'}}>
-                                    <Form.Label size='sm'>Parada maquina</Form.Label>
-                                    <Form.Control disabled type='text' size='sm'/>
-                                </Form.Group>
-                                <Form.Group style={{width:'40px'}}>
-                                    <Form.Label size='sm'></Form.Label>
-                                    <Button size='sm' style={{display:'block'}} onClick={e=>this.setState({show:true})}>Add</Button>
-                                    <IndexPARADASMAQUINA show={this.state.show} cerrarModal={this.cerrarModal}/>
-                                </Form.Group>
+                                <Autocomplete
+                                    id="combo-box-demo"
+                                    options={[{title:'Rotura de carro'},{title:'Noyo cortado'}]}
+                                    getOptionLabel={option => option.title}
+                                    style={{ width: 300 }}
+                                    renderInput={params => (
+                                        <TextField {...params} label="Paradas de Maquina" variant="outlined" fullWidth />
+                                    )}
+                                />
                                 <Form.Group style={{width:'80px',display:'inlineBlock'}}>
                                     <Form.Label size='sm'>Desde</Form.Label>
                                     <Form.Control type='time' size='sm'/>

@@ -4,19 +4,33 @@ import MenuPRODUCCION from './MENUPRODUCCION/indexMENUPRODUCCION'
 import Alta from './ALTA/indexALTA'
 import Baja from './BAJA/indexBAJA'
 import Lista from './LISTA/indexLISTA'
+import {Grid} from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles';
 
 class indexPRODUCCION extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
+    useStyles = makeStyles(theme => ({
+        root: {
+          flexGrow: 1,
+        },
+        paper: {
+          padding: theme.spacing(2),
+          textAlign: 'center',
+          color: theme.palette.text.secondary,
+        },
+      }));
     render() {
+        const classes = this.useStyles
         return (
-            <div>
-                <div id='contenedorMENUPRODUCCION' >
+            <div className={classes.root}>
+            <Grid container racing={12}>
+                <Grid item sm={2} xs={6}>
                     <MenuPRODUCCION/>
-                </div>
-                <div id='dashboardPRODUCCION'>
+                </Grid>
+                <Grid item sm={10} xs={6}>
                     <Route path={`${this.props.match.path}/alta`}>
                         <Alta/>
                     </Route>
@@ -26,8 +40,9 @@ class indexPRODUCCION extends React.Component {
                     <Route path={`${this.props.match.path}/lista`}>
                         <Lista/>
                     </Route>
-                </div>
+                </Grid>
                 <div style={{clear:'both'}}></div>
+            </Grid>
             </div>
         );
     }

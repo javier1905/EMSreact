@@ -1,7 +1,7 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-import Menu from './MENU'
+import Menu from './MENU2'
 
 class indexMENU extends React.Component {
     constructor(props) {

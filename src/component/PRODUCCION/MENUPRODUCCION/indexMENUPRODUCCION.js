@@ -50,7 +50,7 @@ class indexMENUPRODUCCION extends React.Component {
         }))
         const classes = useStyles   
         return (
-            <div id='contenedorMENU'>
+            <div id=''>
                 <List
                 component="nav"
                 aria-labelledby="nested-list-subheader"
