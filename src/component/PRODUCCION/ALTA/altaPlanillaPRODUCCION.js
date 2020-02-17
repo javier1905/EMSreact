@@ -4,9 +4,9 @@ import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker,} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker,KeyboardTimePicker} from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles'
-import {TextField} from '@material-ui/core';
+import {TextField,Box} from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab'
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -21,7 +21,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             show:false,
             fechaProduccion:new Date(),
             fechaFundicion:undefined,
-            idTurno:undefined,
+            idTurno:'',
             HoraInicioProduccion:undefined,
             HoraFinProduccion:undefined,
             idOperacion:'',
@@ -34,6 +34,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecPiezas:[],
             vecMoldes:[],
             vecParadasMaquina:[],
+            vecTurnos:[],
+            vecOperariosCombo:[{idOperario:1,nombreOperario:'Gracia Carlos'},{idOperario:2,nombreOperario:'Irusta Miguel'}],
             paradaMaquinaSeleccionada:undefined,
         }
         this.inputLabel = React.createRef()
@@ -44,12 +46,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.cbx_molde = React.createRef()
     }
     handleDateChange = date => { this.setState({fechaProduccion:date})}
-    capturaFechaFundicion = date => { this.setState({fechaFundicion:date})}
-    // cambioOperacion = e => {this.setState({idOperacion:e.target.value}) };
+    capturaFechaFundicion = date => { this.setState({fechaFundicion:date})} 
+    getHoraInicioProduccion = value =>{this.setState({HoraInicioProduccion:value})}
+    getHoraFinProduccion = value =>{this.setState({HoraFinProduccion:value})}
     addOperario = e =>{
         let Op = {
-            idOperario:undefined,
-            nombre:undefined,
+            idOperario:'',
+            nombre:'',
             apellido:undefined,
             horaInicio:undefined,
             horaFin:undefined,
@@ -151,11 +154,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         catch(e){ console.log(e)}
     }
     capturaDatos = e =>{
-        let nombre = e.target.name
-        let value = e.target.value
+            let nombre = e.target.name
+            let value = e.target.value
         if(nombre === 'idTurno'){this.setState({idTurno:value})}
-        if(nombre === 'HoraInicioProduccion'){this.setState({HoraInicioProduccion:value})}
-        if(nombre === 'HoraFinProduccion'){this.setState({HoraFinProduccion:value})}
         if(nombre === 'idOperacion'){
             this.setState({idOperacion:value})
             this.getMaquinasXoperacion(value)
@@ -174,8 +175,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre.split(' ')[2]){indexRechazo = parseInt(nombre.split(' ')[2]) }
         var vecOperariosCache = this.state.vecOperarios
         try{
-            if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value }
-            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value }
+            if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value; vecOperariosCache[indexOperario].nombre = value }
+            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
             if(nombre.split(' ')[0] === 'hsInicioOperario'){ vecOperariosCache[indexOperario].horaInicio = value }
             if(nombre.split(' ')[0] === 'hsFinOperario'){ vecOperariosCache[indexOperario].horaFin = value }
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
@@ -259,9 +260,21 @@ class AltaPlanillaPRODUCCION extends React.Component {
             catch(e){}
         })
     }
+    getTurnos = () =>{
+        fetch(`https://ems-node-api.herokuapp.com/api/turnos`,{
+            method:'GET',
+            headers: new Headers({
+                'Accept': 'Applitaction/json',
+                'Content-Type': 'Application/json'
+            })
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
+    }
     componentDidMount(){
         this.getOperaciones()
         this.getParadasMaquina()
+        this.getTurnos()
     }
     cerrarModal = () => {
         this.setState({show:false})
@@ -281,365 +294,397 @@ class AltaPlanillaPRODUCCION extends React.Component {
     render() {
         const classes = this.useStyles
         return (
-            <div>
-                <h1 id=''>PlanillaProduccion</h1>
+            <Box  boxShadow={1}  bgcolor="background.default"  m={0} p={3}>
                 <Form>
-                    <Row>
                         <div className={classes.root}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
-                                <Grid container justify="space-around">
-                                    <KeyboardDatePicker
-                                        style={{marginRight:'10px'}}
-                                        required={true}
-                                        size='small'
-                                        variant='standard'
-                                        margin="normal"
-                                        id="dtp_fechaProduccion"
-                                        label="Fecha Produccion"
-                                        format="dd/MM/yyyy"
-                                        value={this.state.fechaProduccion}
-                                        onChange={this.handleDateChange}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                    <KeyboardDatePicker
-                                        required={true}
-                                        size='small'
-                                        variant="outlined"
-                                        margin="normal"
-                                        id="dtp_fechaFundicion"
-                                        label="Fecha Fundicion"
-                                        format="dd/MM/yyyy"
-                                        value={this.state.fechaFundicion}
-                                        onChange={this.capturaFechaFundicion}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </Grid>
-                            </MuiPickersUtilsProvider>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div className='contenedorFechas'>
-                            <Form.Group size="sm" style={{width:'120px'}}>
-                                <Form.Label size="sm">Turno</Form.Label>
-                                <Form.Control size="sm" onChange={this.capturaDatos} name='idTurno'  as="select">
-                                    <option value='1'>1 - Mañana</option>
-                                    <option value='2'>2 - Tarde</option>
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group size="sm" style={{width:'100px'}}>
-                                <Form.Label size="sm">Hora Inicio</Form.Label>
-                                <Form.Control size="sm" name='HoraInicioProduccion' type="time" onChange={this.capturaDatos}/>
-                            </Form.Group>
-                            <Form.Group size="sm" style={{width:'100px'}}>
-                                <Form.Label size="sm">Hora Fin</Form.Label>
-                                <Form.Control size="sm" name='HoraFinProduccion' onChange={this.capturaDatos} type="time" />
-                            </Form.Group>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div className='contenedorFechas'>
-                        <FormControl className={classes.formControl} style={{width:'140px'}}>
-                                    <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
-                                    <Select
-                                        ref={this.cbx_operacion}
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={this.state.idOperacion}
-                                        name='idOperacion'
-                                        onChange={this.capturaDatos}
-                                    >
-                                    {
-                                        this.state.vecOperaciones.map((ope,indiceOperacion)=>{
-                                            return <MenuItem key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
-                                        })
-                                    }
-                                    </Select>
-                        </FormControl>
-                        <FormControl className={classes.formControl} style={{width:'140px'}}>
-                                    <InputLabel id="idMaquina">Maquina</InputLabel>
-                                    <Select
-                                        ref={this.cbx_maquina}
-                                        labelId="IdMaquina"
-                                        id="demo-simple-select"
-                                        value={this.state.idMaquina}
-                                        name='idMaquina'
-                                        onChange={this.capturaDatos}
-                                    >
-                                    {
-                                        this.state.vecMaquinas.map((maq,indiceMaquina)=>{
-                                            return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
-                                        })
-                                    }
-                                    </Select>
-                        </FormControl>
-                        <FormControl className={classes.formControl} style={{width:'140px'}}>
-                                    <InputLabel id="idPieza">Pieza</InputLabel>
-                                    <Select
-                                        ref={this.cbx_pieza}
-                                        labelId="idPieza"
-                                        id="demo-simple-select"
-                                        value={this.state.idPieza}
-                                        name='idPieza'
-                                        onChange={this.capturaDatos}
-                                    >
-                                    {
-                                        this.state.vecPiezas.map((pie,indicePieza)=>{
-                                            return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
-                                        })
-                                    }
-                                    </Select>
-                        </FormControl>
-                        <FormControl className={classes.formControl} style={{width:'140px'}}>
-                                    <InputLabel id="idMolde">Molde</InputLabel>
-                                    <Select
-                                        ref={this.cbx_molde}
-                                        labelId="idMolde"
-                                        id="cbx_molde"
-                                        value={this.state.idMolde}
-                                        name='idMolde'
-                                        onChange={this.capturaDatos}
-                                    >
-                                    {
-                                        this.state.vecMoldes.map((mol,indiceMolde)=>{
-                                            return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
-                                        })
-                                    }
-                                    </Select>
-                        </FormControl>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div className='contenedorOperarios'>
-                            <Form.Group size="sm">
-                                <Form.Label size="sm">Operarios</Form.Label>
-                                <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
-                                    <Button variant="primary" size="lg" block onClick={this.addOperario}>
-                                        Agregar
-                                    </Button>
-                                    {
-                                        this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VEC OPERARIOS
-                                            return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
-                                                        <Row>
-                                                            <Col>
-                                                                <Form.Group size="sm">
-                                                                    <Form.Label size="sm">Legajo</Form.Label>
-                                                                    <Form.Control size="sm" name={`idOperario ${i}`} onChange={this.capturaDatos}  type='number'/>
-                                                                </Form.Group>
-                                                            </Col>
-                                                            <Col>
-                                                                <Form.Group size="sm">
-                                                                    <Form.Label size="sm">Nombre</Form.Label>
-                                                                    <Form.Control size="sm" name={`nombreOperario ${i}`} onChange={this.capturaDatos}  as="select">
-                                                                        <option>Gracia Carlos</option>
-                                                                        <option>Irusta</option>
-                                                                    </Form.Control>
-                                                                </Form.Group>
-                                                            </Col>
-                                                            <Col>
-                                                                <Form.Group size="sm" style={{width:'100px'}}>
-                                                                    <Form.Label size="sm">Hora Inicio</Form.Label>
-                                                                    <Form.Control size="sm" name={`hsInicioOperario ${i}`} onChange={this.capturaDatos}  type="time" style={{textAlign:'center'}}/>
-                                                                </Form.Group>
-                                                            </Col>
-                                                            <Col>
-                                                                <Form.Group size="sm" style={{width:'100px'}}>
-                                                                    <Form.Label size="sm">Hora Fin</Form.Label>
-                                                                    <Form.Control size="sm" name={`hsFinOperario ${i}`} onChange={this.capturaDatos}  type="time" />
-                                                                </Form.Group>
-                                                            </Col>
-                                                            <Col>
-                                                                <Form.Group size="sm" style={{width:'100px'}}>
-                                                                    <Form.Label size="sm">Produccion</Form.Label>
-                                                                    <Form.Control size="sm" name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
-                                                                </Form.Group>
-                                                            </Col>
-                                                            <Col>
-                                                                <Form.Group size="sm" style={{width:'100px'}}>
-                                                                    <Form.Label size="sm">Calorias</Form.Label>
-                                                                    <Form.Control size="sm" name={`caloriasOperario ${i}`} onChange={this.capturaDatos} type="number" />
-                                                                </Form.Group>
-                                                            </Col>
-                                                            <Col>
-                                                                <Form.Group size="sm">
-                                                                    <Form.Label size="sm">Add Rechazos</Form.Label>
-                                                                    <Button size="sm" name={i} onClick={this.addRechazo}>
-                                                                        Add rechazos
-                                                                    </Button>
-                                                                </Form.Group>
-                                                            </Col>
-                                                        </Row>
-                                                        { // RECORRE VECTO RECHAZOS
-                                                            this.state.vecOperarios[i].vecRechazo ?
-                                                            this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
-                                                                return <div id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
-                                                                        <div className='contenedorRechazos'>
-                                                                            <Form.Group size="sm" style={{width:'60px'}}>
-                                                                                <Form.Label size="sm">Id rech</Form.Label>
-                                                                                <Form.Control
-                                                                                    defaultValue={rech.idRechazo}
-                                                                                    id={`idRechazo ${i} ${indexRechazo}`}
-                                                                                    size="sm"
-                                                                                    name={`idRechazo ${i} ${indexRechazo}`}
-                                                                                    type='number'
-                                                                                    onChange = {this.capturaDatos}
-                                                                                    onBlur={this.verificaRechazoCoincidente}
-                                                                                />
-                                                                            </Form.Group>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Defecto</Form.Label>
-                                                                                <Form.Control
-                                                                                    defaultValue={rech.nombreRechazo}
-                                                                                    id={`nombreRechazo ${i} ${indexRechazo}`}
-                                                                                    size="sm"
-                                                                                    name={`nombreRechazo ${i} ${indexRechazo}`}
-                                                                                    as='select'
-                                                                                    onChange = {this.capturaDatos}
-                                                                                    onBlur={this.verificaRechazoCoincidente}
-                                                                                >
-                                                                                    <option>{undefined}</option>
-                                                                                    <option>Rechupe</option>
-                                                                                    <option>Fizura</option>
-                                                                                </Form.Control>
-                                                                            </Form.Group>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Tipo Rech</Form.Label>
-                                                                                <Form.Control
-                                                                                    defaultValue={rech.tipo}
-                                                                                    id={`tipoRechazo ${i} ${indexRechazo}`}
-                                                                                    size="sm"
-                                                                                    name={`tipoRechazo ${i} ${indexRechazo}`}
-                                                                                    as='select'
-                                                                                    onChange = {this.capturaDatos}
-                                                                                    onBlur={this.verificaRechazoCoincidente}
-                                                                                >
-                                                                                    <option>{undefined}</option>
-                                                                                    <option>Rechazo</option>
-                                                                                    <option>Scrap</option>
-                                                                                </Form.Control>
-                                                                            </Form.Group>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Cantidad</Form.Label>
-                                                                                <Form.Control
-                                                                                    defaultValue={rech.cantidadRechazo}
-                                                                                    id={`cantidadRechazo ${i} ${indexRechazo}`}
-                                                                                    size="sm"
-                                                                                    name={`cantidadRechazo ${i} ${indexRechazo}`}
-                                                                                    type='number'
-                                                                                    onChange = {this.capturaDatos}
-                                                                                    onBlur={this.verificaRechazoCoincidente}
-                                                                                    style={{width:'65px'}}
-                                                                                />
-                                                                            </Form.Group>
-                                                                        </div>
-                                                                        <div className='contenedorFormZonas'>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Letra</Form.Label>
-                                                                                <Form.Control size="sm" id={`letraZona ${i} ${indexRechazo}`} className='zona' type='text'/>
-                                                                            </Form.Group>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Numero</Form.Label>
-                                                                                <Form.Control size="sm" id={`numeroZona ${i} ${indexRechazo}`} className='zona' type='number'/>
-                                                                            </Form.Group>
-                                                                            <Form.Group size="sm">
-                                                                                <Form.Label size="sm">Cantidad</Form.Label>
-                                                                                <Form.Control size="sm" id={`cantidadZona ${i} ${indexRechazo}`} className='zona' type='number'/>
-                                                                            </Form.Group>
-                                                                            <Form.Group size="sm">
-                                                                                <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
-                                                                            </Form.Group>
-                                                                            <Table size="sm">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <td>Letra</td>
-                                                                                        <td>Numero</td>
-                                                                                        <td>Cantidad</td>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    {
-                                                                                        this.state.vecOperarios[i].vecRechazo[indexRechazo].vecZonas.map((z,indexZona)=>{
-                                                                                            return <tr key={indexZona}>
-                                                                                                <td>{z.letra}</td>
-                                                                                                <td>{z.numero}</td>
-                                                                                                <td>{z.cantidad}</td>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12}> {/* INICIO CONTENEDOR FECHAS PRODUCCION Y FUNDICION */}
+                                        <h2 style={{marginTop:'10px'}}>PlanillaProduccion</h2>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
+                                            <KeyboardDatePicker
+                                                style={{marginRight:'10px',width:'160px'}}
+                                                required={true}
+                                                size='small'
+                                                variant='standard'
+                                                margin="none"
+                                                id="dtp_fechaProduccion"
+                                                label="Fecha Produccion"
+                                                format="dd/MM/yyyy"
+                                                value={this.state.fechaProduccion}
+                                                onChange={this.handleDateChange}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                            <KeyboardDatePicker
+                                                style={{marginRight:'10px',width:'160px'}}
+                                                required={true}
+                                                size='small'
+                                                variant="outlined"
+                                                margin="none"
+                                                id="dtp_fechaFundicion"
+                                                label="Fecha Fundicion"
+                                                format="dd/MM/yyyy"
+                                                value={this.state.fechaFundicion}
+                                                onChange={this.capturaFechaFundicion}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </Grid> {/* FIN CONTENEDOR FECHAS PRODUCCION Y FUNDICCION*/}
+                                    <Grid item xs={12}> {/* INICIO TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
+                                        <FormControl className={classes.formControl} style={{width:'100px',marginRight:'10px'}}>
+                                        <InputLabel id='idTurnoLabel'>Turno</InputLabel>
+                                        <Select
+                                            labelId='idTurnoLabel'
+                                            onChange={this.capturaDatos}
+                                            id='idTurno'
+                                            value={this.state.idTurno}
+                                            name='idTurno'
+                                        >
+                                            {
+                                                this.state.vecTurnos.map((tur,indiceTurno)=>{
+                                                return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
+                                                })
+                                            }
+                                        </Select>
+                                        </FormControl>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardTimePicker
+                                                style={{width:'100px',marginRight:'10px'}}
+                                                margin="none"
+                                                id="time-picker"
+                                                ampm={false}
+                                                label="HS inicio"
+                                                name='HoraInicioProduccion'
+                                                value={this.state.horaInicio}
+                                                onChange={this.getHoraInicioProduccion}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change time',
+                                                }}
+                                            />
+                                            <KeyboardTimePicker
+                                                style={{width:'100px',marginRight:'10px'}}
+                                                margin="none"
+                                                id="idHoraFinProduccion"
+                                                ampm={false}
+                                                label="HS fin"
+                                                name='HoraFinProduccion'
+                                                value={this.state.HoraFinProduccion}
+                                                onChange={this.getHoraFinProduccion}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change time',
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </Grid> {/* FIN TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
+                                    <Grid item xs={12}> {/* INICIO OPERACION MAQUINA PIEZA Y MOLDE */}
+                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                            <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
+                                            <Select
+                                                ref={this.cbx_operacion}
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={this.state.idOperacion}
+                                                name='idOperacion'
+                                                onChange={this.capturaDatos}
+                                            >
+                                            {
+                                                this.state.vecOperaciones.map((ope,indiceOperacion)=>{
+                                                    return <MenuItem key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
+                                                })
+                                            }
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                            <InputLabel id="idMaquina">Maquina</InputLabel>
+                                            <Select
+                                                ref={this.cbx_maquina}
+                                                labelId="IdMaquina"
+                                                id="demo-simple-select"
+                                                value={this.state.idMaquina}
+                                                name='idMaquina'
+                                                onChange={this.capturaDatos}
+                                            >
+                                            {
+                                                this.state.vecMaquinas.map((maq,indiceMaquina)=>{
+                                                    return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
+                                                })
+                                            }
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                            <InputLabel id="idPieza">Pieza</InputLabel>
+                                            <Select
+                                                ref={this.cbx_pieza}
+                                                labelId="idPieza"
+                                                id="demo-simple-select"
+                                                value={this.state.idPieza}
+                                                name='idPieza'
+                                                onChange={this.capturaDatos}
+                                            >
+                                            {
+                                                this.state.vecPiezas.map((pie,indicePieza)=>{
+                                                    return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
+                                                })
+                                            }
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                            <InputLabel id="idMolde">Molde</InputLabel>
+                                            <Select
+                                                ref={this.cbx_molde}
+                                                labelId="idMolde"
+                                                id="cbx_molde"
+                                                value={this.state.idMolde}
+                                                name='idMolde'
+                                                onChange={this.capturaDatos}
+                                            >
+                                                {
+                                                    this.state.vecMoldes.map((mol,indiceMolde)=>{
+                                                        return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>  {/* FIN OPERACION MAQUINA PIEZA Y MOLDE */}
+                                    <Grid item xs={12}> {/* INICIO OPERARIOS*/}
+                                        <h2>Operarios</h2>
+                                        <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
+                                            <Button variant="primary" size="lg" block onClick={this.addOperario}>
+                                                Agregar
+                                            </Button>
+                                            {
+                                                this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
+                                                    return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
+                                                                <Row>
+                                                                        <TextField
+                                                                            id="standard-basic"
+                                                                            label="Legajo"
+                                                                            type='number'
+                                                                            name={`idOperario ${i}`}
+                                                                            onChange={this.capturaDatos}
+                                                                            style={{width:'50px'}}
+                                                                            value={this.state.vecOperarios[i].idOperario}
+                                                                        />
+                                                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                                                            <InputLabel id="idNombre">Nombre</InputLabel>
+                                                                            <Select
+                                                                                labelId="idNombre"
+                                                                                id="cbx_operarios"
+                                                                                value={this.state.vecOperarios[i].nombre}
+                                                                                name={`nombreOperario ${i}`}
+                                                                                onChange={this.capturaDatos}
+                                                                            >
+                                                                                {
+                                                                                    this.state.vecOperariosCombo.map((op,indiceOperario)=>{
+                                                                                        return <MenuItem key={indiceOperario} value={op.idOperario}>{op.nombreOperario}</MenuItem>
+                                                                                    })
+                                                                                }
+                                                                            </Select>
+                                                                        </FormControl>
+                                                                    <Col>
+                                                                        <Form.Group size="sm" style={{width:'100px'}}>
+                                                                            <Form.Label size="sm">Hora Inicio</Form.Label>
+                                                                            <Form.Control size="sm" name={`hsInicioOperario ${i}`} onChange={this.capturaDatos}  type="time" style={{textAlign:'center'}}/>
+                                                                        </Form.Group>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <Form.Group size="sm" style={{width:'100px'}}>
+                                                                            <Form.Label size="sm">Hora Fin</Form.Label>
+                                                                            <Form.Control size="sm" name={`hsFinOperario ${i}`} onChange={this.capturaDatos}  type="time" />
+                                                                        </Form.Group>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <Form.Group size="sm" style={{width:'100px'}}>
+                                                                            <Form.Label size="sm">Produccion</Form.Label>
+                                                                            <Form.Control size="sm" name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
+                                                                        </Form.Group>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <Form.Group size="sm" style={{width:'100px'}}>
+                                                                            <Form.Label size="sm">Calorias</Form.Label>
+                                                                            <Form.Control size="sm" name={`caloriasOperario ${i}`} onChange={this.capturaDatos} type="number" />
+                                                                        </Form.Group>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <Form.Group size="sm">
+                                                                            <Form.Label size="sm">Add Rechazos</Form.Label>
+                                                                            <Button size="sm" name={i} onClick={this.addRechazo}>
+                                                                                Add rechazos
+                                                                            </Button>
+                                                                        </Form.Group>
+                                                                    </Col>
+                                                                </Row>
+                                                                { // !RECORRE VECTOR RECHAZOS
+                                                                    this.state.vecOperarios[i].vecRechazo ?
+                                                                    this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
+                                                                        return <div id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
+                                                                                <div className='contenedorRechazos'>
+                                                                                    <Form.Group size="sm" style={{width:'60px'}}>
+                                                                                        <Form.Label size="sm">Id rech</Form.Label>
+                                                                                        <Form.Control
+                                                                                            defaultValue={rech.idRechazo}
+                                                                                            id={`idRechazo ${i} ${indexRechazo}`}
+                                                                                            size="sm"
+                                                                                            name={`idRechazo ${i} ${indexRechazo}`}
+                                                                                            type='number'
+                                                                                            onChange = {this.capturaDatos}
+                                                                                            onBlur={this.verificaRechazoCoincidente}
+                                                                                        />
+                                                                                    </Form.Group>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Form.Label size="sm">Defecto</Form.Label>
+                                                                                        <Form.Control
+                                                                                            defaultValue={rech.nombreRechazo}
+                                                                                            id={`nombreRechazo ${i} ${indexRechazo}`}
+                                                                                            size="sm"
+                                                                                            name={`nombreRechazo ${i} ${indexRechazo}`}
+                                                                                            as='select'
+                                                                                            onChange = {this.capturaDatos}
+                                                                                            onBlur={this.verificaRechazoCoincidente}
+                                                                                        >
+                                                                                            <option>{undefined}</option>
+                                                                                            <option>Rechupe</option>
+                                                                                            <option>Fizura</option>
+                                                                                        </Form.Control>
+                                                                                    </Form.Group>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Form.Label size="sm">Tipo Rech</Form.Label>
+                                                                                        <Form.Control
+                                                                                            defaultValue={rech.tipo}
+                                                                                            id={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                            size="sm"
+                                                                                            name={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                            as='select'
+                                                                                            onChange = {this.capturaDatos}
+                                                                                            onBlur={this.verificaRechazoCoincidente}
+                                                                                        >
+                                                                                            <option>{undefined}</option>
+                                                                                            <option>Rechazo</option>
+                                                                                            <option>Scrap</option>
+                                                                                        </Form.Control>
+                                                                                    </Form.Group>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Form.Label size="sm">Cantidad</Form.Label>
+                                                                                        <Form.Control
+                                                                                            defaultValue={rech.cantidadRechazo}
+                                                                                            id={`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                            size="sm"
+                                                                                            name={`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                            type='number'
+                                                                                            onChange = {this.capturaDatos}
+                                                                                            onBlur={this.verificaRechazoCoincidente}
+                                                                                            style={{width:'65px'}}
+                                                                                        />
+                                                                                    </Form.Group>
+                                                                                </div>
+                                                                                <div className='contenedorFormZonas'>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Form.Label size="sm">Letra</Form.Label>
+                                                                                        <Form.Control size="sm" id={`letraZona ${i} ${indexRechazo}`} className='zona' type='text'/>
+                                                                                    </Form.Group>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Form.Label size="sm">Numero</Form.Label>
+                                                                                        <Form.Control size="sm" id={`numeroZona ${i} ${indexRechazo}`} className='zona' type='number'/>
+                                                                                    </Form.Group>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Form.Label size="sm">Cantidad</Form.Label>
+                                                                                        <Form.Control size="sm" id={`cantidadZona ${i} ${indexRechazo}`} className='zona' type='number'/>
+                                                                                    </Form.Group>
+                                                                                    <Form.Group size="sm">
+                                                                                        <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
+                                                                                    </Form.Group>
+                                                                                    <Table size="sm">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <td>Letra</td>
+                                                                                                <td>Numero</td>
+                                                                                                <td>Cantidad</td>
                                                                                             </tr>
-                                                                                        })
-                                                                                    }
-                                                                                </tbody>
-                                                                            </Table>
-                                                                        </div>
-                                                                    </div>
-                                                            })
-                                                            :
-                                                            <div></div>
-                                                        }
-                                                    </div>
-                                        })
-                                    }
-                                </div>
-                            </Form.Group>
-                        </div>
-                    </Row>
-                     <Row>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
-                        <div className='contenedorParadasMaquina'>
-                            <h2>Paradas de Maquina</h2>
-                            <div className='contenedorFormPardasMaquina'>
-                                <Autocomplete
-                                    ref={this.inputLabel}
-                                    onInputChange={(a,e,i)=>{console.log(e)}}
-                                    renderOption={option => (
-                                        <React.Fragment>
-                                            {option.idParadaMaquina} {option.nombreParadaMaquina}
-                                        </React.Fragment>
-                                    )}
-                                    id="combo-box-demo"
-                                    options={this.state.vecParadasMaquina}
-                                    getOptionLabel={option =>`${option.idParadaMaquina} ${option.nombreParadaMaquina}`}
-                                    style={{ width: 300 }}
-                                    renderInput={params => (
-                                        <TextField {...params} label="Paradas de Maquina" variant="outlined" fullWidth />
-                                    )}
-                                />
-                                <Form.Group style={{width:'80px',display:'inlineBlock'}}>
-                                    <Form.Label size='sm'>Desde</Form.Label>
-                                    <Form.Control type='time' size='sm'/>
-                                </Form.Group>
-                                <Form.Group style={{width:'80px'}}>
-                                    <Form.Label size='sm'>Hasta</Form.Label>
-                                    <Form.Control type='time' size='sm'/>
-                                </Form.Group>
-                                <Form.Group style={{width:'(80px'}}>
-                                    <Form.Label size='sm'></Form.Label>
-                                    <Button size='sm' style={{display:'block'}}>Cargar</Button>
-                                </Form.Group>
-                            </div>
-                            <Table>
-                                <thead>
-                                    <tr>
-                                        <th>Id</th>
-                                        <th>Nombre</th>
-                                        <th>Desde</th>
-                                        <th>Hasta</th>
-                                        <th>Duracion</th>
-                                        <th>Tipo</th>
-                                        <th>Editar</th>
-                                        <th>Eliminar</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            {
+                                                                                                this.state.vecOperarios[i].vecRechazo[indexRechazo].vecZonas.map((z,indexZona)=>{
+                                                                                                    return <tr key={indexZona}>
+                                                                                                        <td>{z.letra}</td>
+                                                                                                        <td>{z.numero}</td>
+                                                                                                        <td>{z.cantidad}</td>
+                                                                                                    </tr>
+                                                                                                })
+                                                                                            }
+                                                                                        </tbody>
+                                                                                    </Table>
+                                                                                </div>
+                                                                            </div>
+                                                                    })
+                                                                    :
+                                                                    <div></div>
+                                                                }
+                                                            </div>
+                                                })
+                                            }
+                                        </div>
+                                    </Grid>
+                                    <Grid item xs={12}>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
+                                        <div className='contenedorParadasMaquina'>
+                                            <h2>Paradas de Maquina</h2>
+                                            <div className='contenedorFormPardasMaquina'>
+                                                <Autocomplete
+                                                    ref={this.inputLabel}
+                                                    onInputChange={(a,e,i)=>{console.log(e)}}
+                                                    renderOption={option => (
+                                                        <React.Fragment>
+                                                            {option.idParadaMaquina} {option.nombreParadaMaquina}
+                                                        </React.Fragment>
+                                                    )}
+                                                    id="combo-box-demo"
+                                                    options={this.state.vecParadasMaquina}
+                                                    getOptionLabel={option =>`${option.idParadaMaquina} ${option.nombreParadaMaquina}`}
+                                                    style={{ width: 300 }}
+                                                    renderInput={params => (
+                                                        <TextField {...params} label="Paradas de Maquina" variant="outlined" fullWidth />
+                                                    )}
+                                                />
+                                                <Form.Group style={{width:'80px',display:'inlineBlock'}}>
+                                                    <Form.Label size='sm'>Desde</Form.Label>
+                                                    <Form.Control type='time' size='sm'/>
+                                                </Form.Group>
+                                                <Form.Group style={{width:'80px'}}>
+                                                    <Form.Label size='sm'>Hasta</Form.Label>
+                                                    <Form.Control type='time' size='sm'/>
+                                                </Form.Group>
+                                                <Form.Group style={{width:'(80px'}}>
+                                                    <Form.Label size='sm'></Form.Label>
+                                                    <Button size='sm' style={{display:'block'}}>Cargar</Button>
+                                                </Form.Group>
+                                            </div>
+                                            <Table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Id</th>
+                                                        <th>Nombre</th>
+                                                        <th>Desde</th>
+                                                        <th>Hasta</th>
+                                                        <th>Duracion</th>
+                                                        <th>Tipo</th>
+                                                        <th>Editar</th>
+                                                        <th>Eliminar</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {
 
-                                    }
-                                </tbody>
-                            </Table>
+                                                    }
+                                                </tbody>
+                                            </Table>
+                                        </div>
+                                    </Grid>
+                                </Grid>
                         </div>
-                    </Row>
                 </Form>
-            </div>
+            </Box>
         );
     }
 }
