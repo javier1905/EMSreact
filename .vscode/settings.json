@@ -30,5 +30,6 @@
           "strikethrough": false,
           "backgroundColor": "transparent"
         }
-      ]
+      ],
+      "editor.fontFamily": "'Bahnschrift Light', Arial, Consolas, 'Courier New', monospace"
 }

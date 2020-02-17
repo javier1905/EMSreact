@@ -8,6 +8,10 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker,} from '@material-ui/picker
 import { makeStyles } from '@material-ui/core/styles'
 import {TextField} from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab'
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 // import { format } from 'date-fns'
 
 class AltaPlanillaPRODUCCION extends React.Component {
@@ -16,21 +20,24 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.state = {
             show:false,
             fechaProduccion:new Date(),
-            fechaFundicion:new Date(),
+            fechaFundicion:undefined,
             idTurno:undefined,
             HoraInicioProduccion:undefined,
             HoraFinProduccion:undefined,
-            idOperacion:undefined,
-            idMaquina:undefined,
-            idPieza:undefined,
-            idMolde:undefined,
+            idOperacion:'',
+            idMaquina:'',
+            idPieza:'',
+            idMolde:'',
             vecOperarios:[],
             vecOperaciones:[],
             vecMaquinas:[],
             vecPiezas:[],
-            vecMoldes:[]
+            vecMoldes:[],
+            vecParadasMaquina:[],
+            paradaMaquinaSeleccionada:undefined,
         }
-      
+        this.inputLabel = React.createRef()
+        this.cbx_paradasMaquina = React.createRef()
         this.cbx_operacion = React.createRef()
         this.cbx_maquina = React.createRef()
         this.cbx_pieza = React.createRef()
@@ -38,6 +45,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     handleDateChange = date => { this.setState({fechaProduccion:date})}
     capturaFechaFundicion = date => { this.setState({fechaFundicion:date})}
+    // cambioOperacion = e => {this.setState({idOperacion:e.target.value}) };
     addOperario = e =>{
         let Op = {
             idOperario:undefined,
@@ -151,12 +159,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre === 'idOperacion'){
             this.setState({idOperacion:value})
             this.getMaquinasXoperacion(value)
-            this.setState({idMaquina:undefined,idPieza:undefined,idMolde:undefined})
+            this.setState({idMaquina:'',idPieza:'',idMolde:''})
         }
         if(nombre === 'idMaquina'){
             this.setState({idMaquina:value})
             this.getPiezasXmaquina(value)
-            this.setState({idPieza:undefined,idMolde:undefined})
+            this.setState({idPieza:'',idMolde:''})
         }
         if(nombre === 'idPieza'){this.setState({idPieza:value});this.getMoldesXpieza(value)}
         if(nombre === 'idMolde'){this.setState({idMolde:value})}
@@ -196,12 +204,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{
-            this.setState({vecOperaciones:json})
-            try{
-                return this.cbx_operacion.current.value = undefined
-            }
-            catch(e){}
-            
+            return this.setState({vecOperaciones:json,idOperacion:''})
         })
     }
     getMaquinasXoperacion = idOperacion =>{
@@ -214,8 +217,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{
-            this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[]})
-            return this.cbx_maquina.current.value = undefined
+            this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[],idMaquina:''})
         })
     }
     getPiezasXmaquina = idMaquina =>{
@@ -226,12 +228,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 'Content-Type': 'Application/json'
             })
         })
-        .then(dato=>{return dato.json()})
-        .then(json=>{
-            this.cbx_molde.current.value = undefined
-            this.setState({vecPiezas:json,vecMoldes:[]})
-            return this.cbx_pieza.current.value = undefined
-        })
+        .then(dato=>{ return dato.json() })
+        .then(json=>{ return this.setState({vecPiezas:json,vecMoldes:[],idMolde:'',idPieza:''}) })
     }
     getMoldesXpieza = idPieza =>{
         fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{
@@ -241,14 +239,29 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 'Content-Type': 'Application/json'
             })
         })
+        .then(dato=>{ return dato.json() })
+        .then(json=>{ return this.setState({vecMoldes:json,idMolde:''}) })
+    }
+    getParadasMaquina = () =>{
+        fetch('https://ems-node-api.herokuapp.com/api/paradasMaquina',{
+            method:'GET',
+            headers: new Headers({
+                'Accept': 'Applitaction/json',
+                'Content-Type': 'Application/json'
+            })
+        })
         .then(dato=>{return dato.json()})
         .then(json=>{
-            this.setState({vecMoldes:json})
-            return this.cbx_molde.current.value = undefined
+            this.setState({vecParadasMaquina:json})
+            try{
+                return this.cbx_paradasMaquina.current.value = undefined
+            }
+            catch(e){}
         })
     }
     componentDidMount(){
         this.getOperaciones()
+        this.getParadasMaquina()
     }
     cerrarModal = () => {
         this.setState({show:false})
@@ -256,7 +269,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
     useStyles = makeStyles(theme => ({
         root: {
             flexGrow: 1
-        }
+        },
+        formControl: {
+            margin: theme.spacing(1),
+            minWidth: 120,
+        },
+        selectEmpty: {
+            marginTop: theme.spacing(2),
+        },
     }))
     render() {
         const classes = this.useStyles
@@ -266,7 +286,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 <Form>
                     <Row>
                         <div className={classes.root}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
                                 <Grid container justify="space-around">
                                     <KeyboardDatePicker
                                         style={{marginRight:'10px'}}
@@ -284,7 +304,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         }}
                                     />
                                     <KeyboardDatePicker
-                                
                                         required={true}
                                         size='small'
                                         variant="outlined"
@@ -323,46 +342,74 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     </Row>
                     <Row>
                         <div className='contenedorFechas'>
-                            <Form.Group size="sm">
-                                <Form.Label size="sm">Operacion</Form.Label>
-                                <Form.Control ref={this.cbx_operacion} size="sm" style={{width:'120px'}} name='idOperacion' onChange={this.capturaDatos} as="select">
+                        <FormControl className={classes.formControl} style={{width:'140px'}}>
+                                    <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
+                                    <Select
+                                        ref={this.cbx_operacion}
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={this.state.idOperacion}
+                                        name='idOperacion'
+                                        onChange={this.capturaDatos}
+                                    >
                                     {
                                         this.state.vecOperaciones.map((ope,indiceOperacion)=>{
-                                            return <option key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</option>
+                                            return <MenuItem key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
                                         })
                                     }
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group size="sm">
-                                <Form.Label size="sm">Maquina</Form.Label>
-                                <Form.Control ref={this.cbx_maquina} size="sm" style={{width:'80px'}} name='idMaquina' onChange={this.capturaDatos} as="select">
+                                    </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl} style={{width:'140px'}}>
+                                    <InputLabel id="idMaquina">Maquina</InputLabel>
+                                    <Select
+                                        ref={this.cbx_maquina}
+                                        labelId="IdMaquina"
+                                        id="demo-simple-select"
+                                        value={this.state.idMaquina}
+                                        name='idMaquina'
+                                        onChange={this.capturaDatos}
+                                    >
                                     {
                                         this.state.vecMaquinas.map((maq,indiceMaquina)=>{
-                                            return <option key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</option>
+                                            return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
                                         })
                                     }
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group size="sm">
-                                <Form.Label size="sm">Pieza</Form.Label>
-                                <Form.Control ref={this.cbx_pieza} size="sm" style={{width:'120px'}} name='idPieza' onChange={this.capturaDatos} as="select">
+                                    </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl} style={{width:'140px'}}>
+                                    <InputLabel id="idPieza">Pieza</InputLabel>
+                                    <Select
+                                        ref={this.cbx_pieza}
+                                        labelId="idPieza"
+                                        id="demo-simple-select"
+                                        value={this.state.idPieza}
+                                        name='idPieza'
+                                        onChange={this.capturaDatos}
+                                    >
                                     {
                                         this.state.vecPiezas.map((pie,indicePieza)=>{
-                                            return <option key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</option>
+                                            return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
                                         })
                                     }
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group size="sm">
-                                <Form.Label size="sm">Molde</Form.Label>
-                                <Form.Control ref={this.cbx_molde} size="sm" style={{width:'100px'}} name='idMolde' onChange={this.capturaDatos}  as="select">
+                                    </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl} style={{width:'140px'}}>
+                                    <InputLabel id="idMolde">Molde</InputLabel>
+                                    <Select
+                                        ref={this.cbx_molde}
+                                        labelId="idMolde"
+                                        id="cbx_molde"
+                                        value={this.state.idMolde}
+                                        name='idMolde'
+                                        onChange={this.capturaDatos}
+                                    >
                                     {
                                         this.state.vecMoldes.map((mol,indiceMolde)=>{
-                                            return <option key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</option>
+                                            return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
                                         })
                                     }
-                                </Form.Control>
-                            </Form.Group>
+                                    </Select>
+                        </FormControl>
                         </div>
                     </Row>
                     <Row>
@@ -374,7 +421,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         Agregar
                                     </Button>
                                     {
-                                        this.state.vecOperarios.map((o,i)=>{  // RECORRE VEC OPERARIOS
+                                        this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VEC OPERARIOS
                                             return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                         <Row>
                                                             <Col>
@@ -542,9 +589,16 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             <h2>Paradas de Maquina</h2>
                             <div className='contenedorFormPardasMaquina'>
                                 <Autocomplete
+                                    ref={this.inputLabel}
+                                    onInputChange={(a,e,i)=>{console.log(e)}}
+                                    renderOption={option => (
+                                        <React.Fragment>
+                                            {option.idParadaMaquina} {option.nombreParadaMaquina}
+                                        </React.Fragment>
+                                    )}
                                     id="combo-box-demo"
-                                    options={[{title:'Rotura de carro'},{title:'Noyo cortado'}]}
-                                    getOptionLabel={option => option.title}
+                                    options={this.state.vecParadasMaquina}
+                                    getOptionLabel={option =>`${option.idParadaMaquina} ${option.nombreParadaMaquina}`}
                                     style={{ width: 300 }}
                                     renderInput={params => (
                                         <TextField {...params} label="Paradas de Maquina" variant="outlined" fullWidth />
