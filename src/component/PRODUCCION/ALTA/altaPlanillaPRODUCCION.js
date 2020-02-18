@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form,Col,Row,Button,Table} from 'react-bootstrap'
+import {Form,Row,Button,Table} from 'react-bootstrap'
 import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -7,6 +7,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker,KeyboardTimePicker} from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles'
 import {TextField,Box} from '@material-ui/core';
+import ButtonN from '@material-ui/core/Button'
 import { Autocomplete } from '@material-ui/lab'
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -49,15 +50,27 @@ class AltaPlanillaPRODUCCION extends React.Component {
     capturaFechaFundicion = date => { this.setState({fechaFundicion:date})} 
     getHoraInicioProduccion = value =>{this.setState({HoraInicioProduccion:value})}
     getHoraFinProduccion = value =>{this.setState({HoraFinProduccion:value})}
+    getHoraInicioOperario = e =>{
+        var vecOperariosTemp = this.state.vecOperarios
+        var indexOperario = e.target.name.split(' ')[1]
+        vecOperariosTemp[indexOperario].horaInicio = e.target.value
+        this.setState({vecOperarios:vecOperariosTemp})     
+    }
+    getHoraFinOperario = e =>{
+        var vecOperariosTemp = this.state.vecOperarios
+        var indexOperario = e.target.name.split(' ')[1]
+        vecOperariosTemp[indexOperario].horaFin = e.target.value
+        this.setState({vecOperarios:vecOperariosTemp})     
+    }
     addOperario = e =>{
         let Op = {
             idOperario:'',
             nombre:'',
-            apellido:undefined,
-            horaInicio:undefined,
-            horaFin:undefined,
-            produccion:undefined,
-            calorias:undefined,
+            apellido:'',
+            horaInicio:'',
+            horaFin:'',
+            produccion:'',
+            calorias:'',
             vecRechazo:[]
         }
         let newVecOperarios = [...this.state.vecOperarios,Op]
@@ -177,8 +190,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         try{
             if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value; vecOperariosCache[indexOperario].nombre = value }
             if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
-            if(nombre.split(' ')[0] === 'hsInicioOperario'){ vecOperariosCache[indexOperario].horaInicio = value }
-            if(nombre.split(' ')[0] === 'hsFinOperario'){ vecOperariosCache[indexOperario].horaFin = value }
+            // if(nombre.split(' ')[0] === 'hsInicioOperario'){ vecOperariosCache[indexOperario].horaInicio = value }
+            // if(nombre.split(' ')[0] === 'hsFinOperario'){ vecOperariosCache[indexOperario].horaFin = value }
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
             if(nombre.split(' ')[0] === 'caloriasOperario'){ vecOperariosCache[indexOperario].calorias = value }
             if(nombre.split(' ')[0] === 'idRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value}
@@ -391,9 +404,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                this.state.vecOperaciones.map((ope,indiceOperacion)=>{
+                                                this.state.vecOperaciones ?
+                                                    this.state.vecOperaciones.map((ope,indiceOperacion)=>{
                                                     return <MenuItem key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
-                                                })
+                                                     }) :<MenuItem></MenuItem>                                                
                                             }
                                             </Select>
                                         </FormControl>
@@ -484,38 +498,62 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 }
                                                                             </Select>
                                                                         </FormControl>
-                                                                    <Col>
-                                                                        <Form.Group size="sm" style={{width:'100px'}}>
-                                                                            <Form.Label size="sm">Hora Inicio</Form.Label>
-                                                                            <Form.Control size="sm" name={`hsInicioOperario ${i}`} onChange={this.capturaDatos}  type="time" style={{textAlign:'center'}}/>
-                                                                        </Form.Group>
-                                                                    </Col>
-                                                                    <Col>
-                                                                        <Form.Group size="sm" style={{width:'100px'}}>
-                                                                            <Form.Label size="sm">Hora Fin</Form.Label>
-                                                                            <Form.Control size="sm" name={`hsFinOperario ${i}`} onChange={this.capturaDatos}  type="time" />
-                                                                        </Form.Group>
-                                                                    </Col>
-                                                                    <Col>
-                                                                        <Form.Group size="sm" style={{width:'100px'}}>
-                                                                            <Form.Label size="sm">Produccion</Form.Label>
-                                                                            <Form.Control size="sm" name={`produccionOperario ${i}`} onChange={this.capturaDatos} type="number" style={{textAlign:'center'}}/>
-                                                                        </Form.Group>
-                                                                    </Col>
-                                                                    <Col>
-                                                                        <Form.Group size="sm" style={{width:'100px'}}>
-                                                                            <Form.Label size="sm">Calorias</Form.Label>
-                                                                            <Form.Control size="sm" name={`caloriasOperario ${i}`} onChange={this.capturaDatos} type="number" />
-                                                                        </Form.Group>
-                                                                    </Col>
-                                                                    <Col>
+                                                                        <TextField
+                                                                            id="time"
+                                                                            label="Desde"
+                                                                            name={`hsInicioOperario ${i}`}
+                                                                            type="time"
+                                                                            onChange={this.getHoraInicioOperario}
+                                                                            value ={this.state.vecOperarios[i].horaInicio}
+                                                                            className={classes.textField}
+                                                                            InputLabelProps={{
+                                                                            shrink: true,
+                                                                            }}
+                                                                            inputProps={{
+                                                                            step: 300, // 5 min
+                                                                            }}                                                                            
+                                                                        />
+                                                                        <TextField
+                                                                            id="hsFinOperario"
+                                                                            label="Hasta"
+                                                                            name={`hsFinOperario ${i}`}
+                                                                            type="time"
+                                                                            onChange={this.getHoraFinOperario}
+                                                                            value ={this.state.vecOperarios[i].horaFin}
+                                                                            className={classes.textField}
+                                                                            InputLabelProps={{
+                                                                            shrink: true,
+                                                                            }}
+                                                                            inputProps={{
+                                                                            step: 300, // 5 min
+                                                                            }}
+                                                                        />
+                                                                        <TextField
+                                                                            id="standard-basic"
+                                                                            label="Produccion"
+                                                                            type='number'
+                                                                            name={`produccionOperario ${i}`}
+                                                                            onChange={this.capturaDatos}
+                                                                            style={{width:'50px'}}
+                                                                            value={this.state.vecOperarios[i].produccion}
+                                                                        />
+                                                                        <TextField
+                                                                            id="txt_calorias"
+                                                                            label="Calorias"
+                                                                            type='number'
+                                                                            name={`caloriasOperario ${i}`}
+                                                                            onChange={this.capturaDatos}
+                                                                            style={{width:'50px'}}
+                                                                            value={this.state.vecOperarios[i].calorias}
+                                                                        />                                               
+                                                                        <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN>
                                                                         <Form.Group size="sm">
                                                                             <Form.Label size="sm">Add Rechazos</Form.Label>
                                                                             <Button size="sm" name={i} onClick={this.addRechazo}>
                                                                                 Add rechazos
                                                                             </Button>
                                                                         </Form.Group>
-                                                                    </Col>
+                                                           
                                                                 </Row>
                                                                 { // !RECORRE VECTOR RECHAZOS
                                                                     this.state.vecOperarios[i].vecRechazo ?
