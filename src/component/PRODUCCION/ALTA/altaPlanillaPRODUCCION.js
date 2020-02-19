@@ -4,10 +4,10 @@ import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker,KeyboardTimePicker} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles'
 import {TextField,Box} from '@material-ui/core';
-import ButtonN from '@material-ui/core/Button'
+// import ButtonN from '@material-ui/core/Button'
 import { Autocomplete } from '@material-ui/lab'
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -23,8 +23,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             fechaProduccion:new Date(),
             fechaFundicion:undefined,
             idTurno:'',
-            HoraInicioProduccion:undefined,
-            HoraFinProduccion:undefined,
+            HoraInicioProduccion:'',
+            HoraFinProduccion:'',
             idOperacion:'',
             idMaquina:'',
             idPieza:'',
@@ -48,8 +48,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     handleDateChange = date => { this.setState({fechaProduccion:date})}
     capturaFechaFundicion = date => { this.setState({fechaFundicion:date})} 
-    getHoraInicioProduccion = value =>{this.setState({HoraInicioProduccion:value})}
-    getHoraFinProduccion = value =>{this.setState({HoraFinProduccion:value})}
+    getHoraInicioProduccion = e =>{this.setState({HoraInicioProduccion:e.target.value})}
+    getHoraFinProduccion = e =>{this.setState({HoraFinProduccion:e.target.value})}
     getHoraInicioOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
@@ -363,34 +363,33 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }
                                         </Select>
                                         </FormControl>
-                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                            <KeyboardTimePicker
-                                                style={{width:'100px',marginRight:'10px'}}
-                                                margin="none"
-                                                id="time-picker"
-                                                ampm={false}
-                                                label="HS inicio"
-                                                name='HoraInicioProduccion'
-                                                value={this.state.horaInicio}
-                                                onChange={this.getHoraInicioProduccion}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change time',
-                                                }}
-                                            />
-                                            <KeyboardTimePicker
-                                                style={{width:'100px',marginRight:'10px'}}
-                                                margin="none"
-                                                id="idHoraFinProduccion"
-                                                ampm={false}
-                                                label="HS fin"
-                                                name='HoraFinProduccion'
-                                                value={this.state.HoraFinProduccion}
-                                                onChange={this.getHoraFinProduccion}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change time',
-                                                }}
-                                            />
-                                        </MuiPickersUtilsProvider>
+                                        <TextField
+                                            style={{width:'100px',marginRight:'10px'}}
+                                            id="idHoraIniciuoProduccion"
+                                            label="Desde"
+                                            name='hsInicioOperario'
+                                            type="time"
+                                            
+                                            onChange={this.getHoraInicioProduccion}
+                                            value ={this.state.horaInicio}
+                                            className={classes.textField}
+                                            InputLabelProps={{
+                                            shrink: true,
+                                            }}                                                                                                            
+                                        />
+                                        <TextField
+                                            style={{width:'100px',marginRight:'10px'}}
+                                            id="idHoraFinProduccion"
+                                            label="Hasta"
+                                            name='hsFinOperario'
+                                            type="time"
+                                            onChange={this.getHoraFinProduccion}
+                                            value ={this.state.HoraFinProduccion}
+                                            className={classes.textField}
+                                            InputLabelProps={{
+                                            shrink: true,
+                                            }}                                                                 
+                                         />                                 
                                     </Grid> {/* FIN TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
                                     <Grid item xs={12}> {/* INICIO OPERACION MAQUINA PIEZA Y MOLDE */}
                                         <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
@@ -474,12 +473,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                                 <Row>
                                                                         <TextField
+                                                                            style={{width:'70px',marginRight:'10px'}}
                                                                             id="standard-basic"
                                                                             label="Legajo"
                                                                             type='number'
                                                                             name={`idOperario ${i}`}
-                                                                            onChange={this.capturaDatos}
-                                                                            style={{width:'50px'}}
+                                                                            onChange={this.capturaDatos}                                                                            
                                                                             value={this.state.vecOperarios[i].idOperario}
                                                                         />
                                                                         <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
@@ -499,6 +498,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             </Select>
                                                                         </FormControl>
                                                                         <TextField
+                                                                            style={{width:'100px',marginRight:'10px'}}
                                                                             id="time"
                                                                             label="Desde"
                                                                             name={`hsInicioOperario ${i}`}
@@ -514,6 +514,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }}                                                                            
                                                                         />
                                                                         <TextField
+                                                                            style={{width:'100px',marginRight:'10px'}}
                                                                             id="hsFinOperario"
                                                                             label="Hasta"
                                                                             name={`hsFinOperario ${i}`}
@@ -529,31 +530,25 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }}
                                                                         />
                                                                         <TextField
+                                                                            style={{width:'105px',marginRight:'10px'}}
                                                                             id="standard-basic"
                                                                             label="Produccion"
                                                                             type='number'
                                                                             name={`produccionOperario ${i}`}
-                                                                            onChange={this.capturaDatos}
-                                                                            style={{width:'50px'}}
+                                                                            onChange={this.capturaDatos}                                                                            
                                                                             value={this.state.vecOperarios[i].produccion}
                                                                         />
                                                                         <TextField
+                                                                            style={{width:'80px',marginRight:'10px'}}
                                                                             id="txt_calorias"
                                                                             label="Calorias"
                                                                             type='number'
                                                                             name={`caloriasOperario ${i}`}
-                                                                            onChange={this.capturaDatos}
-                                                                            style={{width:'50px'}}
+                                                                            onChange={this.capturaDatos}                                                                            
                                                                             value={this.state.vecOperarios[i].calorias}
                                                                         />                                               
-                                                                        <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN>
-                                                                        <Form.Group size="sm">
-                                                                            <Form.Label size="sm">Add Rechazos</Form.Label>
-                                                                            <Button size="sm" name={i} onClick={this.addRechazo}>
-                                                                                Add rechazos
-                                                                            </Button>
-                                                                        </Form.Group>
-                                                           
+                                                                        {/* <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN> */}
+                                                                        <Button size="sm" name={i} onClick={this.addRechazo}> Add rechazos </Button>                                                          
                                                                 </Row>
                                                                 { // !RECORRE VECTOR RECHAZOS
                                                                     this.state.vecOperarios[i].vecRechazo ?
