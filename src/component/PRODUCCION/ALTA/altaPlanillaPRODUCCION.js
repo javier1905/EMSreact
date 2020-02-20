@@ -36,6 +36,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecMoldes:[],
             vecParadasMaquina:[],
             vecTurnos:[],
+            vecDefectos:[{idDefecto:'1',nombreDefecto:'Agarre'},{idDefecto:2,nombreDefecto:'Rechupe'}],
+            vecTipoRechazo:[{idTipoRechazo:'1',nombreTipoRechazo:'Rechazo'},{idTipoRechazo:2,nombreTipoRechazo:'Scrap'}],
             vecOperariosCombo:[{idOperario:1,nombreOperario:'Gracia Carlos'},{idOperario:2,nombreOperario:'Irusta Miguel'}],
             paradaMaquinaSeleccionada:undefined,
         }
@@ -80,10 +82,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
     addRechazo = e =>{
         let indexOperario = parseInt(e.target.name)
         let newRechazo = {
-            idRechazo:undefined,
-            nombreRechazo:undefined,
-            tipo:undefined,
-            cantidadRechazo:undefined,
+            idRechazo:'',
+            nombreRechazo:'',
+            tipo:'',
+            cantidadRechazo:'',
             vecZonas:[]
         }
         if(this.state.vecOperarios[indexOperario]){
@@ -129,10 +131,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
         try{
             let indexOperario = parseInt(e.target.name.split(' ')[1])
             let indexRechazo = parseInt(e.target.name.split(' ')[2])
-            var idRechazo = document.getElementById(`idRechazo ${indexOperario} ${indexRechazo}`).value
-            var nombreRechazo = document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).value
-            var tipoRechazo = document.getElementById(`tipoRechazo ${indexOperario} ${indexRechazo}`).value
-            var cantidadRechazo = document.getElementById(`cantidadRechazo ${indexOperario} ${indexRechazo}`).value
+            // var idRechazo = document.getElementById(`idRechazo ${indexOperario} ${indexRechazo}`).value
+            var idRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].idRechazo
+            // var nombreRechazo = document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).value
+            var nombreRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].nombreRechazo
+            // var tipoRechazo = document.getElementById(`tipoRechazo ${indexOperario} ${indexRechazo}`).value
+            var tipoRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].tipo
+            // var cantidadRechazo = document.getElementById(`cantidadRechazo ${indexOperario} ${indexRechazo}`).value ; console.log(document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).target.value)
+            var cantidadRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].cantidadRechazo
             if(idRechazo && nombreRechazo && tipoRechazo && cantidadRechazo){ // VERIFICO QUE TODOS LOS CAMPOS DE DEL RECHAZO ANALIZADO ESTEN COMPLETOS
                 cacheVecOp[indexOperario].vecRechazo.map((rech,indice) => {// RECORRO EL VEC RECHAZOS DE ESE OPERARIO
                     if(rech.idRechazo !== undefined && rech.nombreRechazo !== undefined && rech.tipo !== undefined && rech.cantidadRechazo !== undefined){
@@ -154,7 +160,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                 console.log(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo,'cantidad original ',cantidadRechazo, ' cantidad a sumar')
                                 cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo = parseInt(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo) + parseInt(cantidadRechazo)
                                 cacheVecOp[indexOperario].vecRechazo.splice(indexRechazo,1)
-                                document.getElementById(`cantidadRechazo ${indexOperario} ${indice}`).value = cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo
+                                // document.getElementById(`cantidadRechazo ${indexOperario} ${indice}`).value = cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo
                                 this.setState({vecOperarios:cacheVecOp})
                                 return undefined
                             }
@@ -357,9 +363,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             name='idTurno'
                                         >
                                             {
+                                                this.state.vecTurnos ?
                                                 this.state.vecTurnos.map((tur,indiceTurno)=>{
                                                 return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
                                                 })
+                                                :
+                                                <div></div>
                                             }
                                         </Select>
                                         </FormControl>
@@ -421,9 +430,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
+                                                this.state.vecMaquinas ?
                                                 this.state.vecMaquinas.map((maq,indiceMaquina)=>{
                                                     return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
                                                 })
+                                                :
+                                                <MenuItem></MenuItem>
                                             }
                                             </Select>
                                         </FormControl>
@@ -438,9 +450,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
+                                                this.state.vecPiezas ?
                                                 this.state.vecPiezas.map((pie,indicePieza)=>{
                                                     return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
                                                 })
+                                                :
+                                                <MenuItem></MenuItem>
                                             }
                                             </Select>
                                         </FormControl>
@@ -555,35 +570,58 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
                                                                         return <div id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
                                                                                 <div className='contenedorRechazos'>
-                                                                                    <Form.Group size="sm" style={{width:'60px'}}>
-                                                                                        <Form.Label size="sm">Id rech</Form.Label>
-                                                                                        <Form.Control
-                                                                                            defaultValue={rech.idRechazo}
-                                                                                            id={`idRechazo ${i} ${indexRechazo}`}
-                                                                                            size="sm"
-                                                                                            name={`idRechazo ${i} ${indexRechazo}`}
-                                                                                            type='number'
-                                                                                            onChange = {this.capturaDatos}
-                                                                                            onBlur={this.verificaRechazoCoincidente}
-                                                                                        />
-                                                                                    </Form.Group>
-                                                                                    <Form.Group size="sm">
-                                                                                        <Form.Label size="sm">Defecto</Form.Label>
-                                                                                        <Form.Control
-                                                                                            defaultValue={rech.nombreRechazo}
+                                                                                    <TextField
+                                                                                        style={{width:'105px',marginRight:'10px'}}
+                                                                                        id={`idRechazo ${i} ${indexRechazo}`}
+                                                                                        label="Id rech"
+                                                                                        type='number'
+                                                                                        name={`idRechazo ${i} ${indexRechazo}`}
+                                                                                        onChange={this.capturaDatos}                                                                            
+                                                                                        value={this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo}
+                                                                                        onBlur={this.verificaRechazoCoincidente}
+                                                                                    /> 
+                                                                                    <FormControl className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
+                                                                                        <InputLabel id='lbl_defecto'>Defecto</InputLabel>
+                                                                                        <Select 
                                                                                             id={`nombreRechazo ${i} ${indexRechazo}`}
-                                                                                            size="sm"
+                                                                                            labelId='lbl_defecto'
+                                                                                            value={this.state.vecOperarios[i].vecRechazo[indexRechazo].nombreRechazo}
                                                                                             name={`nombreRechazo ${i} ${indexRechazo}`}
-                                                                                            as='select'
                                                                                             onChange = {this.capturaDatos}
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
-                                                                                            <option>{undefined}</option>
-                                                                                            <option>Rechupe</option>
-                                                                                            <option>Fizura</option>
-                                                                                        </Form.Control>
-                                                                                    </Form.Group>
-                                                                                    <Form.Group size="sm">
+                                                                                            {
+                                                                                                this.state.vecDefectos ?
+                                                                                                this.state.vecDefectos.map((def,indexDefecto)=>{
+                                                                                                    return <MenuItem key={indexDefecto} value={def.idDefecto}>{def.nombreDefecto}</MenuItem>
+                                                                                                })
+                                                                                                :
+                                                                                                <MenuItem></MenuItem>
+                                                                                            }                                                                                            
+                                                                                        </Select>
+                                                                                    </FormControl>
+                                                                                    <FormControl className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
+                                                                                        <InputLabel id='lbl_TipoRecha'>Tipo Rech</InputLabel>
+                                                                                        <Select 
+                                                                                            id={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                            labelId='lbl_TipoRecha'
+                                                                                            value={this.state.vecOperarios[i].vecRechazo[indexRechazo].tipo}
+                                                                                            name={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                            onChange = {this.capturaDatos}
+                                                                                            onBlur={this.verificaRechazoCoincidente}
+                                                                                        >
+                                                                                            {
+                                                                                                this.state.vecTipoRechazo ?
+                                                                                                this.state.vecTipoRechazo.map((tr,indexTipoRechazo)=>{
+                                                                                                    return <MenuItem key={indexTipoRechazo} value={tr.idTipoRechazo}>{tr.nombreTipoRechazo}</MenuItem>
+                                                                                                })
+                                                                                                :
+                                                                                                <MenuItem></MenuItem>
+                                                                                            }                                                                                            
+                                                                                        </Select>
+                                                                                    </FormControl>                                      
+                                 
+                                                                                    {/* <Form.Group size="sm">
                                                                                         <Form.Label size="sm">Tipo Rech</Form.Label>
                                                                                         <Form.Control
                                                                                             defaultValue={rech.tipo}
@@ -598,20 +636,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             <option>Rechazo</option>
                                                                                             <option>Scrap</option>
                                                                                         </Form.Control>
-                                                                                    </Form.Group>
-                                                                                    <Form.Group size="sm">
-                                                                                        <Form.Label size="sm">Cantidad</Form.Label>
-                                                                                        <Form.Control
-                                                                                            defaultValue={rech.cantidadRechazo}
-                                                                                            id={`cantidadRechazo ${i} ${indexRechazo}`}
-                                                                                            size="sm"
-                                                                                            name={`cantidadRechazo ${i} ${indexRechazo}`}
-                                                                                            type='number'
-                                                                                            onChange = {this.capturaDatos}
-                                                                                            onBlur={this.verificaRechazoCoincidente}
-                                                                                            style={{width:'65px'}}
-                                                                                        />
-                                                                                    </Form.Group>
+                                                                                    </Form.Group> */}
+                                                                                    <TextField
+                                                                                        style={{width:'105px',marginRight:'10px'}}
+                                                                                        id={`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                        label="Cantidad"
+                                                                                        type='number'
+                                                                                        name={`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                        onChange={this.capturaDatos}                                                                            
+                                                                                        value={this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo}
+                                                                                        onBlur={this.verificaRechazoCoincidente}
+                                                                                    />                        
                                                                                 </div>
                                                                                 <div className='contenedorFormZonas'>
                                                                                     <Form.Group size="sm">
