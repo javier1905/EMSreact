@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form,Row,Button,Table} from 'react-bootstrap'
+import {Form,Button,Table} from 'react-bootstrap'
 import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -123,6 +123,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     this.setState({vecOperarios:cacheVecOperario})
                 }
             }
+            document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`).focus()
+            document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`).value = ''
+            document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`).value = ''
+            document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`).value = ''
         }
         catch(e){}
     }
@@ -195,13 +199,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var vecOperariosCache = this.state.vecOperarios
         try{
             if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value; vecOperariosCache[indexOperario].nombre = value }
-            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
-            // if(nombre.split(' ')[0] === 'hsInicioOperario'){ vecOperariosCache[indexOperario].horaInicio = value }
-            // if(nombre.split(' ')[0] === 'hsFinOperario'){ vecOperariosCache[indexOperario].horaFin = value }
+            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }     
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
             if(nombre.split(' ')[0] === 'caloriasOperario'){ vecOperariosCache[indexOperario].calorias = value }
-            if(nombre.split(' ')[0] === 'idRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value}
-            if(nombre.split(' ')[0] === 'nombreRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value}
+            if(nombre.split(' ')[0] === 'idRechazo'){
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value 
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = parseInt(value)
+            }
+            if(nombre.split(' ')[0] === 'nombreRechazo'){
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo=value
+            }
             if(nombre.split(' ')[0] === 'tipoRechazo'){
                 vecOperariosCache[indexOperario].vecRechazo[indexRechazo].tipo = value
                 var div = document.getElementById(`contenedorRechazosYzonas ${parseInt(nombre.split(' ')[1])} ${parseInt(nombre.split(' ')[2])}`)
@@ -223,9 +231,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             })
         })
         .then(dato=>{return dato.json()})
-        .then(json=>{
-            return this.setState({vecOperaciones:json,idOperacion:''})
-        })
+        .then(json=>{ return this.setState({vecOperaciones:json,idOperacion:''})  })
+        .catch(e=>{console.log(e)})
     }
     getMaquinasXoperacion = idOperacion =>{
         fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`,{
@@ -415,7 +422,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 this.state.vecOperaciones ?
                                                     this.state.vecOperaciones.map((ope,indiceOperacion)=>{
                                                     return <MenuItem key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
-                                                     }) :<MenuItem></MenuItem>                                                
+                                                     }) 
+                                                     :
+                                                     <MenuItem></MenuItem>                                                
                                             }
                                             </Select>
                                         </FormControl>
@@ -430,7 +439,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                this.state.vecMaquinas ?
+                                                this.state.vecMaquinas?
                                                 this.state.vecMaquinas.map((maq,indiceMaquina)=>{
                                                     return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
                                                 })
@@ -450,7 +459,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                this.state.vecPiezas ?
+                                                this.state.vecPiezas?
                                                 this.state.vecPiezas.map((pie,indicePieza)=>{
                                                     return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
                                                 })
@@ -470,9 +479,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                                 {
+                                                    this.state.vecMoldes?
                                                     this.state.vecMoldes.map((mol,indiceMolde)=>{
                                                         return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
                                                     })
+                                                    :
+                                                    <MenuItem></MenuItem>
                                                 }
                                             </Select>
                                         </FormControl>
@@ -486,7 +498,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             {
                                                 this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
-                                                                <Row>
+                                                                <Grid container spacing={1}>
                                                                         <TextField
                                                                             style={{width:'70px',marginRight:'10px'}}
                                                                             id="standard-basic"
@@ -564,12 +576,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                         />                                               
                                                                         {/* <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN> */}
                                                                         <Button size="sm" name={i} onClick={this.addRechazo}> Add rechazos </Button>                                                          
-                                                                </Row>
+                                                                </Grid>
                                                                 { // !RECORRE VECTOR RECHAZOS
                                                                     this.state.vecOperarios[i].vecRechazo ?
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
-                                                                        return <div id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} className='contenedorRechazosYzonas'>
-                                                                                <div className='contenedorRechazos'>
+                                                                        return <Box  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} style={{width:'auto',display:'inlineBlock'}}>
+                                                                            <Grid container spacing={1}>
+                                                                                <Grid item xs={12} className='contenedorRechazos'>
                                                                                     <TextField
                                                                                         style={{width:'105px',marginRight:'10px'}}
                                                                                         id={`idRechazo ${i} ${indexRechazo}`}
@@ -619,24 +632,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                 <MenuItem></MenuItem>
                                                                                             }                                                                                            
                                                                                         </Select>
-                                                                                    </FormControl>                                      
-                                 
-                                                                                    {/* <Form.Group size="sm">
-                                                                                        <Form.Label size="sm">Tipo Rech</Form.Label>
-                                                                                        <Form.Control
-                                                                                            defaultValue={rech.tipo}
-                                                                                            id={`tipoRechazo ${i} ${indexRechazo}`}
-                                                                                            size="sm"
-                                                                                            name={`tipoRechazo ${i} ${indexRechazo}`}
-                                                                                            as='select'
-                                                                                            onChange = {this.capturaDatos}
-                                                                                            onBlur={this.verificaRechazoCoincidente}
-                                                                                        >
-                                                                                            <option>{undefined}</option>
-                                                                                            <option>Rechazo</option>
-                                                                                            <option>Scrap</option>
-                                                                                        </Form.Control>
-                                                                                    </Form.Group> */}
+                                                                                    </FormControl>                                 
                                                                                     <TextField
                                                                                         style={{width:'105px',marginRight:'10px'}}
                                                                                         id={`cantidadRechazo ${i} ${indexRechazo}`}
@@ -647,23 +643,32 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value={this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo}
                                                                                         onBlur={this.verificaRechazoCoincidente}
                                                                                     />                        
-                                                                                </div>
-                                                                                <div className='contenedorFormZonas'>
-                                                                                    <Form.Group size="sm">
-                                                                                        <Form.Label size="sm">Letra</Form.Label>
-                                                                                        <Form.Control size="sm" id={`letraZona ${i} ${indexRechazo}`} className='zona' type='text'/>
-                                                                                    </Form.Group>
-                                                                                    <Form.Group size="sm">
-                                                                                        <Form.Label size="sm">Numero</Form.Label>
-                                                                                        <Form.Control size="sm" id={`numeroZona ${i} ${indexRechazo}`} className='zona' type='number'/>
-                                                                                    </Form.Group>
-                                                                                    <Form.Group size="sm">
-                                                                                        <Form.Label size="sm">Cantidad</Form.Label>
-                                                                                        <Form.Control size="sm" id={`cantidadZona ${i} ${indexRechazo}`} className='zona' type='number'/>
-                                                                                    </Form.Group>
-                                                                                    <Form.Group size="sm">
-                                                                                        <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
-                                                                                    </Form.Group>
+                                                                                </Grid>
+                                                                                <Grid item xs={12}>                                                                                                                                            
+                                                                                    <TextField
+                                                                                        style={{width:'60px',marginRight:'10px'}}
+                                                                                        label='Letra'
+                                                                                        id={`letraZona ${i} ${indexRechazo}`}
+                                                                                        type='text'
+                                                                                    >
+                                                                                    </TextField>                                                                                    
+                                                                                    <TextField
+                                                                                        style={{width:'60px',marginRight:'10px'}}
+                                                                                        label='Num'
+                                                                                        id={`numeroZona ${i} ${indexRechazo}`}
+                                                                                        type='num'
+                                                                                    >
+                                                                                    </TextField>                                                                                  
+                                                                                    <TextField
+                                                                                        style={{width:'60px',marginRight:'10px'}}
+                                                                                        label='Cant'
+                                                                                        id={`cantidadZona ${i} ${indexRechazo}`}
+                                                                                        type='number'
+                                                                                    >
+                                                                                    </TextField>                                                                        
+                                                                                    <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
+                                                                                </Grid>
+                                                                                <Grid item xs={6}>                                                                         
                                                                                     <Table size="sm">
                                                                                         <thead>
                                                                                             <tr>
@@ -684,8 +689,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             }
                                                                                         </tbody>
                                                                                     </Table>
-                                                                                </div>
-                                                                            </div>
+                                                                                </Grid>  
+                                                                            </Grid>
+                                                                            </Box>
                                                                     })
                                                                     :
                                                                     <div></div>
