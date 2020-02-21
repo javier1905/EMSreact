@@ -13,7 +13,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-// import { format } from 'date-fns'
+// import { differenceInMinutes } from 'date-fns'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
@@ -54,12 +54,19 @@ class AltaPlanillaPRODUCCION extends React.Component {
     capturaParaMaquina = e =>{
         const {campoParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
         var mensaje =""
+        var direrenciaEnMinutos = (horaInicio,horaFin) => {
+            var hDesde = new Date(`1995-12-17T03:${horaInicio}`)
+            var hHasta = new Date(`1995-12-17T03:${horaFin}`)           
+            if(horaInicio === '06:00' && horaFin === '06:00'){  return 24 * 60  }
+            else if((hHasta-hDesde)/1000 < 0){ return (hHasta-hDesde)/1000 + 1440 }
+            else{ return (hHasta-hDesde)/1000 }
+        }        
         var paradaDeMaquinaSeleccionada = {
             idParadaMaquina:campoParadaMaquina.split(' ')[0],
             nombreParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).nombreParadaMaquina,
             desdeParadaMaquina:campoDesdeParadaMaquina,
             hastaParadaMaquina:campoHastaParadaMaquina,
-            duracionParadaMaquina:'',
+            duracionParadaMaquina:direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina),
             tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).tipoParadaMaquina
         }
         if(campoParadaMaquina === ''){
@@ -801,8 +808,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.idParadaMaquina}</td>
                                                                     <td>{parMaq.nombreParadaMaquina}</td>
                                                                     <td>{parMaq.desdeParadaMaquina}</td>
-                                                                    <td>{parMaq.hastaParadaMaquina}</td>
-                                                                    <td></td>
+                                                                    <td>{parMaq.hastaParadaMaquina}</td>  
+                                                                    <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
                                                                     <td></td>
                                                                     <td></td>
