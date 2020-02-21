@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 // import { differenceInMinutes } from 'date-fns'
+import Alert from '@material-ui/lab/Alert'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
@@ -42,7 +43,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
             campoParadaMaquina:'',
             campoDesdeParadaMaquina:'',
             campoHastaParadaMaquina:'',
-            vecParadasMaquinaSeleccionada:[]
+            vecParadasMaquinaSeleccionada:[],
+            showAlert:false,
+            mensajePM:''
         }
         this.inputLabel = React.createRef()
         this.cbx_paradasMaquina = React.createRef()
@@ -54,6 +57,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
     capturaParaMaquina = e =>{
         const {campoParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
         var mensaje =""
+        var val = true
+        var paradaDeMaquinaSeleccionada 
         var direrenciaEnMinutos = (horaInicio,horaFin) => {
             var hDesde = new Date(`1995-12-17T03:${horaInicio}`)
             var hHasta = new Date(`1995-12-17T03:${horaFin}`)           
@@ -61,25 +66,38 @@ class AltaPlanillaPRODUCCION extends React.Component {
             else if((hHasta-hDesde)/1000 < 0){ return (hHasta-hDesde)/1000 + 1440 }
             else{ return (hHasta-hDesde)/1000 }
         }        
-        var paradaDeMaquinaSeleccionada = {
-            idParadaMaquina:campoParadaMaquina.split(' ')[0],
-            nombreParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).nombreParadaMaquina,
-            desdeParadaMaquina:campoDesdeParadaMaquina,
-            hastaParadaMaquina:campoHastaParadaMaquina,
-            duracionParadaMaquina:direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina),
-            tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).tipoParadaMaquina
-        }
+
         if(campoParadaMaquina === ''){
             mensaje += 'Seleccione alguna parada de maquina '
+            val=false
         }
         if(campoDesdeParadaMaquina === ''){
             mensaje += 'Seleccione la Hora Desde '
+            val=false
         }
         if(campoHastaParadaMaquina === ''){
             mensaje += 'Seleccione la Hora Hasta'
+            val=false
         }
-        this.setState({vecParadasMaquinaSeleccionada:[...this.state.vecParadasMaquinaSeleccionada,paradaDeMaquinaSeleccionada]})
-        console.log(paradaDeMaquinaSeleccionada)
+        try{
+             paradaDeMaquinaSeleccionada = {
+                idParadaMaquina:campoParadaMaquina.split(' ')[0],
+                nombreParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).nombreParadaMaquina,
+                desdeParadaMaquina:campoDesdeParadaMaquina,
+                hastaParadaMaquina:campoHastaParadaMaquina,
+                duracionParadaMaquina:direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina),
+                tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).tipoParadaMaquina
+            }           
+        }catch(e){ 
+            mensaje+= 'Parada de maquina inexistente'
+            val=false  }
+        if(val){ this.setState({vecParadasMaquinaSeleccionada:[...this.state.vecParadasMaquinaSeleccionada,paradaDeMaquinaSeleccionada]}) }
+        else{
+            setTimeout(()=>{
+                this.setState({mensajePM:'',showAlert:false})
+            },3000)
+            this.setState({mensajePM:mensaje,showAlert:true})
+        }        
     }
     handleDateChange = date => { this.setState({fechaProduccion:date})}
     capturaFechaFundicion = date => { this.setState({fechaFundicion:date})} 
@@ -787,6 +805,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 />
                                                 <Button size='sm' onClick={this.capturaParaMaquina} >Cargar</Button>
                                             </div>
+                                            {
+                                                this.state.showAlert ? 
+                                                    <div className={classes.root}>
+                                                            <Alert severity="error">{this.state.mensajePM}</Alert>
+                                                    </div>
+                                                    :
+                                                    <div></div>
+                                            }
                                             <Table>
                                                 <thead>
                                                     <tr>
