@@ -796,7 +796,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 >
                                                 </TextField>
                                                 <Button onClick={e=>this.setState({showModalPM:true})}>Buscar</Button>
-                                                <ModalPM eventClose={this.eventClose} show={this.state.showModalPM}/>
+                                                <ModalPM eventClose={this.eventClose} show={this.state.showModalPM} vecParadasMaquina={this.state.vecParadasMaquina}/>
                                             <div style={{ width: '300px' }}>
                                                 <Autocomplete
                                                     ref={this.autoCompletePM}
