@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form,Button,Table} from 'react-bootstrap'
+import {Form,Button,Table,} from 'react-bootstrap'
 import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -15,6 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 // import { differenceInMinutes } from 'date-fns'
 import Alert from '@material-ui/lab/Alert'
+import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
@@ -44,8 +45,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
             campoDesdeParadaMaquina:'',
             campoHastaParadaMaquina:'',
             vecParadasMaquinaSeleccionada:[],
-            showAlert:false,
-            mensajePM:''
+            showAlert:'none',
+            campoIdParaMaquina:'',
+            campoNombreParadaMaquina:'',
+            showModalPM:false
         }
         this.inputLabel = React.createRef()
         this.cbx_paradasMaquina = React.createRef()
@@ -53,67 +56,78 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.cbx_maquina = React.createRef()
         this.cbx_pieza = React.createRef()
         this.cbx_molde = React.createRef()
+        this.alertPM = React.createRef()
+        this.autoCompletePM =React.createRef()
     }
     capturaParaMaquina = e =>{
         const {campoParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
-        var mensaje =""
         var val = true
-        var paradaDeMaquinaSeleccionada 
+        var ul = document.createElement('ul')
+        var paradaDeMaquinaSeleccionada
         var direrenciaEnMinutos = (horaInicio,horaFin) => {
             var hDesde = new Date(`1995-12-17T03:${horaInicio}`)
-            var hHasta = new Date(`1995-12-17T03:${horaFin}`)           
+            var hHasta = new Date(`1995-12-17T03:${horaFin}`)
             if(horaInicio === '06:00' && horaFin === '06:00'){  return 24 * 60  }
             else if((hHasta-hDesde)/1000 < 0){ return (hHasta-hDesde)/1000 + 1440 }
             else{ return (hHasta-hDesde)/1000 }
-        }        
-
-        if(campoParadaMaquina === ''){
-            mensaje += 'Seleccione alguna parada de maquina '
-            val=false
         }
         if(campoDesdeParadaMaquina === ''){
-            mensaje += 'Seleccione la Hora Desde '
+            var li2 = document.createElement('li')
+            li2.innerHTML = 'Seleccione la Hora Desde'
+            ul.append(li2)
             val=false
         }
         if(campoHastaParadaMaquina === ''){
-            mensaje += 'Seleccione la Hora Hasta'
+            var li3 = document.createElement('li')
+            li3.innerHTML = 'Seleccione la Hora Hasta'
+            ul.append(li3)
             val=false
         }
         try{
-             paradaDeMaquinaSeleccionada = {
+                paradaDeMaquinaSeleccionada = {
                 idParadaMaquina:campoParadaMaquina.split(' ')[0],
                 nombreParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).nombreParadaMaquina,
                 desdeParadaMaquina:campoDesdeParadaMaquina,
                 hastaParadaMaquina:campoHastaParadaMaquina,
                 duracionParadaMaquina:direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina),
                 tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).tipoParadaMaquina
-            }           
-        }catch(e){ 
-            mensaje+= 'Parada de maquina inexistente'
-            val=false  }
-        if(val){ this.setState({vecParadasMaquinaSeleccionada:[...this.state.vecParadasMaquinaSeleccionada,paradaDeMaquinaSeleccionada]}) }
+            }
+        }catch(e){
+            var li4 = document.createElement('li')
+            li4.innerHTML = 'Parada de maquina inexistente'
+            ul.append(li4)
+            val=false
+        }
+        if(val){
+            // console.log(this.autoCompletePM.)
+            this.autoCompletePM.current.closeText = 'Close'
+            this.setState({vecParadasMaquinaSeleccionada:[...this.state.vecParadasMaquinaSeleccionada,paradaDeMaquinaSeleccionada],campoDesdeParadaMaquina:'',campoHastaParadaMaquina:''})
+
+        }
         else{
             setTimeout(()=>{
-                this.setState({mensajePM:'',showAlert:false})
+                this.alertPM.current.removeChild(ul)
+                this.setState({showAlert:'none'})
             },3000)
-            this.setState({mensajePM:mensaje,showAlert:true})
-        }        
+            this.alertPM.current.append(ul)
+            this.setState({showAlert:'block'})
+        }
     }
     handleDateChange = date => { this.setState({fechaProduccion:date})}
-    capturaFechaFundicion = date => { this.setState({fechaFundicion:date})} 
+    capturaFechaFundicion = date => { this.setState({fechaFundicion:date})}
     getHoraInicioProduccion = e =>{this.setState({HoraInicioProduccion:e.target.value})}
     getHoraFinProduccion = e =>{this.setState({HoraFinProduccion:e.target.value})}
     getHoraInicioOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
         vecOperariosTemp[indexOperario].horaInicio = e.target.value
-        this.setState({vecOperarios:vecOperariosTemp})     
+        this.setState({vecOperarios:vecOperariosTemp})
     }
     getHoraFinOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
         vecOperariosTemp[indexOperario].horaFin = e.target.value
-        this.setState({vecOperarios:vecOperariosTemp})     
+        this.setState({vecOperarios:vecOperariosTemp})
     }
     addOperario = e =>{
         let Op = {
@@ -250,7 +264,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var vecOperariosCache = this.state.vecOperarios
         try{
             if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value; vecOperariosCache[indexOperario].nombre = value }
-            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }     
+            if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
             if(nombre.split(' ')[0] === 'caloriasOperario'){ vecOperariosCache[indexOperario].calorias = value }
             if(nombre.split(' ')[0] === 'idRechazo'){
@@ -353,9 +367,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.getParadasMaquina()
         this.getTurnos()
     }
-    cerrarModal = () => {
-        this.setState({show:false})
-    }
     useStyles = makeStyles(theme => ({
         root: {
             flexGrow: 1
@@ -368,6 +379,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
             marginTop: theme.spacing(2),
         },
     }))
+    eventClose = e => {
+        this.setState({showModalPM:false})
+    }
     render() {
         const classes = this.useStyles
         const listaParadasMaquina = {
@@ -555,7 +569,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                 <Grid container spacing={1}>
                                                                         <TextField
                                                                             style={{width:'70px',marginRight:'10px'}}
-                                                                            id="standard-basic"
+                                                                            id={`idOperario ${i}`}
                                                                             label="Legajo"
                                                                             type='number'
                                                                             name={`idOperario ${i}`}
@@ -759,16 +773,43 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         <div className=''>
                                             <h2>Paradas de Maquina</h2>
                                             <div className='contenedorFormPardasMaquina'>
+                                                <TextField
+                                                label='Cod PM'
+                                                type='number'
+                                                value={this.state.campoIdParaMaquina}
+                                                onChange={
+                                                    e=>{
+                                                        var PMselect=''
+                                                        try{ PMselect =this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e.target.value)).nombreParadaMaquina }
+                                                        catch(e){ this.setState({campoNombreParadaMaquina:''}) }
+                                                        this.setState({campoIdParaMaquina:e.target.value})
+                                                        if(PMselect !== ''){ this.setState({campoNombreParadaMaquina:PMselect})  }
+                                                    }
+                                                }
+                                                >
+                                                </TextField>
+                                                <TextField
+                                                disabled={true}
+                                                label='Paradas de Mq'
+                                                type='text'
+                                                value={this.state.campoNombreParadaMaquina}
+                                                >
+                                                </TextField>
+                                                <Button onClick={e=>this.setState({showModalPM:true})}>Buscar</Button>
+                                                <ModalPM eventClose={this.eventClose} show={this.state.showModalPM}/>
                                             <div style={{ width: '300px' }}>
                                                 <Autocomplete
+                                                    ref={this.autoCompletePM}
                                                     className={classes.textField}
                                                     // onInputChange={(a,e,i)=>{console.log(e,' enter e')}}
                                                     style={{width:'300px',marginBottom:'0px',marginTop:'0px'}}
                                                     {...listaParadasMaquina}
                                                     id="debug"
+                                                    onClose={e=>{console.log(e.target.clearText='Clear')}}
+                                                    onInputChange={(q,b,c)=>'Clear'}
                                                     debug
                                                     onBlur={e=>{this.setState({campoParadaMaquina:e.target.value})}}
-                                                    renderInput={params => <TextField {...params} label="Paradas Maquina" margin="normal" fullWidth />}
+                                                    renderInput={params => <TextField {...params} label="Paradas Maquina" margin="none" fullWidth />}
                                                 />
                                             </div>
                                                 <TextField
@@ -805,14 +846,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 />
                                                 <Button size='sm' onClick={this.capturaParaMaquina} >Cargar</Button>
                                             </div>
-                                            {
-                                                this.state.showAlert ? 
-                                                    <div className={classes.root}>
-                                                            <Alert severity="error">{this.state.mensajePM}</Alert>
-                                                    </div>
-                                                    :
-                                                    <div></div>
-                                            }
+                                            <Alert ref={this.alertPM} style={{display:this.state.showAlert}} severity="error">
+                                                <h6 id='h6Alert'>Error !</h6>
+                                                <div style={{display:this.state.showAlert}} ></div>
+                                            </Alert>
                                             <Table>
                                                 <thead>
                                                     <tr>
@@ -834,7 +871,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.idParadaMaquina}</td>
                                                                     <td>{parMaq.nombreParadaMaquina}</td>
                                                                     <td>{parMaq.desdeParadaMaquina}</td>
-                                                                    <td>{parMaq.hastaParadaMaquina}</td>  
+                                                                    <td>{parMaq.hastaParadaMaquina}</td>
                                                                     <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
                                                                     <td></td>
