@@ -1,19 +1,17 @@
 import React from 'react'
 import {Form,Button,Table,} from 'react-bootstrap'
 import './styleAltaPlanillaPRODUCCION.css'
-import 'date-fns';
-import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
+import 'date-fns'
+import Grid from '@material-ui/core/Grid'
+import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles'
-import {TextField,Box} from '@material-ui/core';
+import {TextField,Box} from '@material-ui/core'
 // import ButtonN from '@material-ui/core/Button'
-import { Autocomplete } from '@material-ui/lab'
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-// import { differenceInMinutes } from 'date-fns'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormControl from '@material-ui/core/FormControl'
+import Select from '@material-ui/core/Select'
 import Alert from '@material-ui/lab/Alert'
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 
@@ -58,9 +56,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.cbx_molde = React.createRef()
         this.alertPM = React.createRef()
         this.autoCompletePM =React.createRef()
+        this.txt_campoIdParadaMaquina = React.createRef()
     }
     capturaParaMaquina = e =>{
-        const {campoParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
+        const {campoIdParaMaquina,campoNombreParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
         var val = true
         var ul = document.createElement('ul')
         var paradaDeMaquinaSeleccionada
@@ -84,13 +83,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
             val=false
         }
         try{
-                paradaDeMaquinaSeleccionada = {
-                idParadaMaquina:campoParadaMaquina.split(' ')[0],
-                nombreParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).nombreParadaMaquina,
+            paradaDeMaquinaSeleccionada = {
+                idParadaMaquina:campoIdParaMaquina,
+                nombreParadaMaquina:campoNombreParadaMaquina,
                 desdeParadaMaquina:campoDesdeParadaMaquina,
                 hastaParadaMaquina:campoHastaParadaMaquina,
                 duracionParadaMaquina:direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina),
-                tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoParadaMaquina.split(' ')[0])).tipoParadaMaquina
+                tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoIdParaMaquina)).tipoParadaMaquina
             }
         }catch(e){
             var li4 = document.createElement('li')
@@ -99,10 +98,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             val=false
         }
         if(val){
-            // console.log(this.autoCompletePM.)
-            this.autoCompletePM.current.closeText = 'Close'
-            this.setState({vecParadasMaquinaSeleccionada:[...this.state.vecParadasMaquinaSeleccionada,paradaDeMaquinaSeleccionada],campoDesdeParadaMaquina:'',campoHastaParadaMaquina:''})
-
+            this.setState({vecParadasMaquinaSeleccionada:[...this.state.vecParadasMaquinaSeleccionada,paradaDeMaquinaSeleccionada],campoDesdeParadaMaquina:'',campoHastaParadaMaquina:'',campoIdParaMaquina:'',campoNombreParadaMaquina:''})
+            document.getElementById('txt_idParadaMquina').focus()
         }
         else{
             setTimeout(()=>{
@@ -380,14 +377,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
         },
     }))
     eventClose = e => {
-        this.setState({showModalPM:false})
+        console.log(e)
+        this.setState({showModalPM:false,campoIdParaMaquina:parseInt(e),campoNombreParadaMaquina:this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e)).nombreParadaMaquina})
     }
     render() {
         const classes = this.useStyles
-        const listaParadasMaquina = {
-            options: this.state.vecParadasMaquina,
-            getOptionLabel: option => `${option.idParadaMaquina} ${option.nombreParadaMaquina}`
-        }
         return (
             <Box  boxShadow={1}  bgcolor="background.default"  m={0} p={3}>
                 <Form>
@@ -774,6 +768,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             <h2>Paradas de Maquina</h2>
                                             <div className='contenedorFormPardasMaquina'>
                                                 <TextField
+                                                style={{width:'65px',marginRight:'10px'}}
+                                                id='txt_idParadaMquina'
+                                                ref={this.txt_campoIdParadaMaquina}
                                                 label='Cod PM'
                                                 type='number'
                                                 value={this.state.campoIdParaMaquina}
@@ -789,6 +786,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 >
                                                 </TextField>
                                                 <TextField
+                                                style={{width:'300px',marginRight:'10px'}}
                                                 disabled={true}
                                                 label='Paradas de Mq'
                                                 type='text'
@@ -797,21 +795,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 </TextField>
                                                 <Button onClick={e=>this.setState({showModalPM:true})}>Buscar</Button>
                                                 <ModalPM eventClose={this.eventClose} show={this.state.showModalPM} vecParadasMaquina={this.state.vecParadasMaquina}/>
-                                            <div style={{ width: '300px' }}>
-                                                <Autocomplete
-                                                    ref={this.autoCompletePM}
-                                                    className={classes.textField}
-                                                    // onInputChange={(a,e,i)=>{console.log(e,' enter e')}}
-                                                    style={{width:'300px',marginBottom:'0px',marginTop:'0px'}}
-                                                    {...listaParadasMaquina}
-                                                    id="debug"
-                                                    onClose={e=>{console.log(e.target.clearText='Clear')}}
-                                                    onInputChange={(q,b,c)=>'Clear'}
-                                                    debug
-                                                    onBlur={e=>{this.setState({campoParadaMaquina:e.target.value})}}
-                                                    renderInput={params => <TextField {...params} label="Paradas Maquina" margin="none" fullWidth />}
-                                                />
-                                            </div>
                                                 <TextField
                                                     style={{width:'100px',marginRight:'10px'}}
                                                     id="txt_horaDesdeParadaMaquina"

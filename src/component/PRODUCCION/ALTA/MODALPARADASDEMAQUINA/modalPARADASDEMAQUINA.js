@@ -6,9 +6,9 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {TextField} from '@material-ui/core'
-import InputLabel from '@material-ui/core/InputLabel'
+// import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
-import Select from '@material-ui/core/Select'
+// import Select from '@material-ui/core/Select'
 
 class modalPARADASDEMAQUINA extends React.Component {
     constructor(props) {
@@ -16,9 +16,10 @@ class modalPARADASDEMAQUINA extends React.Component {
         this.state = {
             show:false,
             buscador:'',
-            paradaMQseleccionada:'',
+            paradaMQseleccionada:undefined,
             vecParadasMaquina:[]
         }
+        this.lbx_pm = React.createRef()
     }
     useStyles = makeStyles(theme => ({
         container: {
@@ -33,15 +34,6 @@ class modalPARADASDEMAQUINA extends React.Component {
     }))
     static getDerivedStateFromProps(nextProps,nextState){
         var vec = nextProps.vecParadasMaquina
-        try{
-            var regex = new RegExp(`${nextState.buscador}`,'gi')
-            console.log(nextProps.vecParadasMaquina.find(pM=>regex.test(pM.nombreParadaMaquina)))
-            if(nextProps.vecParadasMaquina.find(pM=>regex.test(pM.nombreParadaMaquina)) !== undefined && nextState.buscador !== '' ){
-                vec =[]
-                vec.push(nextProps.vecParadasMaquina.find(pM=>regex.test(pM.nombreParadaMaquina)))
-            }
-        }catch(e){ vec = nextProps.vecParadasMaquina}
-        console.log(vec)
         return {
             show:nextProps.show,
             vecParadasMaquina: vec
@@ -49,26 +41,42 @@ class modalPARADASDEMAQUINA extends React.Component {
     }
     render() {
         const classes = this.useStyles
+        var vecESTADO = this.state.vecParadasMaquina
+        var vecPM = undefined
+        var regex = new RegExp(`(${this.state.buscador})`,'i')
+        if(vecESTADO !== undefined){
+        vecPM = vecESTADO.filter((pM)=>regex.test(String(pM.nombreParadaMaquina)))
+        }
         return (
             <div>
                 <Dialog
                     disableBackdropClick
                     disableEscapeKeyDown
-                    open={this.state.show} onClose={e=>this.props.eventClose()}
+                    open={this.state.show} onClose={e=>this.props.eventClose(undefined)}
                     onKeyUp={
                         e=>{
                             var regex = new RegExp("^[a-zA-Z ]$")
-                            if(e.key === 'Enter'){ } //! PREGUNTO SI ES ENTER - QUE NO HAGA NADA
+                            if(e.key === 'Enter'){
+                                // console.log(typeof this.state.paradaMQseleccionada)
+                                if(this.state.paradaMQseleccionada === undefined){
+                                }
+                                else{
+                                    this.props.eventClose(this.state.paradaMQseleccionada)
+                                }
+                            } //! PREGUNTO SI ES ENTER - QUE NO HAGA NADA
                             else{
                                 if(e.key === 'Backspace'){ //! PREGUNTO SI ES BORRA QUE  BORRE Y SALGA
-                                    this.setState({buscador:this.state.buscador.substring(0,this.state.buscador.length-1)})
+                                    this.lbx_pm.current.value=undefined
+                                    this.setState({buscador:this.state.buscador.substring(0,this.state.buscador.length-1),paradaMQseleccionada:undefined})
                                 }
                                 else{
                                     if(! isNaN(e.key)){ // ! PREGUNTO SI ES NUMERO - QUE LO AGREGUE
-                                        this.setState({buscador:this.state.buscador+e.key})
+                                        this.lbx_pm.current.value=undefined
+                                        this.setState({buscador:this.state.buscador+e.key,paradaMQseleccionada:undefined})
                                     }
                                     else if (regex.test(e.key)){ //! PREGUNTO SI ES LETRA QUE LO AGREGUE
-                                        this.setState({buscador:this.state.buscador+e.key})
+                                        this.lbx_pm.current.value=undefined
+                                        this.setState({buscador:this.state.buscador+e.key,paradaMQseleccionada:undefined})
                                     }
                                     else{  } //! SI NO ES LETRA NI  NUMERO O ESPACIO QUE NO AGA NADA
                                 }
@@ -77,31 +85,31 @@ class modalPARADASDEMAQUINA extends React.Component {
                     }>
                     <DialogTitle>Paradas de maquina</DialogTitle>
                     <DialogContent>
-                        <FormControl className={classes.formControl} style={{width:'500px',borderRadius:'7px'}}>
-                            <InputLabel shrink htmlFor="select-multiple-native">
-                                Paradas de Maquina
-                            </InputLabel>
-                            <Select
-                                style={{height:'300px'}}
-                                multiple
-                                native
-                                value={this.state.paradaMQseleccionada[0]}
-                                onChange={e=>this.setState({paradaMQseleccionada:e.target.value[0]})}
-                                inputProps={
-                                    {  id: 'select-multiple-native',}
+                        <FormControl   className={classes.formControl} style={{width:'500px',borderRadius:'7px'}}>
+                            <select
+                                ref={this.lbx_pm}
+                                multiple={true}
+                                style={{borderRadius:'7px',height:'300px',border:'none'}}
+                                // value ={this.state.paradaMQseleccionada}
+                                onChange={e=>{this.setState({paradaMQseleccionada:e.target.value})}}
+                                onDoubleClick={
+                                    e=>{
+                                    this.props.eventClose(this.state.paradaMQseleccionada)
+                                    this.setState({paradaMQseleccionada:undefined})
+                                    }
                                 }
                             >
                             {
-                                this.state.vecParadasMaquina !== undefined  ?
-                                this.state.vecParadasMaquina.map((pm,indexPM) => (
-                                    <option key={indexPM} value={pm.idParadaMaquina}>
+                                vecPM !== undefined  ?
+                                vecPM.map((pm,indexPM) => (
+                                    <option style={{padding:'8px'}} key={indexPM} value={pm.idParadaMaquina}>
                                         {pm.nombreParadaMaquina}
                                     </option>
                                 ))
                                 :
                                 <option></option>
                             }
-                            </Select>
+                            </select>
                         </FormControl>
                         <form className={classes.container}>
                                 <TextField
@@ -114,11 +122,8 @@ class modalPARADASDEMAQUINA extends React.Component {
                         </form>
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={e=>this.props.eventClose()} color="primary">
+                    <Button onClick={e=>{this.setState({paradaMQseleccionada:undefined});this.props.eventClose(undefined)}} color="primary">
                         Cancel
-                    </Button>
-                    <Button onClick={e=>this.props.eventClose()} color="primary">
-                        Ok
                     </Button>
                     </DialogActions>
                 </Dialog>
