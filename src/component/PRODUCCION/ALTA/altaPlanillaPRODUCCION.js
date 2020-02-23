@@ -779,9 +779,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                                 style={{margin:'0px',padding:'0px'}}
                                                                                                                 onClick={
                                                                                                                     e=>{
-                                                                                                                        var vecPM = this.state.vecOperarios
-                                                                                                                        vecPM[i].vecRechazo[indexRechazo].vecZonas.splice(parseInt(e.target.id.split(' ')[0]),1)
-                                                                                                                        this.setState({vecParadasMaquinaSeleccionada:vecPM})
+                                                                                                                        var vecZN = this.state.vecOperarios
+                                                                                                                        vecZN[i].vecRechazo[indexRechazo].vecZonas.splice(parseInt(e.target.id.split(' ')[0]),1)
+                                                                                                                        this.setState({vecOperarios:vecZN})
                                                                                                                     }
                                                                                                                 }
                                                                                                             >
