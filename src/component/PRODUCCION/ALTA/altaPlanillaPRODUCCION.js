@@ -13,6 +13,8 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import Alert from '@material-ui/lab/Alert'
+import IconButton from '@material-ui/core/IconButton'
+import DeleteIcon from '@material-ui/icons/Delete'
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 
 class AltaPlanillaPRODUCCION extends React.Component {
@@ -375,10 +377,32 @@ class AltaPlanillaPRODUCCION extends React.Component {
         selectEmpty: {
             marginTop: theme.spacing(2),
         },
+        margin: {
+            margin: theme.spacing(1),
+        }
     }))
     eventClose = e => {
         console.log(e)
-        this.setState({showModalPM:false,campoIdParaMaquina:parseInt(e),campoNombreParadaMaquina:this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e)).nombreParadaMaquina})
+        var nomParadaMaquina
+        try{
+            nomParadaMaquina = this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e)).nombreParadaMaquina
+        }
+        catch(e){
+            nomParadaMaquina = ''
+        }
+        var campoPM
+        if(e === undefined){
+            campoPM=''
+        }
+        else{
+            campoPM = parseInt(e)
+        }
+        if(nomParadaMaquina === '' || campoPM === ''){
+            this.setState({showModalPM:false})
+        }
+        else{
+            this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina})
+        }
     }
     render() {
         const classes = this.useStyles
@@ -737,6 +761,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                 <td>Letra</td>
                                                                                                 <td>Numero</td>
                                                                                                 <td>Cantidad</td>
+                                                                                                <td>Eliminar</td>
                                                                                             </tr>
                                                                                         </thead>
                                                                                         <tbody>
@@ -746,6 +771,23 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>{z.letra}</td>
                                                                                                         <td>{z.numero}</td>
                                                                                                         <td>{z.cantidad}</td>
+                                                                                                        <td>
+                                                                                                            <IconButton
+                                                                                                                aria-label="delete"
+                                                                                                                id={`${indexZona} id_txtZona`}
+                                                                                                                className={classes.margin}
+                                                                                                                style={{margin:'0px',padding:'0px'}}
+                                                                                                                onClick={
+                                                                                                                    e=>{
+                                                                                                                        var vecPM = this.state.vecOperarios
+                                                                                                                        vecPM[i].vecRechazo[indexRechazo].vecZonas.splice(parseInt(e.target.id.split(' ')[0]),1)
+                                                                                                                        this.setState({vecParadasMaquinaSeleccionada:vecPM})
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            >
+                                                                                                                <DeleteIcon/>
+                                                                                                            </IconButton>
+                                                                                                        </td>
                                                                                                     </tr>
                                                                                                 })
                                                                                             }
@@ -793,7 +835,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 value={this.state.campoNombreParadaMaquina}
                                                 >
                                                 </TextField>
-                                                <Button onClick={e=>this.setState({showModalPM:true})}>Buscar</Button>
+                                                <Button  size='sm' variant='secondary' onClick={e=>this.setState({showModalPM:true})}>Buscar</Button>
                                                 <ModalPM eventClose={this.eventClose} show={this.state.showModalPM} vecParadasMaquina={this.state.vecParadasMaquina}/>
                                                 <TextField
                                                     style={{width:'100px',marginRight:'10px'}}
@@ -827,7 +869,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     step: 300, // 5 min
                                                     }}
                                                 />
-                                                <Button size='sm' onClick={this.capturaParaMaquina} >Cargar</Button>
+                                                <Button onClick={this.capturaParaMaquina} >Cargar</Button>
                                             </div>
                                             <Alert ref={this.alertPM} style={{display:this.state.showAlert}} severity="error">
                                                 <h6 id='h6Alert'>Error !</h6>
@@ -858,7 +900,23 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
                                                                     <td></td>
-                                                                    <td></td>
+                                                                    <td>
+                                                                    <IconButton
+                                                                        aria-label="delete"
+                                                                        id={indexParadaMaq}
+                                                                        className={classes.margin}
+                                                                        style={{margin:'0px',padding:'0px'}}
+                                                                        onClick={
+                                                                            e=>{
+                                                                                var vecPM = this.state.vecParadasMaquinaSeleccionada
+                                                                                vecPM.splice(parseInt(e.target.id),1)
+                                                                                this.setState({vecParadasMaquinaSeleccionada:vecPM})
+                                                                            }
+                                                                        }
+                                                                    >
+                                                                        <DeleteIcon/>
+                                                                    </IconButton>
+                                                                    </td>
                                                                 </tr>
                                                             })
                                                             :

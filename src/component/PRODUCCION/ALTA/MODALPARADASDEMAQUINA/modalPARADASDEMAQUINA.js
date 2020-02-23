@@ -45,7 +45,7 @@ class modalPARADASDEMAQUINA extends React.Component {
         var vecPM = undefined
         var regex = new RegExp(`(${this.state.buscador})`,'i')
         if(vecESTADO !== undefined){
-        vecPM = vecESTADO.filter((pM)=>regex.test(String(pM.nombreParadaMaquina)))
+        vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.idArea}`))
         }
         return (
             <div>
@@ -103,7 +103,7 @@ class modalPARADASDEMAQUINA extends React.Component {
                                 vecPM !== undefined  ?
                                 vecPM.map((pm,indexPM) => (
                                     <option style={{padding:'8px'}} key={indexPM} value={pm.idParadaMaquina}>
-                                        {pm.nombreParadaMaquina}
+                                        {`${pm.nombreParadaMaquina} ${pm.idArea} Matrizeria`}
                                     </option>
                                 ))
                                 :
