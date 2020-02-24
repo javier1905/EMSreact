@@ -28,27 +28,22 @@ class indexMENUPRODUCCION extends React.Component {
         if(e.target.name === 'alta') this.props.history.push(`${rutaOrigen}/alta`)
         if(e.target.name === 'baja') this.props.history.push(`${rutaOrigen}/baja`)
         if(e.target.name === 'lista') this.props.history.push(`${rutaOrigen}/lista`)
-     
     }
-
-      handleClick = () => {
+    handleClick = () => {
         this.setState({open:!this.state.open})
-      }
-      
-        
-        
+    }
     render() {
         const useStyles = makeStyles(theme => ({
             root: {
-              width: '100%',
-              maxWidth: 360,
-              backgroundColor: theme.palette.background.paper,
+                width: '100%',
+                maxWidth: 360,
+                backgroundColor: theme.palette.background.paper,
             },
             nested: {
-              paddingLeft: theme.spacing(4),
+                paddingLeft: theme.spacing(4),
             },
         }))
-        const classes = useStyles   
+        const classes = useStyles
         return (
             <div id=''>
                 <List
@@ -97,7 +92,7 @@ class indexMENUPRODUCCION extends React.Component {
                         </List>
                     </Collapse>
                 </List>
-                </div>       
+                </div>
         );
     }
 }

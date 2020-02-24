@@ -15,6 +15,7 @@ import Select from '@material-ui/core/Select'
 import Alert from '@material-ui/lab/Alert'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
+
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 
 class AltaPlanillaPRODUCCION extends React.Component {
@@ -37,7 +38,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecPiezas:[],
             vecMoldes:[],
             vecParadasMaquina:[],
-            vecTurnos:[],
+            vecTurnos:undefined,
             vecDefectos:[{idDefecto:'1',nombreDefecto:'Agarre'},{idDefecto:2,nombreDefecto:'Rechupe'}],
             vecTipoRechazo:[{idTipoRechazo:'1',nombreTipoRechazo:'Rechazo'},{idTipoRechazo:2,nombreTipoRechazo:'Scrap'}],
             vecOperariosCombo:[{idOperario:1,nombreOperario:'Gracia Carlos'},{idOperario:2,nombreOperario:'Irusta Miguel'}],
@@ -46,6 +47,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             campoHastaParadaMaquina:'',
             vecParadasMaquinaSeleccionada:[],
             showAlert:'none',
+            showAlertZona:'none',
+            mensajeAlertZona:'',
             campoIdParaMaquina:'',
             campoNombreParadaMaquina:'',
             showModalPM:false
@@ -57,8 +60,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.cbx_pieza = React.createRef()
         this.cbx_molde = React.createRef()
         this.alertPM = React.createRef()
+        this.alertZona = React.createRef()
         this.autoCompletePM =React.createRef()
         this.txt_campoIdParadaMaquina = React.createRef()
+        this.controller = new AbortController()
     }
     capturaParaMaquina = e =>{
         const {campoIdParaMaquina,campoNombreParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
@@ -140,7 +145,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecRechazo:[]
         }
         let newVecOperarios = [...this.state.vecOperarios,Op]
-        console.log(newVecOperarios[0])
+        // console.log(newVecOperarios[0])
         this.setState({vecOperarios:newVecOperarios})
     }
     addRechazo = e =>{
@@ -159,14 +164,45 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
     }
     addZona = e =>{
+
+        let indexOperario = parseInt(e.target.name.split(' ')[1])
+        let indexRechazo = parseInt(e.target.name.split(' ')[2])
+        var txt_letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
+        var txt_numero = document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`)
+        var txt_cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`)
+        var regexLETRA = new RegExp('[A-Z]','i')
+
+        if(txt_letra.value.length === 0 || txt_letra.value.length >1 || !regexLETRA.test(txt_letra.value)){
+            setTimeout(()=>{ this.setState({showAlertZona:'none',mensajeAlertZona:''}) },3000)
+            this.setState({showAlertZona:'block',mensajeAlertZona:'Recuerde que es una sola LETRA'})
+            txt_letra.focus()
+            txt_letra.select()
+            return
+        }
+        var nu
+        try{ nu = parseInt(txt_numero.value) } catch(e){ }
+        if(txt_numero.value.length === 0 || nu <= 0 || txt_numero.value.length > 2 || isNaN(txt_numero.value) || isNaN(parseInt(txt_numero.value)) ){
+            setTimeout(()=>{ this.setState({showAlertZona:'none',mensajeAlertZona:''}) },3000)
+            this.setState({showAlertZona:'block',mensajeAlertZona:'El numero no cumple con las condiciones necesarias'})
+            txt_numero.focus()
+            txt_numero.select()
+            return
+        }
+        var ca
+        try{ ca = parseInt(txt_cantidad.value) } catch(e){ }
+        if(txt_cantidad.value.length === 0 || ca<= 0 || txt_cantidad.value.length > 4 || isNaN(txt_cantidad.value) || isNaN(parseInt(txt_cantidad.value)) ){
+            setTimeout(()=>{ this.setState({showAlertZona:'none',mensajeAlertZona:''}) },3000)
+            this.setState({showAlertZona:'block',mensajeAlertZona:'La cantidad no cumple con las condiciones'})
+            txt_cantidad.focus()
+            txt_cantidad.select()
+            return
+        }
         var letra,numero,cantidad;
         var cacheVecOperario = this.state.vecOperarios
         try{
-            let indexOperario = parseInt(e.target.name.split(' ')[1])
-            let indexRechazo = parseInt(e.target.name.split(' ')[2])
-            letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`).value
-            numero = document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`).value
-            cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`).value
+            letra = String(txt_letra.value).toLocaleUpperCase();
+            numero = txt_numero.value
+            cantidad = txt_cantidad.value
             var vecZONA = cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas
             if(vecZONA.length === 0){
                 var newZona = { letra,numero,cantidad }
@@ -287,7 +323,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         catch(e){console.log(e)}
     }
     getOperaciones = () =>{
-        fetch('https://ems-node-api.herokuapp.com/api/operaciones',{
+        fetch('https://ems-node-api.herokuapp.com/api/operaciones',{signal:this.controller.signal},{
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -296,10 +332,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{ return this.setState({vecOperaciones:json,idOperacion:''})  })
-        .catch(e=>{console.log(e)})
+        .catch(e=>{
+            if(e.name === 'AbortError') return 
+            throw Error
+        })
     }
     getMaquinasXoperacion = idOperacion =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`,{
+        fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`,{signal:this.controller.signal},{
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -310,9 +349,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(json=>{
             this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[],idMaquina:''})
         })
+        .catch(e=>{
+            if(e.name === 'AbortError') return 
+            throw Error
+        })
     }
     getPiezasXmaquina = idMaquina =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}`,{
+        fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}`,{signal:this.controller.signal},{
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -321,9 +364,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecPiezas:json,vecMoldes:[],idMolde:'',idPieza:''}) })
+        .catch(e=>{
+            if(e.name === 'AbortError') return 
+            throw Error
+        })
     }
     getMoldesXpieza = idPieza =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{
+        fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{signal:this.controller.signal},{
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -332,9 +379,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecMoldes:json,idMolde:''}) })
+        .catch(e=>{
+            if(e.name === 'AbortError') return 
+            throw Error
+        })
     }
     getParadasMaquina = () =>{
-        fetch('https://ems-node-api.herokuapp.com/api/paradasMaquina',{
+        fetch('https://ems-node-api.herokuapp.com/api/paradasMaquina',{signal:this.controller.signal},{
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -349,9 +400,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
             }
             catch(e){}
         })
+        .catch(e=>{
+            if(e.name === 'AbortError') return 
+            throw Error
+        })
     }
     getTurnos = () =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/turnos`,{
+        fetch(`https://ems-node-api.herokuapp.com/api/turnos`,{signal:this.controller.signal},{
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -360,6 +415,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
+        .catch(e=>{
+            if(e.name === 'AbortError') return 
+            throw Error
+        })
     }
     componentDidMount(){
         this.getOperaciones()
@@ -403,6 +462,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         else{
             this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina})
         }
+    }
+    componentWillUnmount(){
+        this.controller.abort()
     }
     render() {
         const classes = this.useStyles
@@ -457,7 +519,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             name='idTurno'
                                         >
                                             {
-                                                this.state.vecTurnos ?
+                                                this.state.vecTurnos !== undefined ?
                                                 this.state.vecTurnos.map((tur,indiceTurno)=>{
                                                 return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
                                                 })
@@ -742,7 +804,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         style={{width:'60px',marginRight:'10px'}}
                                                                                         label='Num'
                                                                                         id={`numeroZona ${i} ${indexRechazo}`}
-                                                                                        type='num'
+                                                                                        type='number'
                                                                                     >
                                                                                     </TextField>
                                                                                     <TextField
@@ -753,6 +815,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                     >
                                                                                     </TextField>
                                                                                     <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
+                                                                                    <Alert ref={this.alertZona} style={{display:this.state.showAlertZona}} severity="error">
+                                                                                        {this.state.mensajeAlertZona}
+                                                                                    </Alert>
                                                                                 </Grid>
                                                                                 <Grid item xs={6}>
                                                                                     <Table size="sm">

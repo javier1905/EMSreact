@@ -14,18 +14,18 @@ class indexPRODUCCION extends React.Component {
     }
     useStyles = makeStyles(theme => ({
         root: {
-          flexGrow: 1,
+            flexGrow: 1,
         },
         paper: {
-          padding: theme.spacing(2),
-          textAlign: 'center',
-          color: theme.palette.text.secondary,
+            padding: theme.spacing(2),
+            textAlign: 'center',
+            color: theme.palette.text.secondary,
         },
-      }));
+    }));
     render() {
-        const classes = this.useStyles
+        // const classes = this.useStyles
         return (
-            <div className={classes.root}>
+            <div>
             <Grid container racing={12}>
                 <Grid item sm={2} xs={6}>
                     <MenuPRODUCCION/>
