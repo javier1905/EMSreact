@@ -13,8 +13,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import Alert from '@material-ui/lab/Alert'
-import IconButton from '@material-ui/core/IconButton'
-import DeleteIcon from '@material-ui/icons/Delete'
+// import IconButton from '@material-ui/core/IconButton'
+// import DeleteIcon from '@material-ui/icons/Delete'
+
 
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 
@@ -47,7 +48,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
             campoHastaParadaMaquina:'',
             vecParadasMaquinaSeleccionada:[],
             showAlert:'none',
-            showAlertZona:'none',
             mensajeAlertZona:'',
             campoIdParaMaquina:'',
             campoNombreParadaMaquina:'',
@@ -60,7 +60,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.cbx_pieza = React.createRef()
         this.cbx_molde = React.createRef()
         this.alertPM = React.createRef()
-        this.alertZona = React.createRef()
         this.autoCompletePM =React.createRef()
         this.txt_campoIdParadaMaquina = React.createRef()
         this.controller = new AbortController()
@@ -170,11 +169,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var txt_letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
         var txt_numero = document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`)
         var txt_cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`)
+        var alertZona = document.getElementById(`alert ${indexOperario} ${indexRechazo}`)
         var regexLETRA = new RegExp('[A-Z]','i')
 
         if(txt_letra.value.length === 0 || txt_letra.value.length >1 || !regexLETRA.test(txt_letra.value)){
-            setTimeout(()=>{ this.setState({showAlertZona:'none',mensajeAlertZona:''}) },3000)
-            this.setState({showAlertZona:'block',mensajeAlertZona:'Recuerde que es una sola LETRA'})
+            setTimeout(()=>{ this.setState({mensajeAlertZona:''}); alertZona.setAttribute('style','display:none') },3000)
+            this.setState({mensajeAlertZona:'Recuerde que es una sola LETRA'})
+            alertZona.setAttribute('style','display:block')
             txt_letra.focus()
             txt_letra.select()
             return
@@ -182,8 +183,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var nu
         try{ nu = parseInt(txt_numero.value) } catch(e){ }
         if(txt_numero.value.length === 0 || nu <= 0 || txt_numero.value.length > 2 || isNaN(txt_numero.value) || isNaN(parseInt(txt_numero.value)) ){
-            setTimeout(()=>{ this.setState({showAlertZona:'none',mensajeAlertZona:''}) },3000)
-            this.setState({showAlertZona:'block',mensajeAlertZona:'El numero no cumple con las condiciones necesarias'})
+            setTimeout(()=>{ this.setState({mensajeAlertZona:''});  alertZona.setAttribute('style','display:none') },3000)
+            this.setState({mensajeAlertZona:'El numero no cumple con las condiciones necesarias'})
+            alertZona.setAttribute('style','display:block')
             txt_numero.focus()
             txt_numero.select()
             return
@@ -191,8 +193,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var ca
         try{ ca = parseInt(txt_cantidad.value) } catch(e){ }
         if(txt_cantidad.value.length === 0 || ca<= 0 || txt_cantidad.value.length > 4 || isNaN(txt_cantidad.value) || isNaN(parseInt(txt_cantidad.value)) ){
-            setTimeout(()=>{ this.setState({showAlertZona:'none',mensajeAlertZona:''}) },3000)
-            this.setState({showAlertZona:'block',mensajeAlertZona:'La cantidad no cumple con las condiciones'})
+            setTimeout(()=>{ this.setState({mensajeAlertZona:''}); alertZona.setAttribute('style','display:none') },3000)
+            this.setState({mensajeAlertZona:'La cantidad no cumple con las condiciones'})
+            alertZona.setAttribute('style','display:block')
             txt_cantidad.focus()
             txt_cantidad.select()
             return
@@ -313,9 +316,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
             if(nombre.split(' ')[0] === 'tipoRechazo'){
                 vecOperariosCache[indexOperario].vecRechazo[indexRechazo].tipo = value
                 var div = document.getElementById(`contenedorRechazosYzonas ${parseInt(nombre.split(' ')[1])} ${parseInt(nombre.split(' ')[2])}`)
-                if(value === 'Scrap'){div.setAttribute('class','Scrap') }
-                else if( value === 'Rechazo'){ div.setAttribute('class','Rechazo') }
-                else{ div.setAttribute('class','contenedorRechazosYzonas') }
+                if(value === 'Scrap'){div.setAttribute('style','border: solid red 1px') }
+                else if( value === 'Rechazo'){ div.setAttribute('style','border: solid yelow 1px') }
+                else{ div.setAttribute('style','border: none') }
             }
             if(nombre.split(' ')[0] === 'cantidadRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].cantidadRechazo = value}
             this.setState({vecOperarios:vecOperariosCache})
@@ -646,7 +649,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             {
                                                 this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
-                                                                <Grid container spacing={1}>
+                                                                <Grid container spacing={1}  id='contenedorOperaio'>
                                                                         <TextField
                                                                             style={{width:'70px',marginRight:'10px'}}
                                                                             id={`idOperario ${i}`}
@@ -656,9 +659,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange={this.capturaDatos}
                                                                             value={this.state.vecOperarios[i].idOperario}
                                                                         />
-                                                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                                                        <FormControl className={classes.formControl} style={{width:'120px',marginRight:'10px'}}>
                                                                             <InputLabel id="idNombre">Nombre</InputLabel>
                                                                             <Select
+                                                                                style={{width:'120px',marginRight:'10px'}}
                                                                                 labelId="idNombre"
                                                                                 id="cbx_operarios"
                                                                                 value={this.state.vecOperarios[i].nombre}
@@ -724,11 +728,26 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                         />
                                                                         {/* <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN> */}
                                                                         <Button size="sm" name={i} onClick={this.addRechazo}> Add rechazos </Button>
+                                                                        <Button
+                                                                            aria-label="delete"
+                                                                            id={`${i} id_Operario`}
+                                                                            className={classes.margin}
+                                                                            style={{margin:'0px',padding:'0px',display:'block',width:'70px',float:'right'}}
+                                                                            onClick={
+                                                                                e=>{
+                                                                                    var vecOP = this.state.vecOperarios
+                                                                                    vecOP.splice(parseInt(e.target.id.split(' ')[0]),1)
+                                                                                    this.setState({vecOperarios:vecOP})
+                                                                                }
+                                                                            }
+                                                                        >
+                                                                            Eliminar
+                                                                        </Button>
                                                                 </Grid>
                                                                 { // !RECORRE VECTOR RECHAZOS
                                                                     this.state.vecOperarios[i].vecRechazo ?
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
-                                                                        return <Box  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} style={{width:'auto',display:'inlineBlock'}}>
+                                                                        return <Box className='contenedorRechazo'  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} >
                                                                             <Grid container spacing={1}>
                                                                                 <Grid item xs={12} className='contenedorRechazos'>
                                                                                     <TextField
@@ -791,6 +810,21 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value={this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo}
                                                                                         onBlur={this.verificaRechazoCoincidente}
                                                                                     />
+                                                                                    <Button
+                                                                                        aria-label="delete"
+                                                                                        id={`${i} ${indexRechazo} id_rechazo`}
+                                                                                        className={classes.margin}
+                                                                                        style={{margin:'0px',padding:'0px',display:'block',width:'70px',float:'right'}}
+                                                                                        onClick={
+                                                                                            e=>{
+                                                                                                var vecRE = this.state.vecOperarios
+                                                                                                vecRE[i].vecRechazo.splice(parseInt(e.target.id.split(' ')[1]),1)
+                                                                                                this.setState({vecOperarios:vecRE})
+                                                                                            }
+                                                                                        }
+                                                                                    >
+                                                                                        Eliminar
+                                                                                    </Button>
                                                                                 </Grid>
                                                                                 <Grid item xs={12}>
                                                                                     <TextField
@@ -808,14 +842,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                     >
                                                                                     </TextField>
                                                                                     <TextField
-                                                                                        style={{width:'60px',marginRight:'10px'}}
+                                                                                        style={{width:'60px',marginRight:'10px',marginBottom:'10px'}}
                                                                                         label='Cant'
                                                                                         id={`cantidadZona ${i} ${indexRechazo}`}
                                                                                         type='number'
                                                                                     >
                                                                                     </TextField>
                                                                                     <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
-                                                                                    <Alert ref={this.alertZona} style={{display:this.state.showAlertZona}} severity="error">
+                                                                                    <Alert id={`alert ${i} ${indexRechazo}`} style={{display:'none'}} severity="error">
                                                                                         {this.state.mensajeAlertZona}
                                                                                     </Alert>
                                                                                 </Grid>
@@ -837,7 +871,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>{z.numero}</td>
                                                                                                         <td>{z.cantidad}</td>
                                                                                                         <td>
-                                                                                                            <IconButton
+                                                                                                            <Button
                                                                                                                 aria-label="delete"
                                                                                                                 id={`${indexZona} id_txtZona`}
                                                                                                                 className={classes.margin}
@@ -850,8 +884,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                                     }
                                                                                                                 }
                                                                                                             >
-                                                                                                                <DeleteIcon/>
-                                                                                                            </IconButton>
+                                                                                                               Eliminar
+                                                                                                            </Button>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 })
@@ -940,7 +974,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 <h6 id='h6Alert'>Error !</h6>
                                                 <div style={{display:this.state.showAlert}} ></div>
                                             </Alert>
-                                            <Table>
+                                            <Table style={{marginTop:'10px'}}>
                                                 <thead>
                                                     <tr>
                                                         <th>Id</th>
@@ -964,9 +998,31 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.hastaParadaMaquina}</td>
                                                                     <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
-                                                                    <td></td>
                                                                     <td>
-                                                                    <IconButton
+                                                                        <Button
+                                                                                variant='secondary'
+                                                                                id={`${indexParadaMaq} id_PMseleccionada`}
+                                                                                aria-label="update"
+                                                                                className={classes.margin}
+                                                                                style={{margin:'0px',padding:'0px'}}
+                                                                                onClick={
+                                                                                e=>{
+                                                                                    var index = parseInt(String(e.target.id).split(' ')[0])
+                                                                                    var idPM = this.state.vecParadasMaquinaSeleccionada[index].idParadaMaquina
+                                                                                    var nombrePM = this.state.vecParadasMaquinaSeleccionada[index].nombreParadaMaquina
+                                                                                    var desdePM = this.state.vecParadasMaquinaSeleccionada[index].desdeParadaMaquina
+                                                                                    var hastaPM = this.state.vecParadasMaquinaSeleccionada[index].hastaParadaMaquina
+                                                                                    var vecPM = this.state.vecParadasMaquinaSeleccionada
+                                                                                    vecPM.splice(parseInt(index),1)
+                                                                                    this.setState({vecParadasMaquinaSeleccionada:vecPM,campoIdParaMaquina:idPM,campoNombreParadaMaquina:nombrePM,campoDesdeParadaMaquina:desdePM,campoHastaParadaMaquina:hastaPM})
+                                                                                }
+                                                                            }
+                                                                        >
+                                                                            Update
+                                                                        </Button>
+                                                                    </td>
+                                                                    <td>
+                                                                    <Button
                                                                         aria-label="delete"
                                                                         id={indexParadaMaq}
                                                                         className={classes.margin}
@@ -979,8 +1035,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }
                                                                         }
                                                                     >
-                                                                        <DeleteIcon/>
-                                                                    </IconButton>
+                                                                        Eliminar
+                                                                    </Button>
                                                                     </td>
                                                                 </tr>
                                                             })

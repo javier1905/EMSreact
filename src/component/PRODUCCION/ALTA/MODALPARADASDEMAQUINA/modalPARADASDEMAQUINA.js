@@ -17,7 +17,7 @@ class modalPARADASDEMAQUINA extends React.Component {
             show:false,
             buscador:'',
             paradaMQseleccionada:undefined,
-            vecParadasMaquina:[]
+            vecParadasMaquina:undefined
         }
         this.lbx_pm = React.createRef()
     }
