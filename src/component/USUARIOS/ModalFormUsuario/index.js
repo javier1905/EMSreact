@@ -9,11 +9,15 @@ class index extends React.Component {
             show:false,
             aceptarSalir:false
         }
+        this.controller = new AbortController()
     }
     static getDerivedStateFromProps(nextProps,nextState){
         return{
             show:nextProps.show
         }
+    }
+    componentWillUnmount(){
+        this.controller.abort()
     }
     render() {
         return (

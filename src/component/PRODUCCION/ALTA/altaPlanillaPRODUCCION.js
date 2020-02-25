@@ -19,6 +19,7 @@ import Alert from '@material-ui/lab/Alert'
 
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 
+
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
         super(props)
@@ -38,11 +39,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecMaquinas:[],
             vecPiezas:[],
             vecMoldes:[],
-            vecParadasMaquina:[],
+            vecParadasMaquina:undefined,
             vecTurnos:undefined,
-            vecDefectos:[{idDefecto:'1',nombreDefecto:'Agarre'},{idDefecto:2,nombreDefecto:'Rechupe'}],
-            vecTipoRechazo:[{idTipoRechazo:'1',nombreTipoRechazo:'Rechazo'},{idTipoRechazo:2,nombreTipoRechazo:'Scrap'}],
-            vecOperariosCombo:[{idOperario:1,nombreOperario:'Gracia Carlos'},{idOperario:2,nombreOperario:'Irusta Miguel'}],
+            vecDefectos:undefined,
+            vecTipoRechazo:[{idTipoRechazo:false,nombreTipoRechazo:'Rechazo'},{idTipoRechazo:true,nombreTipoRechazo:'Scrap'}],
+            vecOperariosCombo:undefined,
             campoParadaMaquina:'',
             campoDesdeParadaMaquina:'',
             campoHastaParadaMaquina:'',
@@ -144,7 +145,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecRechazo:[]
         }
         let newVecOperarios = [...this.state.vecOperarios,Op]
-        // console.log(newVecOperarios[0])
         this.setState({vecOperarios:newVecOperarios})
     }
     addRechazo = e =>{
@@ -163,7 +163,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
     }
     addZona = e =>{
-
         let indexOperario = parseInt(e.target.name.split(' ')[1])
         let indexRechazo = parseInt(e.target.name.split(' ')[2])
         var txt_letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
@@ -171,7 +170,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var txt_cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`)
         var alertZona = document.getElementById(`alert ${indexOperario} ${indexRechazo}`)
         var regexLETRA = new RegExp('[A-Z]','i')
-
         if(txt_letra.value.length === 0 || txt_letra.value.length >1 || !regexLETRA.test(txt_letra.value)){
             setTimeout(()=>{ this.setState({mensajeAlertZona:''}); alertZona.setAttribute('style','display:none') },3000)
             this.setState({mensajeAlertZona:'Recuerde que es una sola LETRA'})
@@ -264,7 +262,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     })
                                 }
                                 // sumar cantidad de rechazo
-                                console.log(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo,'cantidad original ',cantidadRechazo, ' cantidad a sumar')
+                                // console.log(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo,'cantidad original ',cantidadRechazo, ' cantidad a sumar')
                                 cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo = parseInt(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo) + parseInt(cantidadRechazo)
                                 cacheVecOp[indexOperario].vecRechazo.splice(indexRechazo,1)
                                 // document.getElementById(`cantidadRechazo ${indexOperario} ${indice}`).value = cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo
@@ -404,7 +402,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             catch(e){}
         })
         .catch(e=>{
-            if(e.name === 'AbortError') return 
+            if(e.name === 'AbortError') return
             throw Error
         })
     }
@@ -423,10 +421,37 @@ class AltaPlanillaPRODUCCION extends React.Component {
             throw Error
         })
     }
-    componentDidMount(){
-        this.getOperaciones()
-        this.getParadasMaquina()
-        this.getTurnos()
+    getDefectos = () =>{
+        fetch('https://ems-node-api.herokuapp.com/api/defectos',{signal:this.controller.signal},{
+            method: 'GET',
+            headers: new Headers({
+                'Accept':'Application/json',
+                'Content-Type': 'Application/json'
+            })
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{this.setState({vecDefectos:json})})
+        .catch(e=>{
+            if(e.name === 'AbortError'){
+                throw Error
+            }
+        })
+    }
+    getTrabajadores = () =>{
+        fetch('https://ems-node-api.herokuapp.com/api/trabajadores',{signal:this.controller.signal},{
+            method:'GET',
+            headers: new Headers({
+                'Accept' : 'Application/json',
+                'Content-Type' : 'Application/json'
+            })
+        })
+        .then(dato=>{return dato.json()})
+        .then(json=>{this.setState({vecOperariosCombo:json})})
+        .catch(err=>{
+            if(err.name === 'AbortError'){
+                throw Error
+            }
+        })
     }
     useStyles = makeStyles(theme => ({
         root: {
@@ -444,7 +469,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
     }))
     eventClose = e => {
-        console.log(e)
         var nomParadaMaquina
         try{
             nomParadaMaquina = this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e)).nombreParadaMaquina
@@ -466,6 +490,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina})
         }
     }
+    miSubmit = e =>{
+        console.log('Submit ejecutado')
+        e.preventDefault()
+    }
+    componentDidMount(){
+        this.getOperaciones()
+        this.getParadasMaquina()
+        this.getTurnos()
+        this.getDefectos()
+        this.getTrabajadores()
+    }
     componentWillUnmount(){
         this.controller.abort()
     }
@@ -473,7 +508,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         const classes = this.useStyles
         return (
             <Box  boxShadow={1}  bgcolor="background.default"  m={0} p={3}>
-                <Form>
+                <Form onSubmit={this.miSubmit}>
                         <div className={classes.root}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12}> {/* INICIO CONTENEDOR FECHAS PRODUCCION Y FUNDICION */}
@@ -481,7 +516,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
                                             <KeyboardDatePicker
                                                 style={{marginRight:'10px',width:'160px'}}
-                                                required={true}
+                                                required
                                                 size='small'
                                                 variant='standard'
                                                 margin="none"
@@ -512,26 +547,28 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         </MuiPickersUtilsProvider>
                                     </Grid> {/* FIN CONTENEDOR FECHAS PRODUCCION Y FUNDICCION*/}
                                     <Grid item xs={12}> {/* INICIO TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
-                                        <FormControl className={classes.formControl} style={{width:'100px',marginRight:'10px'}}>
-                                        <InputLabel id='idTurnoLabel'>Turno</InputLabel>
-                                        <Select
-                                            labelId='idTurnoLabel'
-                                            onChange={this.capturaDatos}
-                                            id='idTurno'
-                                            value={this.state.idTurno}
-                                            name='idTurno'
-                                        >
-                                            {
-                                                this.state.vecTurnos !== undefined ?
-                                                this.state.vecTurnos.map((tur,indiceTurno)=>{
-                                                return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
-                                                })
-                                                :
-                                                <MenuItem></MenuItem>
-                                            }
-                                        </Select>
+                                        <FormControl  className={classes.formControl} style={{width:'100px',marginRight:'10px'}} required>
+                                        <InputLabel required  id='idTurnoLabel'>Turno</InputLabel>
+                                            <Select
+                                                required
+                                                labelId='idTurnoLabel'
+                                                onChange={this.capturaDatos}
+                                                id='idTurno'
+                                                value={this.state.idTurno}
+                                                name='idTurno'
+                                            >
+                                                {
+                                                    this.state.vecTurnos !== undefined ?
+                                                    this.state.vecTurnos.map((tur,indiceTurno)=>{
+                                                    return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
+                                                    })
+                                                    :
+                                                    <MenuItem value=''></MenuItem>
+                                                }
+                                            </Select>
                                         </FormControl>
                                         <TextField
+                                            required
                                             style={{width:'100px',marginRight:'10px'}}
                                             id="idHoraIniciuoProduccion"
                                             label="Desde"
@@ -545,6 +582,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }}
                                         />
                                         <TextField
+                                            required
                                             style={{width:'100px',marginRight:'10px'}}
                                             id="idHoraFinProduccion"
                                             label="Hasta"
@@ -559,7 +597,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         />
                                     </Grid> {/* FIN TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
                                     <Grid item xs={12}> {/* INICIO OPERACION MAQUINA PIEZA Y MOLDE */}
-                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
                                             <Select
                                                 ref={this.cbx_operacion}
@@ -572,14 +610,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             {
                                                 this.state.vecOperaciones ?
                                                     this.state.vecOperaciones.map((ope,indiceOperacion)=>{
-                                                    return <MenuItem key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
+                                                    return <MenuItem  key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
                                                     })
                                                     :
                                                     <MenuItem></MenuItem>
                                             }
                                             </Select>
                                         </FormControl>
-                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idMaquina">Maquina</InputLabel>
                                             <Select
                                                 ref={this.cbx_maquina}
@@ -599,7 +637,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }
                                             </Select>
                                         </FormControl>
-                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idPieza">Pieza</InputLabel>
                                             <Select
                                                 ref={this.cbx_pieza}
@@ -619,7 +657,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }
                                             </Select>
                                         </FormControl>
-                                        <FormControl className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idMolde">Molde</InputLabel>
                                             <Select
                                                 ref={this.cbx_molde}
@@ -643,14 +681,15 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
                                         <h2>Operarios</h2>
                                         <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
-                                            <Button variant="primary" size="lg" block onClick={this.addOperario}>
-                                                Agregar
+                                            <Button variant="primary"  onClick={this.addOperario}>
+                                                Agregar Operario
                                             </Button>
                                             {
                                                 this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                                 <Grid container spacing={1}  id='contenedorOperaio'>
                                                                         <TextField
+                                                                            required
                                                                             style={{width:'70px',marginRight:'10px'}}
                                                                             id={`idOperario ${i}`}
                                                                             label="Legajo"
@@ -659,10 +698,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange={this.capturaDatos}
                                                                             value={this.state.vecOperarios[i].idOperario}
                                                                         />
-                                                                        <FormControl className={classes.formControl} style={{width:'120px',marginRight:'10px'}}>
+                                                                        <FormControl required className={classes.formControl} style={{width:'180px',marginRight:'10px'}}>
                                                                             <InputLabel id="idNombre">Nombre</InputLabel>
                                                                             <Select
-                                                                                style={{width:'120px',marginRight:'10px'}}
+                                                                                style={{width:'180px',marginRight:'10px'}}
                                                                                 labelId="idNombre"
                                                                                 id="cbx_operarios"
                                                                                 value={this.state.vecOperarios[i].nombre}
@@ -670,13 +709,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 onChange={this.capturaDatos}
                                                                             >
                                                                                 {
+                                                                                    this.state.vecOperariosCombo !== undefined ?
                                                                                     this.state.vecOperariosCombo.map((op,indiceOperario)=>{
-                                                                                        return <MenuItem key={indiceOperario} value={op.idOperario}>{op.nombreOperario}</MenuItem>
+                                                                                    return <MenuItem key={indiceOperario} value={op.idTrabajador}>{op.nombreTrabajador} { op.apellidoTrabajador }</MenuItem>
                                                                                     })
+                                                                                    :
+                                                                                    <MenuItem></MenuItem>
                                                                                 }
                                                                             </Select>
                                                                         </FormControl>
                                                                         <TextField
+                                                                            required
                                                                             style={{width:'100px',marginRight:'10px'}}
                                                                             id="time"
                                                                             label="Desde"
@@ -693,6 +736,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }}
                                                                         />
                                                                         <TextField
+                                                                            required
                                                                             style={{width:'100px',marginRight:'10px'}}
                                                                             id="hsFinOperario"
                                                                             label="Hasta"
@@ -709,6 +753,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }}
                                                                         />
                                                                         <TextField
+                                                                            required
                                                                             style={{width:'105px',marginRight:'10px'}}
                                                                             id="standard-basic"
                                                                             label="Produccion"
@@ -718,6 +763,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             value={this.state.vecOperarios[i].produccion}
                                                                         />
                                                                         <TextField
+                                                                            required
                                                                             style={{width:'80px',marginRight:'10px'}}
                                                                             id="txt_calorias"
                                                                             label="Calorias"
@@ -751,6 +797,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             <Grid container spacing={1}>
                                                                                 <Grid item xs={12} className='contenedorRechazos'>
                                                                                     <TextField
+                                                                                        required
                                                                                         style={{width:'105px',marginRight:'10px'}}
                                                                                         id={`idRechazo ${i} ${indexRechazo}`}
                                                                                         label="Id rech"
@@ -760,7 +807,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value={this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo}
                                                                                         onBlur={this.verificaRechazoCoincidente}
                                                                                     />
-                                                                                    <FormControl className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
+                                                                                    <FormControl required className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
                                                                                         <InputLabel id='lbl_defecto'>Defecto</InputLabel>
                                                                                         <Select
                                                                                             id={`nombreRechazo ${i} ${indexRechazo}`}
@@ -771,7 +818,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
-                                                                                                this.state.vecDefectos ?
+                                                                                                this.state.vecDefectos !== undefined ?
                                                                                                 this.state.vecDefectos.map((def,indexDefecto)=>{
                                                                                                     return <MenuItem key={indexDefecto} value={def.idDefecto}>{def.nombreDefecto}</MenuItem>
                                                                                                 })
@@ -780,7 +827,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             }
                                                                                         </Select>
                                                                                     </FormControl>
-                                                                                    <FormControl className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
+                                                                                    <FormControl required className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
                                                                                         <InputLabel id='lbl_TipoRecha'>Tipo Rech</InputLabel>
                                                                                         <Select
                                                                                             id={`tipoRechazo ${i} ${indexRechazo}`}
@@ -791,7 +838,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
-                                                                                                this.state.vecTipoRechazo ?
+                                                                                                this.state.vecTipoRechazo !== undefined ?
                                                                                                 this.state.vecTipoRechazo.map((tr,indexTipoRechazo)=>{
                                                                                                     return <MenuItem key={indexTipoRechazo} value={tr.idTipoRechazo}>{tr.nombreTipoRechazo}</MenuItem>
                                                                                                 })
@@ -801,6 +848,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         </Select>
                                                                                     </FormControl>
                                                                                     <TextField
+                                                                                        required
                                                                                         style={{width:'105px',marginRight:'10px'}}
                                                                                         id={`cantidadRechazo ${i} ${indexRechazo}`}
                                                                                         label="Cantidad"
@@ -884,7 +932,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                                     }
                                                                                                                 }
                                                                                                             >
-                                                                                                               Eliminar
+                                                                                                                Eliminar
                                                                                                             </Button>
                                                                                                         </td>
                                                                                                     </tr>
@@ -989,7 +1037,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 </thead>
                                                 <tbody>
                                                     {
-                                                        this.state.vecParadasMaquinaSeleccionada ?
+                                                        this.state.vecParadasMaquinaSeleccionada !== undefined ?
                                                             this.state.vecParadasMaquinaSeleccionada.map((parMaq,indexParadaMaq)=>{
                                                                 return <tr key={indexParadaMaq}>
                                                                     <td>{parMaq.idParadaMaquina}</td>
@@ -1048,6 +1096,16 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         </div>
                                     </Grid>
                                 </Grid>
+                        </div>
+                        <div>
+                            <Button
+                                variant='primary'
+                                size='lg'
+                                block
+                                type='submit'
+                            >
+                                Guardar Planilla de Produccion
+                            </Button>
                         </div>
                 </Form>
             </Box>

@@ -8,8 +8,12 @@ class IndexUSUARIOS extends React.Component {
         super(props)
         this.state = {
         }
+        this.controller = new AbortController()
     }
     componentDidMount(){ this.props.FindListaUSUARIOS() }
+    componentWillUnmount(){
+        this.controller.abort()
+    }
     render() {
         return (
             <div>

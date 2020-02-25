@@ -22,9 +22,10 @@ class FormUsuarios extends React.Component {
             password1:undefined,
             password2:undefined
         }
+        this.controller = new AbortController()
     }
     componentDidMount(){
-        fetch('https://ems-node-api.herokuapp.com/api/usuarios/perfiles',{
+        fetch('https://ems-node-api.herokuapp.com/api/usuarios/perfiles',{signal:this.controller.signal},{
             method:'GET',
             headers:{
                 'Accept': 'Application/json',
@@ -41,6 +42,11 @@ class FormUsuarios extends React.Component {
                     this.setState({id:_id,nombre,apellido,userName,email,perfil,password1:undefined})
                 }
             })
+        })
+        .catch(err=>{
+            if(err.name === 'AbortError'){
+                throw Error
+            }
         })
     }
     validacionForm = () =>{
@@ -69,7 +75,7 @@ class FormUsuarios extends React.Component {
             if(this.props.user === undefined){
                 // INSERT
                 const {nombre,apellido,userName,email,perfil,password1} = this.state
-                fetch('https://ems-node-api.herokuapp.com/api/usuarios',{
+                fetch('https://ems-node-api.herokuapp.com/api/usuarios',{signal:this.controller.signal},{
                     method:'POST',
                     body:JSON.stringify({nombre,apellido,userName,perfil,email,password:password1 }),
                     headers:{
@@ -93,11 +99,16 @@ class FormUsuarios extends React.Component {
                         this.setState({showModal:true,mensajeModal:json.error})
                     }
                 })
+                .catch(err=>{
+                    if(err.name === 'AbortError'){
+                        throw Error
+                    }
+                })
             }
             else{
                 //UPDATE
                 const {id,nombre,apellido,userName,email,perfil,password1} = this.state
-                fetch('https://ems-node-api.herokuapp.com/api/usuarios/'+id,{
+                fetch('https://ems-node-api.herokuapp.com/api/usuarios/'+id,{signal:this.controller.signal},{
                     method:'PUT',
                     body:JSON.stringify({nombre,apellido,email,userName,perfil,password:password1}),
                     headers:{
@@ -117,6 +128,11 @@ class FormUsuarios extends React.Component {
                         this.setState({showModal:true,mensajeModal:json.error})
                     }
                 })
+                .catch(err => {
+                    if(err.name === 'AbortError'){
+                        throw Error
+                    }
+                })
             }
         }
         else{
@@ -127,6 +143,9 @@ class FormUsuarios extends React.Component {
     }
     cerrarModal = () =>{
         this.setState({showModal:false})
+    }
+    componentWillUnmount(){
+        this.controller.abort()
     }
     render() {
         return (

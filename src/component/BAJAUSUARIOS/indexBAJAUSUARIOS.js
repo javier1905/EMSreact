@@ -2,12 +2,9 @@ import React from 'react'
 
 class indexBAJAUSUARIOS extends React.Component {
     constructor(props) {
-        super(props);
-
-        this.state = {};
-
+        super(props)
+        this.state = {}
     }
-
     render() {
         return (
             <div>

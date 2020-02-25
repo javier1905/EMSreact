@@ -6,9 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {TextField} from '@material-ui/core'
-// import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
-// import Select from '@material-ui/core/Select'
 
 class modalPARADASDEMAQUINA extends React.Component {
     constructor(props) {
@@ -20,6 +18,7 @@ class modalPARADASDEMAQUINA extends React.Component {
             vecParadasMaquina:undefined
         }
         this.lbx_pm = React.createRef()
+        this.controller = new AbortController()
     }
     useStyles = makeStyles(theme => ({
         container: {
@@ -33,11 +32,17 @@ class modalPARADASDEMAQUINA extends React.Component {
         },
     }))
     static getDerivedStateFromProps(nextProps,nextState){
-        var vec = nextProps.vecParadasMaquina
+        var vec = undefined
+        if(typeof nextProps.vecParadasMaquina === "object" ){
+            vec = nextProps.vecParadasMaquina
+        }
         return {
             show:nextProps.show,
             vecParadasMaquina: vec
         }
+    }
+    componentWillUnmount(){
+        this.controller.abort()
     }
     render() {
         const classes = this.useStyles
@@ -45,7 +50,7 @@ class modalPARADASDEMAQUINA extends React.Component {
         var vecPM = undefined
         var regex = new RegExp(`(${this.state.buscador})`,'i')
         if(vecESTADO !== undefined){
-        vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.idArea}`))
+        vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.nombreArea} ${ pM.tipoParadaMaquina ? '(No Programada)' : '(Programada)'}`))
         }
         return (
             <div>
@@ -57,7 +62,6 @@ class modalPARADASDEMAQUINA extends React.Component {
                         e=>{
                             var regex = new RegExp("^[a-zA-Z ]$")
                             if(e.key === 'Enter'){
-                                // console.log(typeof this.state.paradaMQseleccionada)
                                 if(this.state.paradaMQseleccionada === undefined){
                                 }
                                 else{
@@ -90,7 +94,6 @@ class modalPARADASDEMAQUINA extends React.Component {
                                 ref={this.lbx_pm}
                                 multiple={true}
                                 style={{borderRadius:'7px',height:'300px',border:'none'}}
-                                // value ={this.state.paradaMQseleccionada}
                                 onChange={e=>{this.setState({paradaMQseleccionada:e.target.value})}}
                                 onDoubleClick={
                                     e=>{
@@ -103,7 +106,7 @@ class modalPARADASDEMAQUINA extends React.Component {
                                 vecPM !== undefined  ?
                                 vecPM.map((pm,indexPM) => (
                                     <option style={{padding:'8px'}} key={indexPM} value={pm.idParadaMaquina}>
-                                        {`${pm.nombreParadaMaquina} ${pm.idArea} Matrizeria`}
+                                        {`${pm.nombreParadaMaquina} ${pm.nombreArea} ${ pm.tipoParadaMaquina ? '(No Programada)' : '(Programada)'}`}
                                     </option>
                                 ))
                                 :
