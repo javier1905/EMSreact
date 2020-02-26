@@ -50,9 +50,12 @@ class modalPARADASDEMAQUINA extends React.Component {
         var vecPM = undefined
         var regex = new RegExp(`(${this.state.buscador})`,'i')
         console.log(typeof vecESTADO)
-        if(vecESTADO !== undefined){
-        vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.nombreArea} ${ pM.tipoParadaMaquina ? '(No Programada)' : '(Programada)'}`))
-        }
+        try{        
+        vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.nombreArea} ${ pM.tipoParadaMaquina ? '(No Programada)' : '(Programada)'}`))        
+    }
+    catch(e){
+        vecPM = undefined
+    }
         return (
             <div>
                 <Dialog
