@@ -49,9 +49,12 @@ class modalPARADASDEMAQUINA extends React.Component {
         var vecESTADO = this.state.vecParadasMaquina
         var vecPM = []
         var regex = new RegExp(`(${this.state.buscador})`,'i')
+
         try{
         vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.nombreArea} ${ pM.tipoParadaMaquina ? '(No Programada)' : '(Programada)'}`))
         }catch(e){vecPM = []}
+
+
         return (
             <div>
                 <Dialog

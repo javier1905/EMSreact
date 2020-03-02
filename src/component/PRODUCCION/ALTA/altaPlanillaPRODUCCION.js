@@ -804,10 +804,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             className={classes.textField}
                                                                             InputLabelProps={{
                                                                             shrink: true,
-                                                                            }}
-                                                                            inputProps={{
-                                                                            step: 300, // 5 min
-                                                                            }}
+                                                                            }}                                                              
                                                                         />
                                                                         <TextField
                                                                             required
@@ -821,10 +818,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             className={classes.textField}
                                                                             InputLabelProps={{
                                                                             shrink: true,
-                                                                            }}
-                                                                            inputProps={{
-                                                                            step: 300, // 5 min
-                                                                            }}
+                                                                            }}                                                              
                                                                         />
                                                                         <TextField
                                                                             required
