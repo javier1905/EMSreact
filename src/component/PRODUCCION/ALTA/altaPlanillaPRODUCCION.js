@@ -34,11 +34,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
             idMaquina:'',
             idPieza:'',
             idMolde:'',
+            idTipoProceso:'',
             vecOperarios:[],
             vecOperaciones:[],
             vecMaquinas:[],
             vecPiezas:[],
             vecMoldes:[],
+            vecTiposProceso:[],
             vecParadasMaquina:undefined,
             vecTurnos:undefined,
             vecDefectos:undefined,
@@ -281,6 +283,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
             let nombre = e.target.name
             let value = e.target.value
         if(nombre === 'idTurno'){this.setState({idTurno:value})}
+        if(nombre === 'idTipoProceso'){
+            this.setState({idTipoProceso:value})
+        }
         if(nombre === 'idOperacion'){
             this.setState({idOperacion:value})
             this.getMaquinasXoperacion(value)
@@ -291,7 +296,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.getPiezasXmaquina(value)
             this.setState({idPieza:'',idMolde:''})
         }
-        if(nombre === 'idPieza'){this.setState({idPieza:value});this.getMoldesXpieza(value)}
+        if(nombre === 'idPieza'){
+            this.setState({idPieza:value})
+            this.getMoldesXpieza(value)
+            this.getTipoProcesoXpiezaMaquina(value,this.state.idMaquina)
+        }
         if(nombre === 'idMolde'){this.setState({idMolde:value})}
         var indexOperario
         if(nombre.split(' ')[1]){indexOperario = parseInt(nombre.split(' ')[1])}
@@ -334,7 +343,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{ return this.setState({vecOperaciones:json,idOperacion:''})  })
         .catch(e=>{
-            if(e.name === 'AbortError') return 
+            if(e.name === 'AbortError') return
             throw Error
         })
     }
@@ -351,7 +360,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[],idMaquina:''})
         })
         .catch(e=>{
-            if(e.name === 'AbortError') return 
+            if(e.name === 'AbortError') return
             throw Error
         })
     }
@@ -366,7 +375,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecPiezas:json,vecMoldes:[],idMolde:'',idPieza:''}) })
         .catch(e=>{
-            if(e.name === 'AbortError') return 
+            if(e.name === 'AbortError') return
             throw Error
         })
     }
@@ -381,7 +390,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecMoldes:json,idMolde:''}) })
         .catch(e=>{
-            if(e.name === 'AbortError') return 
+            if(e.name === 'AbortError') return
             throw Error
         })
     }
@@ -491,8 +500,48 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
     }
     miSubmit = e =>{
-        console.log('Submit ejecutado')
+        const  { fechaProduccion , fechaFundicion , idTurno , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
+        var  dato = { fechaProduccion, fechaFundicion, idTurno, HoraInicioProduccion,  HoraFinProduccion,  idOperacion, idMaquina,  idPieza,  idMolde, idTipoProceso, vecOperarios, vecParadasMaquinaSeleccionada }
+
+        fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
+            method: 'POST',
+            body: JSON.stringify(dato),
+            headers:  new Headers ({
+                'Accept': 'Application/json',
+                'Content-Type': 'Application/json'
+            })
+        })
+        .then(dato => { return dato.json })
+        .then(json => console.log(json))
+        .catch(e => {
+            if(e.name === 'AbortError'){
+                throw Error
+            }
+            else{
+                console.log(e)
+            }
+        })
         e.preventDefault()
+    }
+    getTipoProcesoXpiezaMaquina( idPieza , idMaquina ){
+        const dato = {
+            idPieza,
+            idMaquina
+        }
+        console.log(dato)
+        fetch(`https://ems-node-api.herokuapp.com/api/tiposProceso`, {
+            method: 'POST',
+            body: JSON.stringify(dato),
+            headers: {
+                'Accept' : 'Application/json',
+                'Content-Type' : 'Application/json'
+            }
+        })
+        .then(dato=>{return dato.json()})
+        .then(json => { this.setState( { vecTiposProceso:json } ) } )
+        .catch(e=>{
+           console.log(e)
+        })
     }
     componentDidMount(){
         this.getOperaciones()
@@ -557,8 +606,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 value={this.state.idTurno}
                                                 name='idTurno'
                                             >
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
                                                 {
-                                                    this.state.vecTurnos !== undefined ?
+                                                    typeof this.state.vecTurnos === 'object' ?
                                                     this.state.vecTurnos.map((tur,indiceTurno)=>{
                                                     return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
                                                     })
@@ -608,7 +660,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                this.state.vecOperaciones ?
+                                                typeof this.state.vecOperaciones === 'object' ?
                                                     this.state.vecOperaciones.map((ope,indiceOperacion)=>{
                                                     return <MenuItem  key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
                                                     })
@@ -628,7 +680,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                this.state.vecMaquinas?
+                                                typeof this.state.vecMaquinas === 'object'?
                                                 this.state.vecMaquinas.map((maq,indiceMaquina)=>{
                                                     return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
                                                 })
@@ -648,7 +700,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                this.state.vecPiezas?
+                                                typeof this.state.vecPiezas === 'object'?
                                                 this.state.vecPiezas.map((pie,indicePieza)=>{
                                                     return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
                                                 })
@@ -668,7 +720,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                                 {
-                                                    this.state.vecMoldes?
+                                                    typeof this.state.vecMoldes === 'object'?
                                                     this.state.vecMoldes.map((mol,indiceMolde)=>{
                                                         return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
                                                     })
@@ -676,7 +728,29 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     <MenuItem></MenuItem>
                                                 }
                                             </Select>
+
                                         </FormControl>
+                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                            <InputLabel id="idTipoProceso">Tipo Proceso</InputLabel>
+                                            <Select
+                                                ref={this.cbx_tipoProceso}
+                                                labelId="idTipoProceso"
+                                                id="cbx_molde"
+                                                value={this.state.idTipoProceso}
+                                                name='idTipoProceso'
+                                                onChange={this.capturaDatos}
+                                            >
+                                                {
+                                                    typeof this.state.vecTiposProceso === 'object'?
+                                                    this.state.vecTiposProceso.map((tpro,indiceTipoProceso)=>{
+                                                        return <MenuItem key={indiceTipoProceso} value={tpro.idTipoProceso}>{tpro.nombreTipoProceso}</MenuItem>
+                                                    })
+                                                    :
+                                                    <MenuItem></MenuItem>
+                                                }
+                                            </Select>
+                                        </FormControl>
+
                                     </Grid>  {/* FIN OPERACION MAQUINA PIEZA Y MOLDE */}
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
                                         <h2>Operarios</h2>
@@ -709,7 +783,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 onChange={this.capturaDatos}
                                                                             >
                                                                                 {
-                                                                                    this.state.vecOperariosCombo !== undefined ?
+                                                                                    typeof this.state.vecOperariosCombo === 'object' ?
                                                                                     this.state.vecOperariosCombo.map((op,indiceOperario)=>{
                                                                                     return <MenuItem key={indiceOperario} value={op.idTrabajador}>{op.nombreTrabajador} { op.apellidoTrabajador }</MenuItem>
                                                                                     })
@@ -818,7 +892,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
-                                                                                                this.state.vecDefectos !== undefined ?
+                                                                                                typeof this.state.vecDefectos === 'object' ?
                                                                                                 this.state.vecDefectos.map((def,indexDefecto)=>{
                                                                                                     return <MenuItem key={indexDefecto} value={def.idDefecto}>{def.nombreDefecto}</MenuItem>
                                                                                                 })
@@ -838,7 +912,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
-                                                                                                this.state.vecTipoRechazo !== undefined ?
+                                                                                                typeof this.state.vecTipoRechazo === 'object' ?
                                                                                                 this.state.vecTipoRechazo.map((tr,indexTipoRechazo)=>{
                                                                                                     return <MenuItem key={indexTipoRechazo} value={tr.idTipoRechazo}>{tr.nombreTipoRechazo}</MenuItem>
                                                                                                 })
