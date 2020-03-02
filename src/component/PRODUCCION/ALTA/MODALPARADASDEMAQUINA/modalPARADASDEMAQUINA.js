@@ -49,18 +49,20 @@ class modalPARADASDEMAQUINA extends React.Component {
         var vecESTADO = this.state.vecParadasMaquina
         var vecPM = []
         var regex = new RegExp(`(${this.state.buscador})`,'i')
-
         try{
         vecPM = vecESTADO.filter((pM)=>regex.test(`${pM.nombreParadaMaquina} ${pM.nombreArea} ${ pM.tipoParadaMaquina ? '(No Programada)' : '(Programada)'}`))
         }catch(e){vecPM = []}
-
-
         return (
             <div>
                 <Dialog
                     disableBackdropClick
                     disableEscapeKeyDown
-                    open={this.state.show} onClose={e=>this.props.eventClose(undefined)}
+                    open={this.state.show} 
+                    onClose={e=>{
+                        this.setState({buscador: ''})
+                        this.props.eventClose(undefined)
+                        
+                    } }
                     onKeyUp={
                         e=>{
                             var regex = new RegExp("^[a-zA-Z ]$")
@@ -101,7 +103,7 @@ class modalPARADASDEMAQUINA extends React.Component {
                                 onDoubleClick={
                                     e=>{
                                     this.props.eventClose(this.state.paradaMQseleccionada)
-                                    this.setState({paradaMQseleccionada:undefined})
+                                    this.setState({paradaMQseleccionada:undefined, buscador: ''})
                                     }
                                 }
                             >
@@ -128,7 +130,7 @@ class modalPARADASDEMAQUINA extends React.Component {
                         </form>
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={e=>{this.setState({paradaMQseleccionada:undefined});this.props.eventClose(undefined)}} color="primary">
+                    <Button onClick={e=>{this.setState({paradaMQseleccionada:undefined, buscador: '' });this.props.eventClose(undefined)}} color="primary">
                         Cancel
                     </Button>
                     </DialogActions>

@@ -25,8 +25,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         super(props)
         this.state = {
             show:false,
-            fechaProduccion:new Date(),
-            fechaFundicion:undefined,
+            fechaProduccion:null,
+            fechaFundicion:null,
             idTurno:'',
             HoraInicioProduccion:'',
             HoraFinProduccion:'',
@@ -126,13 +126,23 @@ class AltaPlanillaPRODUCCION extends React.Component {
     getHoraInicioOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
-        vecOperariosTemp[indexOperario].horaInicio = e.target.value
+        if(e.target.value === vecOperariosTemp[indexOperario].horaFin){
+            vecOperariosTemp[indexOperario].horaInicio = ''
+        }
+        else{
+            vecOperariosTemp[indexOperario].horaInicio = e.target.value
+        }
         this.setState({vecOperarios:vecOperariosTemp})
     }
     getHoraFinOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
-        vecOperariosTemp[indexOperario].horaFin = e.target.value
+        if(e.target.value === vecOperariosTemp[indexOperario].horaInicio){
+            vecOperariosTemp[indexOperario].horaFin = ''
+        }
+        else{
+            vecOperariosTemp[indexOperario].horaFin = e.target.value
+        }
         this.setState({vecOperarios:vecOperariosTemp})
     }
     addOperario = e =>{
@@ -308,13 +318,35 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre.split(' ')[2]){indexRechazo = parseInt(nombre.split(' ')[2]) }
         var vecOperariosCache = this.state.vecOperarios
         try{
-            if(nombre.split(' ')[0] === 'idOperario'){ vecOperariosCache[indexOperario].idOperario = value; vecOperariosCache[indexOperario].nombre = value }
+            if(nombre.split(' ')[0] === 'idOperario'){
+                if(String (value).length !== 0 &&  this.state.vecOperariosCombo.find(o => o.idTrabajador === parseInt(value)) === undefined  ){
+                    vecOperariosCache[indexOperario].idOperario = ''
+                    vecOperariosCache[indexOperario].nombre = ''
+                }
+                else{
+                    vecOperariosCache[indexOperario].idOperario = value
+                    vecOperariosCache[indexOperario].nombre = value
+                }
+            }
             if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
-            if(nombre.split(' ')[0] === 'caloriasOperario'){ vecOperariosCache[indexOperario].calorias = value }
+            if(nombre.split(' ')[0] === 'caloriasOperario'){
+                if(value > 12){
+                    vecOperariosCache[indexOperario].calorias = ''
+                }
+                else{
+                    vecOperariosCache[indexOperario].calorias = value
+                }
+            }
             if(nombre.split(' ')[0] === 'idRechazo'){
-                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value 
-                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = parseInt(value)
+                if(String (value).length !== 0 &&  this.state.vecDefectos.find(d => d.idDefecto === parseInt(value)) === undefined  ){
+                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = ''
+                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = ''
+                }
+                else{
+                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value
+                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value
+                }
             }
             if(nombre.split(' ')[0] === 'nombreRechazo'){
                 vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value
@@ -426,7 +458,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
         .catch(e=>{
-            if(e.name === 'AbortError') return 
+            if(e.name === 'AbortError') return
             throw Error
         })
     }
@@ -527,8 +559,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         const dato = {
             idPieza,
             idMaquina
-        }
-        console.log(dato)
+        } 
         fetch(`https://ems-node-api.herokuapp.com/api/tiposProceso`, {
             method: 'POST',
             body: JSON.stringify(dato),
@@ -551,6 +582,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.getTrabajadores()
     }
     componentWillUnmount(){
+        alert('demontado !')
         this.controller.abort()
     }
     render() {
@@ -564,7 +596,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         <h2 style={{marginTop:'10px'}}>PlanillaProduccion</h2>
                                         <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
                                             <KeyboardDatePicker
-                                                style={{marginRight:'10px',width:'160px'}}
+                                                style={{marginRight:'10px',width:'180px'}}
                                                 required
                                                 size='small'
                                                 variant='standard'
@@ -579,7 +611,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 }}
                                             />
                                             <KeyboardDatePicker
-                                                style={{marginRight:'10px',width:'160px'}}
+                                                style={{marginRight:'10px',width:'180px'}}
                                                 required={true}
                                                 size='small'
                                                 variant="outlined"
@@ -1058,7 +1090,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     label="Desde"
                                                     name="txt_horaDesdeParadaMaquina"
                                                     type="time"
-                                                    onChange={e=>{this.setState({campoDesdeParadaMaquina:e.target.value})}}
+                                                    onChange={e=>{
+                                                        if(e.target.value === this.state.campoHastaParadaMaquina){
+                                                            this.setState({campoDesdeParadaMaquina:''})
+                                                        }
+                                                        else{
+                                                            this.setState({campoDesdeParadaMaquina:e.target.value})
+                                                        }
+                                                    }}
                                                     value ={this.state.campoDesdeParadaMaquina}
                                                     className={classes.textField}
                                                     InputLabelProps={{
@@ -1074,7 +1113,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     label="Hasta"
                                                     name='txt_horaHastaParadaMaquina'
                                                     type="time"
-                                                    onChange={e=>{this.setState({campoHastaParadaMaquina:e.target.value})}}
+                                                    onChange={e=>{
+                                                        if(e.target.value === this.state.campoDesdeParadaMaquina){
+                                                            this.setState({campoHastaParadaMaquina:''})
+                                                        }
+                                                        else{
+                                                            this.setState({campoHastaParadaMaquina:e.target.value})
+                                                        }
+                                                    }}
                                                     value ={this.state.campoHastaParadaMaquina}
                                                     className={classes.textField}
                                                     InputLabelProps={{
