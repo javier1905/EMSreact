@@ -27,7 +27,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
             show:false,
             fechaProduccion:null,
             fechaFundicion:null,
-            idTurno:'',
             HoraInicioProduccion:'',
             HoraFinProduccion:'',
             idOperacion:'',
@@ -150,6 +149,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             idOperario:'',
             nombre:'',
             apellido:'',
+            idTurno:'',
             horaInicio:'',
             horaFin:'',
             produccion:'',
@@ -292,7 +292,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
     capturaDatos = e =>{
             let nombre = e.target.name
             let value = e.target.value
-        if(nombre === 'idTurno'){this.setState({idTurno:value})}
         if(nombre === 'idTipoProceso'){
             this.setState({idTipoProceso:value})
         }
@@ -328,6 +327,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     vecOperariosCache[indexOperario].nombre = value
                 }
             }
+            if(nombre.split(' ')[0] === 'idTurno'){ vecOperariosCache[indexOperario].idTurno=value }
             if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
             if(nombre.split(' ')[0] === 'caloriasOperario'){
@@ -532,10 +532,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
     }
     miSubmit = e =>{
-        const  { fechaProduccion , fechaFundicion , idTurno , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
-        var  dato = { fechaProduccion, fechaFundicion, idTurno, HoraInicioProduccion,  HoraFinProduccion,  idOperacion, idMaquina,  idPieza,  idMolde, idTipoProceso, vecOperarios, vecParadasMaquinaSeleccionada }
+        const  { fechaProduccion , fechaFundicion  , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
+        var  dato = { fechaProduccion, fechaFundicion , HoraInicioProduccion,  HoraFinProduccion,  idOperacion, idMaquina,  idPieza,  idMolde, idTipoProceso, vecOperarios, vecParadasMaquinaSeleccionada }
 
-        fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
+        // fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
+        fetch('http://localhost:5000/api/planillasProduccion',{
             method: 'POST',
             body: JSON.stringify(dato),
             headers:  new Headers ({
@@ -628,29 +629,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         </MuiPickersUtilsProvider>
                                     </Grid> {/* FIN CONTENEDOR FECHAS PRODUCCION Y FUNDICCION*/}
                                     <Grid item xs={12}> {/* INICIO TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
-                                        <FormControl  className={classes.formControl} style={{width:'100px',marginRight:'10px'}} required>
-                                        <InputLabel required  id='idTurnoLabel'>Turno</InputLabel>
-                                            <Select
-                                                required
-                                                labelId='idTurnoLabel'
-                                                onChange={this.capturaDatos}
-                                                id='idTurno'
-                                                value={this.state.idTurno}
-                                                name='idTurno'
-                                            >
-                                                <MenuItem value="">
-                                                    <em>None</em>
-                                                </MenuItem>
-                                                {
-                                                    typeof this.state.vecTurnos === 'object' ?
-                                                    this.state.vecTurnos.map((tur,indiceTurno)=>{
-                                                    return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
-                                                    })
-                                                    :
-                                                    <MenuItem value=''></MenuItem>
-                                                }
-                                            </Select>
-                                        </FormControl>
                                         <TextField
                                             required
                                             style={{width:'100px',marginRight:'10px'}}
@@ -760,7 +738,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     <MenuItem></MenuItem>
                                                 }
                                             </Select>
-
                                         </FormControl>
                                         <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idTipoProceso">Tipo Proceso</InputLabel>
@@ -782,7 +759,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 }
                                             </Select>
                                         </FormControl>
-
                                     </Grid>  {/* FIN OPERACION MAQUINA PIEZA Y MOLDE */}
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
                                         <h2>Operarios</h2>
@@ -824,6 +800,29 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 }
                                                                             </Select>
                                                                         </FormControl>
+                                                                        <FormControl  className={classes.formControl} style={{width:'100px',marginRight:'10px'}} required>
+                                                                        <InputLabel required  id='idTurnoLabel'>Turno</InputLabel>
+                                                                            <Select
+                                                                                required
+                                                                                labelId='idTurnoLabel'
+                                                                                onChange={this.capturaDatos}
+                                                                                id='idTurno'
+                                                                                value={this.state.vecOperarios[i].idTurno}
+                                                                                name={`idTurno ${i}`}
+                                                                            >
+                                                                                <MenuItem value="">
+                                                                                    <em>None</em>
+                                                                                </MenuItem>
+                                                                                {
+                                                                                    typeof this.state.vecTurnos === 'object' ?
+                                                                                    this.state.vecTurnos.map((tur,indiceTurno)=>{
+                                                                                    return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
+                                                                                    })
+                                                                                    :
+                                                                                    <MenuItem value=''></MenuItem>
+                                                                                }
+                                                                            </Select>
+                                                                        </FormControl>
                                                                         <TextField
                                                                             required
                                                                             style={{width:'100px',marginRight:'10px'}}
@@ -836,7 +835,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             className={classes.textField}
                                                                             InputLabelProps={{
                                                                             shrink: true,
-                                                                            }}                                                              
+                                                                            }}
                                                                         />
                                                                         <TextField
                                                                             required
