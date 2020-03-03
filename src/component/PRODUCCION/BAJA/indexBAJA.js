@@ -4,10 +4,13 @@ class indexBAJA extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {}
+        this.contoller = new AbortController()
 
     }
-
+    componentWillUnmount(){
+        this.contoller.abort()
+    }
     render() {
         return (
             <div>

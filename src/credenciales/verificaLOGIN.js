@@ -15,7 +15,7 @@ class VerificaLOGIN extends React.Component
                 perfil:undefined,
                 email:undefined
             },
-            comprobacion:false
+            comprobacion:true
         }
     }
     ve = () =>{

@@ -535,8 +535,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         const  { fechaProduccion , fechaFundicion  , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
         var  dato = { fechaProduccion, fechaFundicion , HoraInicioProduccion,  HoraFinProduccion,  idOperacion, idMaquina,  idPieza,  idMolde, idTipoProceso, vecOperarios, vecParadasMaquinaSeleccionada }
 
-        // fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
-        fetch('http://localhost:5000/api/planillasProduccion',{
+        fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
+        // fetch('http://localhost:5000/api/planillasProduccion',{
             method: 'POST',
             body: JSON.stringify(dato),
             headers:  new Headers ({
@@ -583,7 +583,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.getTrabajadores()
     }
     componentWillUnmount(){
-        alert('demontado !')
+      
         this.controller.abort()
     }
     render() {
