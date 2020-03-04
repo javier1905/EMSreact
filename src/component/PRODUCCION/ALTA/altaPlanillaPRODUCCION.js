@@ -18,6 +18,7 @@ import Alert from '@material-ui/lab/Alert'
 
 
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
+import { fi } from 'date-fns/locale'
 
 
 class AltaPlanillaPRODUCCION extends React.Component {
@@ -533,27 +534,60 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     miSubmit = e =>{
         const  { fechaProduccion , fechaFundicion  , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
-        var  dato = { fechaProduccion, fechaFundicion , HoraInicioProduccion,  HoraFinProduccion,  idOperacion, idMaquina,  idPieza,  idMolde, idTipoProceso, vecOperarios, vecParadasMaquinaSeleccionada }
-
-        fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
-        // fetch('http://localhost:5000/api/planillasProduccion',{
-            method: 'POST',
-            body: JSON.stringify(dato),
-            headers:  new Headers ({
-                'Accept': 'Application/json',
-                'Content-Type': 'Application/json'
+        var  dato = {
+            fechaProduccion,
+            fechaFundicion ,
+            HoraInicioProduccion,
+            HoraFinProduccion,
+            idOperacion, idMaquina,
+            idPieza,  idMolde, idTipoProceso,
+            vecOperarios,
+            vecParadasMaquinaSeleccionada
+        }
+        var valid = true
+        var nombreOperarioMasrechazoQueProduccion = ''
+        const validacion = () => {
+            if( fechaProduccion >= fechaFundicion ){ valid = false }
+            else  if(HoraInicioProduccion !== '06:00' && HoraFinProduccion !== ' 06:00' && HoraInicioProduccion === HoraFinProduccion) { valid = false }
+            else if (vecOperarios.length >0) { valid = false  }
+            vecOperarios.forEach(o=>{
+                var cantRechazo = 0
+                if(o.vecRechazo.length>0){
+                    o.vecRechazo.forEach(r=>{
+                        cantRechazo += parseInt(r.cantidadRechazo)
+                        if(r.vecZonas.length === 0){
+                            valid = false
+                            console.log('no tiene zona ')
+                        }
+                    })
+                }
+                if(cantRechazo > parseInt(o.produccion)){
+                    nombreOperarioMasrechazoQueProduccion = o.nombre
+                    console.log('hay mas rechazos que produccion', nombreOperarioMasrechazoQueProduccion)
+                    valid = false
+                }
             })
-        })
-        .then(dato => { return dato.json })
-        .then(json => console.log(json))
-        .catch(e => {
-            if(e.name === 'AbortError'){
-                throw Error
-            }
-            else{
-                console.log(e)
-            }
-        })
+        }
+        validacion()
+        // fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
+        // // fetch('http://localhost:5000/api/planillasProduccion',{
+        //     method: 'POST',
+        //     body: JSON.stringify(dato),
+        //     headers:  new Headers ({
+        //         'Accept': 'Application/json',
+        //         'Content-Type': 'Application/json'
+        //     })
+        // })
+        // .then(dato => { return dato.json })
+        // .then(json => console.log(json))
+        // .catch(e => {
+        //     if(e.name === 'AbortError'){
+        //         throw Error
+        //     }
+        //     else{
+        //         console.log(e)
+        //     }
+        // })
         e.preventDefault()
     }
     getTipoProcesoXpiezaMaquina( idPieza , idMaquina ){
