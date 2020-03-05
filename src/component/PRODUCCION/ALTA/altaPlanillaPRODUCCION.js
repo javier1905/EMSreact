@@ -472,7 +472,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .catch(e=>{
             // if(e.name === 'AbortError'){
             //     throw Error
-            }
+           // }
         })
     }
     getTrabajadores = () =>{
@@ -876,7 +876,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             className={classes.textField}
                                                                             InputLabelProps={{
                                                                             shrink: true,
-                                                                            }}                                                              
+                                                                            }}
                                                                         />
                                                                         <TextField
                                                                             required
