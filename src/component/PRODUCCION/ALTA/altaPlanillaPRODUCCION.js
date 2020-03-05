@@ -389,8 +389,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[],idMaquina:''})
         })
         .catch(e=>{
-            if(e.name === 'AbortError') return
-            throw Error
+            // if(e.name === 'AbortError') return
+            // throw Error
         })
     }
     getPiezasXmaquina = idMaquina =>{
@@ -404,8 +404,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecPiezas:json,vecMoldes:[],idMolde:'',idPieza:''}) })
         .catch(e=>{
-            if(e.name === 'AbortError') return
-            throw Error
+            // if(e.name === 'AbortError') return
+            // throw Error
         })
     }
     getMoldesXpieza = idPieza =>{
@@ -419,8 +419,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecMoldes:json,idMolde:''}) })
         .catch(e=>{
-            if(e.name === 'AbortError') return
-            throw Error
+            // if(e.name === 'AbortError') return
+            // throw Error
         })
     }
     getParadasMaquina = () =>{
@@ -440,8 +440,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             catch(e){}
         })
         .catch(e=>{
-            if(e.name === 'AbortError') return
-            throw Error
+            // if(e.name === 'AbortError') return
+            // throw Error
         })
     }
     getTurnos = () =>{
@@ -455,8 +455,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
         .catch(e=>{
-            if(e.name === 'AbortError') return
-            throw Error
+            // if(e.name === 'AbortError') return
+            // throw Error
         })
     }
     getDefectos = () =>{
@@ -470,8 +470,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{this.setState({vecDefectos:json})})
         .catch(e=>{
-            if(e.name === 'AbortError'){
-                throw Error
+            // if(e.name === 'AbortError'){
+            //     throw Error
             }
         })
     }
@@ -486,9 +486,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{this.setState({vecOperariosCombo:json})})
         .catch(err=>{
-            if(err.name === 'AbortError'){
-                throw Error
-            }
+            // if(err.name === 'AbortError'){
+            //     throw Error
+            // }
         })
     }
     useStyles = makeStyles(theme => ({
@@ -602,7 +602,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json => { this.setState( { vecTiposProceso:json } ) } )
         .catch(e=>{
-           console.log(e)
+        //    console.log(e)
         })
     }
     componentDidMount(){
