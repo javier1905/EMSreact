@@ -839,13 +839,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 id='idTurno'
                                                                                 value={this.state.vecOperarios[i].idTurno}
                                                                                 name={`idTurno ${i}`}
-                                                                            >                                     
+                                                                            >
                                                                                 {
-<<<<<<< HEAD
-                                                                                    Array.isArray(  this.state.vecTurnos )?
-=======
                                                                                     Array.isArray( this.state.vecTurnos )?
->>>>>>> 7768f92bbf58072dff31db609bf534dc7ce2e95d
                                                                                     this.state.vecTurnos.map((tur,indiceTurno)=>{
                                                                                     return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
                                                                                     })
@@ -921,11 +917,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                         </Button>
                                                                 </Grid>
                                                                 { // !RECORRE VECTOR RECHAZOS
-<<<<<<< HEAD
-                                                                    Array.isArray(  this.state.vecOperarios[i].vecRechazo )?
-=======
                                                                     Array.isArray( this.state.vecOperarios[i].vecRechazo) ?
->>>>>>> 7768f92bbf58072dff31db609bf534dc7ce2e95d
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
                                                                         return <Box className='contenedorRechazo'  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} >
                                                                             <Grid container spacing={1}>
