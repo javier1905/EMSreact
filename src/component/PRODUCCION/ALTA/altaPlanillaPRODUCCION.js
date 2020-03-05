@@ -15,11 +15,7 @@ import Select from '@material-ui/core/Select'
 import Alert from '@material-ui/lab/Alert'
 // import IconButton from '@material-ui/core/IconButton'
 // import DeleteIcon from '@material-ui/icons/Delete'
-
-
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
-import { fi } from 'date-fns/locale'
-
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
@@ -834,7 +830,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 }
                                                                             </Select>
                                                                         </FormControl>
-                                                                        <FormControl  className={classes.formControl} style={{width:'100px',marginRight:'10px'}} required>
+                                                                        <FormControl  className={classes.formControl} style={{width:'130px',marginRight:'10px'}} required>
                                                                         <InputLabel required  id='idTurnoLabel'>Turno</InputLabel>
                                                                             <Select
                                                                                 required
@@ -843,12 +839,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 id='idTurno'
                                                                                 value={this.state.vecOperarios[i].idTurno}
                                                                                 name={`idTurno ${i}`}
-                                                                            >
-                                                                                <MenuItem value="">
-                                                                                    <em>None</em>
-                                                                                </MenuItem>
+                                                                            >                                     
                                                                                 {
+<<<<<<< HEAD
                                                                                     Array.isArray(  this.state.vecTurnos )?
+=======
+                                                                                    Array.isArray( this.state.vecTurnos )?
+>>>>>>> 7768f92bbf58072dff31db609bf534dc7ce2e95d
                                                                                     this.state.vecTurnos.map((tur,indiceTurno)=>{
                                                                                     return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
                                                                                     })
@@ -924,7 +921,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                         </Button>
                                                                 </Grid>
                                                                 { // !RECORRE VECTOR RECHAZOS
+<<<<<<< HEAD
                                                                     Array.isArray(  this.state.vecOperarios[i].vecRechazo )?
+=======
+                                                                    Array.isArray( this.state.vecOperarios[i].vecRechazo) ?
+>>>>>>> 7768f92bbf58072dff31db609bf534dc7ce2e95d
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
                                                                         return <Box className='contenedorRechazo'  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} >
                                                                             <Grid container spacing={1}>
