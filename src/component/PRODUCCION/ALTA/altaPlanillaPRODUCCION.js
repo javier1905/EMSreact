@@ -704,7 +704,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                typeof this.state.vecOperaciones === 'object' ?
+                                                Array.isArray( this.state.vecOperaciones )?
                                                     this.state.vecOperaciones.map((ope,indiceOperacion)=>{
                                                     return <MenuItem  key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
                                                     })
@@ -724,7 +724,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                typeof this.state.vecMaquinas === 'object'?
+                                                Array.isArray(  this.state.vecMaquinas )?
                                                 this.state.vecMaquinas.map((maq,indiceMaquina)=>{
                                                     return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
                                                 })
@@ -744,7 +744,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                             {
-                                                typeof this.state.vecPiezas === 'object'?
+                                                Array.isArray(  this.state.vecPiezas )?
                                                 this.state.vecPiezas.map((pie,indicePieza)=>{
                                                     return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
                                                 })
@@ -764,7 +764,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                                 {
-                                                    typeof this.state.vecMoldes === 'object'?
+                                                    Array.isArray(  this.state.vecMoldes )?
                                                     this.state.vecMoldes.map((mol,indiceMolde)=>{
                                                         return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
                                                     })
@@ -784,7 +784,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 onChange={this.capturaDatos}
                                             >
                                                 {
-                                                    typeof this.state.vecTiposProceso === 'object'?
+                                                    Array.isArray(  this.state.vecTiposProceso )?
                                                     this.state.vecTiposProceso.map((tpro,indiceTipoProceso)=>{
                                                         return <MenuItem key={indiceTipoProceso} value={tpro.idTipoProceso}>{tpro.nombreTipoProceso}</MenuItem>
                                                     })
@@ -825,7 +825,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 onChange={this.capturaDatos}
                                                                             >
                                                                                 {
-                                                                                    typeof this.state.vecOperariosCombo === 'object' ?
+                                                                                    Array.isArray(  this.state.vecOperariosCombo )?
                                                                                     this.state.vecOperariosCombo.map((op,indiceOperario)=>{
                                                                                     return <MenuItem key={indiceOperario} value={op.idTrabajador}>{op.nombreTrabajador} { op.apellidoTrabajador }</MenuItem>
                                                                                     })
@@ -848,7 +848,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                     <em>None</em>
                                                                                 </MenuItem>
                                                                                 {
-                                                                                    typeof this.state.vecTurnos === 'object' ?
+                                                                                    Array.isArray(  this.state.vecTurnos )?
                                                                                     this.state.vecTurnos.map((tur,indiceTurno)=>{
                                                                                     return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
                                                                                     })
@@ -924,7 +924,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                         </Button>
                                                                 </Grid>
                                                                 { // !RECORRE VECTOR RECHAZOS
-                                                                    this.state.vecOperarios[i].vecRechazo ?
+                                                                    Array.isArray(  this.state.vecOperarios[i].vecRechazo )?
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
                                                                         return <Box className='contenedorRechazo'  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} >
                                                                             <Grid container spacing={1}>
@@ -951,7 +951,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
-                                                                                                typeof this.state.vecDefectos === 'object' ?
+                                                                                                Array.isArray(  this.state.vecDefectos )?
                                                                                                 this.state.vecDefectos.map((def,indexDefecto)=>{
                                                                                                     return <MenuItem key={indexDefecto} value={def.idDefecto}>{def.nombreDefecto}</MenuItem>
                                                                                                 })
@@ -971,7 +971,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
-                                                                                                typeof this.state.vecTipoRechazo === 'object' ?
+                                                                                                Array.isArray(  this.state.vecTipoRechazo )?
                                                                                                 this.state.vecTipoRechazo.map((tr,indexTipoRechazo)=>{
                                                                                                     return <MenuItem key={indexTipoRechazo} value={tr.idTipoRechazo}>{tr.nombreTipoRechazo}</MenuItem>
                                                                                                 })
@@ -1184,7 +1184,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 </thead>
                                                 <tbody>
                                                     {
-                                                        this.state.vecParadasMaquinaSeleccionada !== undefined ?
+                                                        Array.isArray(  this.state.vecParadasMaquinaSeleccionada )?
                                                             this.state.vecParadasMaquinaSeleccionada.map((parMaq,indexParadaMaq)=>{
                                                                 return <tr key={indexParadaMaq}>
                                                                     <td>{parMaq.idParadaMaquina}</td>
