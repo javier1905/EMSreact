@@ -127,7 +127,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
     getHoraInicioOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
-        if(e.target.value === vecOperariosTemp[indexOperario].horaFin){
+        if(e.target.value !== '06:00' && vecOperariosTemp[indexOperario].horaFin !== '06:00' && e.target.value === vecOperariosTemp[indexOperario].horaFin){
             vecOperariosTemp[indexOperario].horaInicio = ''
         }
         else{
@@ -138,7 +138,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
     getHoraFinOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
-        if(e.target.value === vecOperariosTemp[indexOperario].horaInicio){
+        if(e.target.value !== '06:00' && vecOperariosTemp[indexOperario].horaInicio !== '06:00' && e.target.value === vecOperariosTemp[indexOperario].horaInicio){
             vecOperariosTemp[indexOperario].horaFin = ''
         }
         else{
@@ -520,12 +520,37 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecOperarios,
             vecParadasMaquinaSeleccionada
         }
-        var valid = true
-
-        const validacion = () => {console.log(vecOperarios.length)
+        const validacion = () => {
+            var dtp_fechaProduccion = document.getElementById('dtp_fechaProduccion')
+            if(fechaProduccion === null){
+                this.props.enqueueSnackbar('Ingrese la fecha de Procesado ', { variant: 'error',preventDuplicate: true})
+                dtp_fechaProduccion.focus()
+                dtp_fechaProduccion.select()
+                return false
+            }
+            if(fechaFundicion === null){
+                this.props.enqueueSnackbar('Ingrese la fecha de Fundicion ', { variant: 'error',preventDuplicate: true})
+                var dtp_fechaFundicion = document.getElementById('dtp_fechaFundicion')
+                dtp_fechaFundicion.focus()
+                dtp_fechaFundicion.select()
+                return false
+            }
+            if(HoraInicioProduccion === ''){
+                this.props.enqueueSnackbar('Ingrese la hora de inicio de produccion ', { variant: 'error',preventDuplicate: true})
+                var dtp_horaInicioProduccion = document.getElementById('idHoraIniciuoProduccion')
+                dtp_horaInicioProduccion.focus()
+                dtp_horaInicioProduccion.select()
+                return false
+            }
+            if(HoraFinProduccion === ''){
+                this.props.enqueueSnackbar('Ingrese la hora de fin de produccion ', { variant: 'error',preventDuplicate: true})
+                var dtp_horaFinProduccion = document.getElementById('idHoraFinProduccion')
+                dtp_horaFinProduccion.focus()
+                dtp_horaFinProduccion.select()
+                return false
+            }
             if( fechaProduccion < fechaFundicion ){
                 this.props.enqueueSnackbar('Verifique que la fecha de Produccion sea Posterior o igual a la de fundicion', { variant: 'error'})
-                var dtp_fechaProduccion = document.getElementById('dtp_fechaProduccion')
                 dtp_fechaProduccion.focus()
                 dtp_fechaProduccion.select()
                 window.scroll({
@@ -560,76 +585,170 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 return false
             }
             if(idTipoProceso === '' ){
-                this.props.enqueueSnackbar('Seleccione un proceso ', { variant: 'error',preventDuplicate: true})
+                this.props.enqueueSnackbar('Seleccione el tipo de  proceso ', { variant: 'error',preventDuplicate: true})
                 return false
             }
             else if (vecOperarios.length <= 0) {
                 this.props.enqueueSnackbar('Debe ingresar al menos un operario', { variant: 'error'})
                 return false
             }
-           
-            vecOperarios.map((o,indexOperario)=>{
+            var vecOP = true
+            vecOperarios.forEach((o,indexOperario)=>{
+                if(vecOP === false) { return true}
                 var cantRechazo = 0
+                if(o.idOperario === ''){
+                    var cbx_idOperario = document.getElementById(`idOperario ${indexOperario}`)
+                    cbx_idOperario.focus()
+                    cbx_idOperario.click()
+                    this.props.enqueueSnackbar('Ingrese algun Operario  ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
+                    return false
+                }
                 if(o.idTurno === ''){
                     var cbx_idTurno = document.getElementById(`idTurno ${indexOperario}`)
                     cbx_idTurno.focus()
                     cbx_idTurno.click()
                     this.props.enqueueSnackbar('Seleccione el turno ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
                     return false
                 }
+                if(o.horaInicio === ''){
+                    var txt_horaInicio = document.getElementById(`hsInicioOperario ${indexOperario}`)
+                    txt_horaInicio.focus()
+                    txt_horaInicio.click()
+                    this.props.enqueueSnackbar('Seleccione la hora de Inicio ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
+                    return false
+                }
+                if(o.horaFin === ''){
+                    var txt_horaFin = document.getElementById(`hsFinOperario ${indexOperario}`)
+                    txt_horaFin.focus()
+                    txt_horaFin.click()
+                    this.props.enqueueSnackbar('Seleccione la hora de Fin ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
+                    return false
+                }
+                if(o.produccion === ''){
+                    var txt_produccionOperario = document.getElementById(`txt_produccionOperario ${indexOperario}`)
+                    txt_produccionOperario.focus()
+                    txt_produccionOperario.click()
+                    this.props.enqueueSnackbar('Ingrese la cantidad Producida ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
+                    return false
+                }
+                if(o.calorias === ''){
+                    var txt_caloriasOperario = document.getElementById(`txt_caloriasOperario ${indexOperario}`)
+                    txt_caloriasOperario.focus()
+                    txt_caloriasOperario.click()
+                    this.props.enqueueSnackbar('Ingrese la calorias ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
+                    return false
+                }
+                var vecRE = true
                 if(o.vecRechazo.length>0){
-                    o.vecRechazo.map((r,indexRechazo)=>{
+                    o.vecRechazo.forEach((r,indexRechazo)=>{
+                        if(vecRE === false) {return}
+                        if(r.idRechazo === ''){
+                            var txt_idRechazo = document.getElementById(`idRechazo ${indexOperario} ${indexRechazo}`)
+                            txt_idRechazo.focus()
+                            this.props.enqueueSnackbar('Selecione algun Rechazo ', { variant: 'error',preventDuplicate: true})
+                            vecOP=false
+                            vecRE = false
+                            return false
+                        }
+                        if(r.tipo === ''){
+                            var cbx_tipoRechazo = document.getElementById(`tipoRechazo ${indexOperario} ${indexRechazo}`)
+                            cbx_tipoRechazo.focus()
+                            this.props.enqueueSnackbar('Selecione el tipo de rachazo ', { variant: 'error',preventDuplicate: true})
+                            vecOP=false
+                            vecRE = false
+                            return false
+                        }
+                        if(r.cantidadRechazo === ''){
+                            var txt_cantidadRechazo = document.getElementById(`cantidadRechazo ${indexOperario} ${indexRechazo}`)
+                            txt_cantidadRechazo.focus()
+                            this.props.enqueueSnackbar('Ingrese la cantidad de rechazos ', { variant: 'error',preventDuplicate: true})
+                            vecOP=false
+                            vecRE = false
+                            return false
+                        }
                         cantRechazo += parseInt(r.cantidadRechazo)
                         if(r.vecZonas.length === 0){
                             var letraZona = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
                             letraZona.focus()
                             letraZona.select()
                             this.props.enqueueSnackbar('Verifique que todos los rechazos tengan al menos una zona cargada ', { variant: 'error',preventDuplicate: true})
+                            vecOP = false
+                            vecRE = false
                             return false
                         }
                     })
+                    if(vecRE === false) {return false}
                 }
                 if(cantRechazo > parseInt(o.produccion)){
                     this.props.enqueueSnackbar('Revise los rechazos porque hay mas que la cantidad producida ', { variant: 'error',preventDuplicate: true})
+                    vecOP = false
                     return false
                 }
             })
-
-            if(vecOperarios.length > 0){
-                vecOperarios.forEach( o=>{
-                    if( o.idTurno  === ''){
-                        valid = false
-                    }
-                    if(o.vecRechazo.length > 0){
-                        o.vecRechazo.forEach(r=>{
-                            if(r.tipo === ''){
-                                valid =false
-                            }
-                        })
-                    }
+            if(vecOP === false) { return }
+            fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
+                // fetch('http://localhost:5000/api/planillasProduccion',{
+                    method: 'POST',
+                    body: JSON.stringify(dato),
+                    headers:  new Headers ({
+                        'Accept': 'Application/json',
+                        'Content-Type': 'Application/json'
+                    })
                 })
-            }
+                .then(dato => { return dato.json })
+                .then(json =>{
+                    this.props.enqueueSnackbar(`${json.mensaje}`,
+                    {
+                        variant: 'success',
+                        preventDuplicate: true,
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }
+                    })
+                    this.setState({
+                        fechaProduccion:null,
+                        fechaFundicion:null,
+                        HoraInicioProduccion:'',
+                        HoraFinProduccion:'',
+                        idOperacion:'',
+                        idMaquina:'',
+                        idPieza:'',
+                        idMolde:'',
+                        idTipoProceso:'',
+                        vecOperarios:[],
+                        vecMaquinas:[],
+                        vecPiezas:[],
+                        vecMoldes:[],
+                        vecTiposProceso:[],
+                        campoParadaMaquina:'',
+                        campoDesdeParadaMaquina:'',
+                        campoHastaParadaMaquina:'',
+                        vecParadasMaquinaSeleccionada:[],
+                        campoIdParaMaquina:'',
+                        campoNombreParadaMaquina:''
+                    })
+                    console.log(json)
+                })
+                .catch(e => {
+                    this.props.enqueueSnackbar(`${e.mensaje}`,
+                    {
+                        variant: 'error',
+                        preventDuplicate: true,
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }
+                    })
+                })
         }
         validacion()
-        // fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
-        // // fetch('http://localhost:5000/api/planillasProduccion',{
-        //     method: 'POST',
-        //     body: JSON.stringify(dato),
-        //     headers:  new Headers ({
-        //         'Accept': 'Application/json',
-        //         'Content-Type': 'Application/json'
-        //     })
-        // })
-        // .then(dato => { return dato.json })
-        // .then(json => console.log(json))
-        // .catch(e => {
-        //     if(e.name === 'AbortError'){
-        //         throw Error
-        //     }
-        //     else{
-        //         console.log(e)
-        //     }
-        // })
         e.preventDefault()
     }
     getTipoProcesoXpiezaMaquina( idPieza , idMaquina ){
@@ -647,9 +766,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json => { this.setState( { vecTiposProceso:json } ) } )
-        .catch(e=>{
-        //    console.log(e)
-        })
+        .catch(e=>{ })
     }
     componentDidMount(){
         this.getOperaciones()
@@ -673,7 +790,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
                                             <KeyboardDatePicker
                                                 style={{marginRight:'10px',width:'180px'}}
-                                                required
                                                 size='small'
                                                 variant='standard'
                                                 margin="none"
@@ -688,7 +804,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             />
                                             <KeyboardDatePicker
                                                 style={{marginRight:'10px',width:'180px'}}
-                                                required={true}
                                                 size='small'
                                                 variant="outlined"
                                                 margin="none"
@@ -705,21 +820,19 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     </Grid> {/* FIN CONTENEDOR FECHAS PRODUCCION Y FUNDICCION*/}
                                     <Grid item xs={12}> {/* INICIO TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
                                         <TextField
-                                            required
                                             style={{width:'100px',marginRight:'10px'}}
                                             id="idHoraIniciuoProduccion"
                                             label="Desde"
                                             name='hsInicioOperario'
                                             type="time"
                                             onChange={this.getHoraInicioProduccion}
-                                            value ={this.state.horaInicio}
+                                            value ={this.state.HoraInicioProduccion}
                                             className={classes.textField}
                                             InputLabelProps={{
                                             shrink: true,
                                             }}
                                         />
                                         <TextField
-                                            required
                                             style={{width:'100px',marginRight:'10px'}}
                                             id="idHoraFinProduccion"
                                             label="Hasta"
@@ -734,7 +847,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         />
                                     </Grid> {/* FIN TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
                                     <Grid item xs={12}> {/* INICIO OPERACION MAQUINA PIEZA Y MOLDE */}
-                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
                                             <Select
                                                 ref={this.cbx_operacion}
@@ -754,7 +867,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }
                                             </Select>
                                         </FormControl>
-                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idMaquina">Maquina</InputLabel>
                                             <Select
                                                 ref={this.cbx_maquina}
@@ -774,7 +887,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }
                                             </Select>
                                         </FormControl>
-                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idPieza">Pieza</InputLabel>
                                             <Select
                                                 ref={this.cbx_pieza}
@@ -794,7 +907,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                             }
                                             </Select>
                                         </FormControl>
-                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idMolde">Molde</InputLabel>
                                             <Select
                                                 ref={this.cbx_molde}
@@ -814,7 +927,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 }
                                             </Select>
                                         </FormControl>
-                                        <FormControl required className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
+                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                                             <InputLabel id="idTipoProceso">Tipo Proceso</InputLabel>
                                             <Select
                                                 ref={this.cbx_tipoProceso}
@@ -846,7 +959,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                                 <Grid container spacing={1}  id='contenedorOperaio'>
                                                                         <TextField
-                                                                            required
                                                                             style={{width:'70px',marginRight:'10px'}}
                                                                             id={`idOperario ${i}`}
                                                                             label="Legajo"
@@ -855,7 +967,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange={this.capturaDatos}
                                                                             value={this.state.vecOperarios[i].idOperario}
                                                                         />
-                                                                        <FormControl required className={classes.formControl} style={{width:'180px',marginRight:'10px'}}>
+                                                                        <FormControl  className={classes.formControl} style={{width:'180px',marginRight:'10px'}}>
                                                                             <InputLabel id="idNombre">Nombre</InputLabel>
                                                                             <Select
                                                                                 style={{width:'180px',marginRight:'10px'}}
@@ -875,10 +987,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 }
                                                                             </Select>
                                                                         </FormControl>
-                                                                        <FormControl  className={classes.formControl} style={{width:'130px',marginRight:'10px'}} required>
-                                                                        <InputLabel required  id='idTurnoLabel'>Turno</InputLabel>
+                                                                        <FormControl  className={classes.formControl} style={{width:'130px',marginRight:'10px'}} >
+                                                                        <InputLabel  id='idTurnoLabel'>Turno</InputLabel>
                                                                             <Select
-                                                                                required
                                                                                 labelId='idTurnoLabel'
                                                                                 onChange={this.capturaDatos}
                                                                                 id={`idTurno ${i}`}
@@ -896,9 +1007,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             </Select>
                                                                         </FormControl>
                                                                         <TextField
-                                                                            required
                                                                             style={{width:'100px',marginRight:'10px'}}
-                                                                            id="time"
+                                                                            id={`hsInicioOperario ${i}`}
                                                                             label="Desde"
                                                                             name={`hsInicioOperario ${i}`}
                                                                             type="time"
@@ -910,9 +1020,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }}
                                                                         />
                                                                         <TextField
-                                                                            required
                                                                             style={{width:'100px',marginRight:'10px'}}
-                                                                            id="hsFinOperario"
+                                                                            id={`hsFinOperario ${i}`}
                                                                             label="Hasta"
                                                                             name={`hsFinOperario ${i}`}
                                                                             type="time"
@@ -924,9 +1033,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             }}
                                                                         />
                                                                         <TextField
-                                                                            required
                                                                             style={{width:'105px',marginRight:'10px'}}
-                                                                            id="standard-basic"
+                                                                            id={`txt_produccionOperario ${i}`}
                                                                             label="Produccion"
                                                                             type='number'
                                                                             name={`produccionOperario ${i}`}
@@ -934,9 +1042,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             value={this.state.vecOperarios[i].produccion}
                                                                         />
                                                                         <TextField
-                                                                            required
                                                                             style={{width:'80px',marginRight:'10px'}}
-                                                                            id="txt_calorias"
+                                                                            id={`txt_caloriasOperario ${i}`}
                                                                             label="Calorias"
                                                                             type='number'
                                                                             name={`caloriasOperario ${i}`}
@@ -968,7 +1075,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             <Grid container spacing={1}>
                                                                                 <Grid item xs={12} className='contenedorRechazos'>
                                                                                     <TextField
-                                                                                        required
                                                                                         style={{width:'105px',marginRight:'10px'}}
                                                                                         id={`idRechazo ${i} ${indexRechazo}`}
                                                                                         label="Id rech"
@@ -978,7 +1084,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value={this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo}
                                                                                         onBlur={this.verificaRechazoCoincidente}
                                                                                     />
-                                                                                    <FormControl required className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
+                                                                                    <FormControl  className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
                                                                                         <InputLabel id='lbl_defecto'>Defecto</InputLabel>
                                                                                         <Select
                                                                                             id={`nombreRechazo ${i} ${indexRechazo}`}
@@ -998,7 +1104,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             }
                                                                                         </Select>
                                                                                     </FormControl>
-                                                                                    <FormControl required className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
+                                                                                    <FormControl  className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
                                                                                         <InputLabel id='lbl_TipoRecha'>Tipo Rech</InputLabel>
                                                                                         <Select
                                                                                             id={`tipoRechazo ${i} ${indexRechazo}`}
@@ -1019,7 +1125,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         </Select>
                                                                                     </FormControl>
                                                                                     <TextField
-                                                                                        required
                                                                                         style={{width:'105px',marginRight:'10px'}}
                                                                                         id={`cantidadRechazo ${i} ${indexRechazo}`}
                                                                                         label="Cantidad"
@@ -1162,7 +1267,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     name="txt_horaDesdeParadaMaquina"
                                                     type="time"
                                                     onChange={e=>{
-                                                        if(e.target.value === this.state.campoHastaParadaMaquina){
+                                                        if(e.target.value !== '06:00' && this.state.campoHastaParadaMaquina !== '06:00' && e.target.value === this.state.campoHastaParadaMaquina){
                                                             this.setState({campoDesdeParadaMaquina:''})
                                                         }
                                                         else{
@@ -1185,7 +1290,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     name='txt_horaHastaParadaMaquina'
                                                     type="time"
                                                     onChange={e=>{
-                                                        if(e.target.value === this.state.campoDesdeParadaMaquina){
+                                                        if(e.target.value !== '06:00' && this.state.campoDesdeParadaMaquina !== '06:00' && e.target.value === this.state.campoDesdeParadaMaquina){
                                                             this.setState({campoHastaParadaMaquina:''})
                                                         }
                                                         else{
