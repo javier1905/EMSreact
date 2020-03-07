@@ -7,6 +7,8 @@ import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles'
 import {TextField,Box} from '@material-ui/core'
+// import Fab from '@material-ui/core/Fab';
+// import AddIcon from '@material-ui/icons/Add';
 // import ButtonN from '@material-ui/core/Button'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -16,6 +18,7 @@ import Alert from '@material-ui/lab/Alert'
 // import IconButton from '@material-ui/core/IconButton'
 // import DeleteIcon from '@material-ui/icons/Delete'
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
+import { withSnackbar } from 'notistack'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor(props) {
@@ -63,6 +66,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.txt_campoIdParadaMaquina = React.createRef()
         this.controller = new AbortController()
     }
+
+
     capturaParaMaquina = e =>{
         const {campoIdParaMaquina,campoNombreParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
         var val = true
@@ -295,15 +300,15 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if(nombre === 'idOperacion'){
             this.setState({idOperacion:value})
             this.getMaquinasXoperacion(value)
-            this.setState({idMaquina:'',idPieza:'',idMolde:''})
+            this.setState({idMaquina:'',idPieza:'',idMolde:'',idTipoProceso:'',vecTiposProceso:[]})
         }
         if(nombre === 'idMaquina'){
             this.setState({idMaquina:value})
             this.getPiezasXmaquina(value)
-            this.setState({idPieza:'',idMolde:''})
+            this.setState({idPieza:'',idMolde:'',idTipoProceso:'',vecTiposProceso:[]})
         }
         if(nombre === 'idPieza'){
-            this.setState({idPieza:value})
+            this.setState({idPieza:value,idTipoProceso:'',vecTiposProceso:[]})
             this.getMoldesXpieza(value)
             this.getTipoProcesoXpiezaMaquina(value,this.state.idMaquina)
         }
@@ -388,10 +393,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(json=>{
             this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[],idMaquina:''})
         })
-        .catch(e=>{
-            // if(e.name === 'AbortError') return
-            // throw Error
-        })
+        .catch(e=>{  })
     }
     getPiezasXmaquina = idMaquina =>{
         fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}`,{signal:this.controller.signal},{
@@ -403,10 +405,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecPiezas:json,vecMoldes:[],idMolde:'',idPieza:''}) })
-        .catch(e=>{
-            // if(e.name === 'AbortError') return
-            // throw Error
-        })
+        .catch(e=>{  })
     }
     getMoldesXpieza = idPieza =>{
         fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{signal:this.controller.signal},{
@@ -418,10 +417,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{ return dato.json() })
         .then(json=>{ return this.setState({vecMoldes:json,idMolde:''}) })
-        .catch(e=>{
-            // if(e.name === 'AbortError') return
-            // throw Error
-        })
+        .catch(e=>{  })
     }
     getParadasMaquina = () =>{
         fetch('https://ems-node-api.herokuapp.com/api/paradasMaquina',{signal:this.controller.signal},{
@@ -434,15 +430,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
         .then(dato=>{return dato.json()})
         .then(json=>{
             this.setState({vecParadasMaquina:json})
-            try{
-                return this.cbx_paradasMaquina.current.value = undefined
-            }
+            try{  return this.cbx_paradasMaquina.current.value = undefined }
             catch(e){}
         })
-        .catch(e=>{
-            // if(e.name === 'AbortError') return
-            // throw Error
-        })
+        .catch(e=>{  })
     }
     getTurnos = () =>{
         fetch(`https://ems-node-api.herokuapp.com/api/turnos`,{signal:this.controller.signal},{
@@ -454,10 +445,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
-        .catch(e=>{
-            // if(e.name === 'AbortError') return
-            // throw Error
-        })
+        .catch(e=>{   })
     }
     getDefectos = () =>{
         fetch('https://ems-node-api.herokuapp.com/api/defectos',{signal:this.controller.signal},{
@@ -469,11 +457,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{this.setState({vecDefectos:json})})
-        .catch(e=>{
-            // if(e.name === 'AbortError'){
-            //     throw Error
-           // }
-        })
+        .catch(e=>{    })
     }
     getTrabajadores = () =>{
         fetch('https://ems-node-api.herokuapp.com/api/trabajadores',{signal:this.controller.signal},{
@@ -485,11 +469,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{this.setState({vecOperariosCombo:json})})
-        .catch(err=>{
-            // if(err.name === 'AbortError'){
-            //     throw Error
-            // }
-        })
+        .catch(err=>{  })
     }
     useStyles = makeStyles(theme => ({
         root: {
@@ -541,28 +521,94 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecParadasMaquinaSeleccionada
         }
         var valid = true
-        var nombreOperarioMasrechazoQueProduccion = ''
-        const validacion = () => {
-            if( fechaProduccion >= fechaFundicion ){ valid = false }
-            else  if(HoraInicioProduccion !== '06:00' && HoraFinProduccion !== ' 06:00' && HoraInicioProduccion === HoraFinProduccion) { valid = false }
-            else if (vecOperarios.length >0) { valid = false  }
-            vecOperarios.forEach(o=>{
+
+        const validacion = () => {console.log(vecOperarios.length)
+            if( fechaProduccion < fechaFundicion ){
+                this.props.enqueueSnackbar('Verifique que la fecha de Produccion sea Posterior o igual a la de fundicion', { variant: 'error'})
+                var dtp_fechaProduccion = document.getElementById('dtp_fechaProduccion')
+                dtp_fechaProduccion.focus()
+                dtp_fechaProduccion.select()
+                window.scroll({
+                    top: 0,
+                    left: 0,
+                    behavior: 'smooth'
+                })
+                // dtp_fechaProduccion.scrollLeft = 0
+                return false
+            }
+            else  if(HoraInicioProduccion !== '06:00' && HoraFinProduccion !== ' 06:00' && HoraInicioProduccion === HoraFinProduccion) {
+                var dtp_idHoraIniciuoProduccion = document.getElementById('idHoraIniciuoProduccion')
+                dtp_idHoraIniciuoProduccion.focus()
+                dtp_idHoraIniciuoProduccion.select()
+                this.props.enqueueSnackbar('No puede tener horas de inicio y fin  iguales', { variant: 'error'})
+                return false
+            }
+            if(idOperacion === '' ){
+                this.props.enqueueSnackbar('Seleccione una operacion  ', { variant: 'error',preventDuplicate: true})
+                return false
+            }
+            if(idMaquina === '' ){
+                this.props.enqueueSnackbar('Selecciones una maquina', { variant: 'error',preventDuplicate: true})
+                return false
+            }
+            if(idPieza === '' ){
+                this.props.enqueueSnackbar('Seleccione una pieza ', { variant: 'error',preventDuplicate: true})
+                return false
+            }
+            if(idMolde === '' ){
+                this.props.enqueueSnackbar('Seleccione un molde ', { variant: 'error',preventDuplicate: true})
+                return false
+            }
+            if(idTipoProceso === '' ){
+                this.props.enqueueSnackbar('Seleccione un proceso ', { variant: 'error',preventDuplicate: true})
+                return false
+            }
+            else if (vecOperarios.length <= 0) {
+                this.props.enqueueSnackbar('Debe ingresar al menos un operario', { variant: 'error'})
+                return false
+            }
+           
+            vecOperarios.map((o,indexOperario)=>{
                 var cantRechazo = 0
+                if(o.idTurno === ''){
+                    var cbx_idTurno = document.getElementById(`idTurno ${indexOperario}`)
+                    cbx_idTurno.focus()
+                    cbx_idTurno.click()
+                    this.props.enqueueSnackbar('Seleccione el turno ', { variant: 'error',preventDuplicate: true})
+                    return false
+                }
                 if(o.vecRechazo.length>0){
-                    o.vecRechazo.forEach(r=>{
+                    o.vecRechazo.map((r,indexRechazo)=>{
                         cantRechazo += parseInt(r.cantidadRechazo)
                         if(r.vecZonas.length === 0){
-                            valid = false
-                            console.log('no tiene zona ')
+                            var letraZona = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
+                            letraZona.focus()
+                            letraZona.select()
+                            this.props.enqueueSnackbar('Verifique que todos los rechazos tengan al menos una zona cargada ', { variant: 'error',preventDuplicate: true})
+                            return false
                         }
                     })
                 }
                 if(cantRechazo > parseInt(o.produccion)){
-                    nombreOperarioMasrechazoQueProduccion = o.nombre
-                    console.log('hay mas rechazos que produccion', nombreOperarioMasrechazoQueProduccion)
-                    valid = false
+                    this.props.enqueueSnackbar('Revise los rechazos porque hay mas que la cantidad producida ', { variant: 'error',preventDuplicate: true})
+                    return false
                 }
             })
+
+            if(vecOperarios.length > 0){
+                vecOperarios.forEach( o=>{
+                    if( o.idTurno  === ''){
+                        valid = false
+                    }
+                    if(o.vecRechazo.length > 0){
+                        o.vecRechazo.forEach(r=>{
+                            if(r.tipo === ''){
+                                valid =false
+                            }
+                        })
+                    }
+                })
+            }
         }
         validacion()
         // fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
@@ -590,7 +636,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         const dato = {
             idPieza,
             idMaquina
-        } 
+        }
         fetch(`https://ems-node-api.herokuapp.com/api/tiposProceso`, {
             method: 'POST',
             body: JSON.stringify(dato),
@@ -613,7 +659,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.getTrabajadores()
     }
     componentWillUnmount(){
-      
         this.controller.abort()
     }
     render() {
@@ -633,7 +678,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 variant='standard'
                                                 margin="none"
                                                 id="dtp_fechaProduccion"
-                                                label="Fecha Produccion"
+                                                label="Fecha Procesado"
                                                 format="dd/MM/yyyy"
                                                 value={this.state.fechaProduccion}
                                                 onChange={this.handleDateChange}
@@ -836,7 +881,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 required
                                                                                 labelId='idTurnoLabel'
                                                                                 onChange={this.capturaDatos}
-                                                                                id='idTurno'
+                                                                                id={`idTurno ${i}`}
                                                                                 value={this.state.vecOperarios[i].idTurno}
                                                                                 name={`idTurno ${i}`}
                                                                             >
@@ -1253,4 +1298,4 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
 }
 
-export default AltaPlanillaPRODUCCION;
+export default withSnackbar(AltaPlanillaPRODUCCION)

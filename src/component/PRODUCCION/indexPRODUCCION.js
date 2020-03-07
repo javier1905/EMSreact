@@ -5,7 +5,8 @@ import Alta from './ALTA/indexALTA'
 import Baja from './BAJA/indexBAJA'
 import Lista from './LISTA/indexLISTA'
 import {Grid} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
+import { SnackbarProvider } from 'notistack'
 
 class indexPRODUCCION extends React.Component {
     constructor(props) {
@@ -32,7 +33,9 @@ class indexPRODUCCION extends React.Component {
                 </Grid>
                 <Grid item sm={10} xs={6}>
                     <Route path={`${this.props.match.path}/alta`}>
+                    <SnackbarProvider maxSnack={3}>
                         <Alta/>
+                    </SnackbarProvider>
                     </Route>
                     <Route path={`${this.props.match.path}/baja`}>
                         <Baja/>
