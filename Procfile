@@ -1,1 +1,1 @@
-web: build/static/media/index.html
+web: build/static
