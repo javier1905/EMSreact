@@ -66,10 +66,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.txt_campoIdParadaMaquina = React.createRef()
         this.controller = new AbortController()
     }
-
-
     capturaParaMaquina = e =>{
-        const {campoIdParaMaquina,campoNombreParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
+        const {HoraInicioProduccion, HoraFinProduccion,vecParadasMaquinaSeleccionada , campoIdParaMaquina,campoNombreParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
         var val = true
         var ul = document.createElement('ul')
         var paradaDeMaquinaSeleccionada
@@ -79,6 +77,25 @@ class AltaPlanillaPRODUCCION extends React.Component {
             if(horaInicio === '06:00' && horaFin === '06:00'){  return 24 * 60  }
             else if((hHasta-hDesde)/1000 < 0){ return (hHasta-hDesde)/1000 + 1440 }
             else{ return (hHasta-hDesde)/1000 }
+        }
+        var minTotalesPM = 0
+        if( HoraInicioProduccion === '' || HoraFinProduccion === ''){
+            var li8 = document.createElement('li')
+            li8.innerHTML = 'Ingrese primero la hora de inicio y produccion antes'
+            ul.append(li8)
+            val=false
+        }
+        else{
+            vecParadasMaquinaSeleccionada.forEach(pmSelect =>{
+                minTotalesPM +=  parseInt(pmSelect.duracionParadaMaquina)
+            })
+            minTotalesPM += direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina)
+            if(minTotalesPM >  direrenciaEnMinutos(HoraInicioProduccion, HoraFinProduccion) ){
+                var li0 = document.createElement('li')
+                li0.innerHTML = 'El tiempo de parada de maquina exede al tiempo de produccion'
+                ul.append(li0)
+                val=false
+            }
         }
         if(campoDesdeParadaMaquina === ''){
             var li2 = document.createElement('li')
@@ -157,6 +174,16 @@ class AltaPlanillaPRODUCCION extends React.Component {
             produccion:'',
             calorias:'',
             vecRechazo:[]
+        }
+        if(Array.isArray(this.state.vecTurnos)){
+            if(this.state.vecTurnos.length === 0 ){
+                this.getTurnos()
+            }
+        }
+        if(Array.isArray(this.state.vecOperariosCombo)){
+            if(this.state.vecOperariosCombo.length === 0 ){
+                this.getTrabajadores()
+            }
         }
         let newVecOperarios = [...this.state.vecOperarios,Op]
         this.setState({vecOperarios:newVecOperarios})
@@ -329,7 +356,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     vecOperariosCache[indexOperario].nombre = value
                 }
             }
-            if(nombre.split(' ')[0] === 'idTurno'){ vecOperariosCache[indexOperario].idTurno=value }
+            if(nombre.split(' ')[0] === 'idTurno'){ 
+                var turno
+                if( Array.isArray (this.state.vecTurnos) ){
+                turno = this.state.vecTurnos.find( t =>  t.idTurno === parseInt(value) )
+                }
+                if(turno.hsInicioTurno){
+                    vecOperariosCache[indexOperario].horaInicio = String(turno.hsInicioTurno).substring(11,16)
+                    vecOperariosCache[indexOperario].horaFin =  String(turno.hsFinTurno).substring(11,16)
+                    vecOperariosCache[indexOperario].idTurno=value
+                }
+            }
             if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
             if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
             if(nombre.split(' ')[0] === 'caloriasOperario'){
@@ -445,7 +482,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
-        .catch(e=>{   })
+        .catch(e=>{ this.setState({vecTurnos:[],idTurno:''}) })
     }
     getDefectos = () =>{
         fetch('https://ems-node-api.herokuapp.com/api/defectos',{signal:this.controller.signal},{
@@ -469,7 +506,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         })
         .then(dato=>{return dato.json()})
         .then(json=>{this.setState({vecOperariosCombo:json})})
-        .catch(err=>{  })
+        .catch(err=>{ this.setState({vecOperariosCombo:[]}) })
     }
     useStyles = makeStyles(theme => ({
         root: {
@@ -549,17 +586,24 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 dtp_horaFinProduccion.select()
                 return false
             }
-            if( fechaProduccion < fechaFundicion ){
-                this.props.enqueueSnackbar('Verifique que la fecha de Produccion sea Posterior o igual a la de fundicion', { variant: 'error'})
-                dtp_fechaProduccion.focus()
-                dtp_fechaProduccion.select()
-                window.scroll({
-                    top: 0,
-                    left: 0,
-                    behavior: 'smooth'
-                })
-                // dtp_fechaProduccion.scrollLeft = 0
-                return false
+            const comparaIgualdadFechas = ( fechaUno, FechaDos ) => {
+                var fe_uno = `${fechaUno.getDate()}${fechaUno.getMonth()+1}${fechaUno.getFullYear()}`
+                var fe_dos = `${FechaDos.getDate()}${FechaDos.getMonth()+1}${FechaDos.getFullYear()}`
+                if(fe_uno === fe_dos) { return true} else { return false}
+            }
+            if(!comparaIgualdadFechas(fechaProduccion, fechaFundicion )){
+                if((fechaProduccion - fechaFundicion) < 0 ){
+                    this.props.enqueueSnackbar('Verifique que la fecha de Produccion sea Posterior o igual a la de fundicion', { variant: 'error'})
+                    dtp_fechaProduccion.focus()
+                    dtp_fechaProduccion.select()
+                    window.scroll({
+                        top: 0,
+                        left: 0,
+                        behavior: 'smooth'
+                    })
+                    // dtp_fechaProduccion.scrollLeft = 0
+                    return false
+                }
             }
             else  if(HoraInicioProduccion !== '06:00' && HoraFinProduccion !== ' 06:00' && HoraInicioProduccion === HoraFinProduccion) {
                 var dtp_idHoraIniciuoProduccion = document.getElementById('idHoraIniciuoProduccion')
@@ -701,7 +745,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         'Content-Type': 'Application/json'
                     })
                 })
-                .then(dato => { return dato.json })
+                .then(dato => { return dato.json() })
                 .then(json =>{
                     this.props.enqueueSnackbar(`${json.mensaje}`,
                     {
