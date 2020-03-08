@@ -1,1 +1,1 @@
-web: build/static
+web: bin/boot
