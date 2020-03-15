@@ -33,7 +33,7 @@ class VerificaLOGIN extends React.Component
                 })
             }
             else{ this.setState({comprobacion:false}) }
-        }).catch(e=>console.log(e))
+        }).catch( e=> this.setState ( {comprobacion:false } ) )
     }
     componentDidMount(){ this.ve() }
     componentDidUpdate(){ this.props.findUsuarioLOGIN(this.state.user) }
