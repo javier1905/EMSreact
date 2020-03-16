@@ -5,7 +5,7 @@ import PlanillaProduccion from './planillaProduccion'
 import Moment from 'moment'
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
-
+import { Table } from 'react-bootstrap'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -141,8 +141,8 @@ const ListaPlanilasProduccion = ( props ) => {
                     </MuiPickersUtilsProvider>
                 </div>
                 <div>
-                    <div style = {{height:500,overflow:'scroll',overflowX: 'hidden' , width : '60%' , float : "left"}} >
-                        <table border={1}>
+                    <div style = {{height:500,overflow:'scroll',overflowX: 'hidden' , width : '60%' , float : "left" , boxSizing : 'border-box' , padding : 10}} >
+                        <Table responsive  hover>
                             <thead>
                                 <tr>
                                     <th style = { { padding : 10 }}>FECHA FUNDICION</th>
@@ -167,14 +167,14 @@ const ListaPlanilasProduccion = ( props ) => {
                                     <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>Sin Registros</td></tr>
                                 }
                             </tbody>
-                        </table>
+                        </Table>
                     </div>
-                    <div style = { { width : '40%' , float : "right" , background : 'blue'}}>
+                    <div style = { { width : '40%' , float : "right" , background : 'white' , boxSizing : 'border-box' , padding : 10}}>
                         {
                             planillaSeleccionada ?
                                 <div>
                                         <div>
-                                            <table>
+                                            <Table responsive size = 'sm'>
                                                     <thead>
                                                         <tr>
                                                             <th>FECHA FUNDICION</th>
@@ -187,10 +187,10 @@ const ListaPlanilasProduccion = ( props ) => {
                                                             <td>{ new Moment ( planillaSeleccionada.fechaProduccion ).format ( "DD/MM/YYYY" ) }</td>
                                                         </tr>
                                                     </tbody>
-                                                </table>
+                                                </Table>
                                         </div>
                                         <div>
-                                            <table>
+                                            <Table responsive size = 'sm' >
                                                 <thead>
                                                     <tr>
                                                         <th>MAQUINA</th>
@@ -205,7 +205,7 @@ const ListaPlanilasProduccion = ( props ) => {
                                                         <td>{ planillaSeleccionada.nombreMolde }</td>
                                                     </tr>
                                                 </tbody>
-                                            </table>
+                                            </Table>
                                         </div>
                                         {
                                             planillaSeleccionada.vecOperarios.map ( ( o , i ) => {
@@ -215,7 +215,7 @@ const ListaPlanilasProduccion = ( props ) => {
                                                             <h6>{ ` ${ o.apellidoTrabajador } ${ o.nombreTrabajador }` }</h6>
                                                         </div>
                                                         <div>
-                                                            <table>
+                                                            <Table responsive size = 'sm'>
                                                                 <thead>
                                                                     <tr>
                                                                         <th>TURNO</th>
@@ -230,28 +230,28 @@ const ListaPlanilasProduccion = ( props ) => {
                                                                         <td>{ o.horaFin }</td>
                                                                     </tr>
                                                                 </tbody>
-                                                            </table>
+                                                            </Table>
                                                         </div>
                                                         {
                                                             o.vecRechazo.map ( ( r , indexRechazo ) => {
                                                                 return (
                                                                     <div key = { indexRechazo }>
-                                                                                                                                    <table>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>TURNO</th>
-                                                                        <th>HS INICIO</th>
-                                                                        <th>HS FIN</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>{ o.turnoTrabajador }</td>
-                                                                        <td>{ o.horaInicio }</td>
-                                                                        <td>{ o.horaFin }</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
+                                                                        <Table responsive size = 'sm'>
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>TURNO</th>
+                                                                                    <th>HS INICIO</th>
+                                                                                    <th>HS FIN</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td>{ o.turnoTrabajador }</td>
+                                                                                    <td>{ o.horaInicio }</td>
+                                                                                    <td>{ o.horaFin }</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </Table>
                                                                     </div>
                                                                 )
                                                             })

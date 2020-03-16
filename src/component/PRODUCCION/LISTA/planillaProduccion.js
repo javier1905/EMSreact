@@ -1,5 +1,6 @@
 import React ,{ useState } from 'react'
 import Moment from 'moment'
+import { Button } from 'react-bootstrap'
 const PlanillaProduccion = ( props ) => {
     const [ modeDelete , setModeDelete ] = useState ( false )
     const deletePlanillaProduccion = ( idPlanilla ) => {
@@ -24,7 +25,7 @@ const PlanillaProduccion = ( props ) => {
         return { totalProduccion , totalRechazo , totalScrap }
     }
     return (
-        <tr style={ { padding : 20 } } onClick = { e => { props.filtraPlanilla( props.planilla.idPlanilla ) } } >
+        <tr style={ { padding : 20 ,cursor : 'pointer' } } onClick = { e => { props.filtraPlanilla( props.planilla.idPlanilla ) } } >
             {
                 ! modeDelete ?
                     <>
@@ -36,14 +37,14 @@ const PlanillaProduccion = ( props ) => {
                         <td> {calculaProduccion().totalProduccion } </td>
                         <td> {calculaProduccion().totalRechazo } </td>
                         <td> {calculaProduccion().totalScrap } </td>
-                        <td><button onClick={ e => setModeDelete( true ) }>Editar</button></td>
-                        <td><button onClick={ e => setModeDelete( true ) }>Eliminar</button></td>
+                        <td><Button onClick={ e => setModeDelete( true ) }>Editar</Button></td>
+                        <td><Button onClick={ e => setModeDelete( true ) }>Eliminar</Button></td>
                     </>
                     :
                     <td colSpan = { 10 }>
                         <div>¿Esta seguro de eliminar esta planilla ?</div>
-                        <button onClick={ e => deletePlanillaProduccion( props.planilla.idPlanilla ) } >eliminar</button>
-                        <button  onClick={ e=> setModeDelete ( false ) } > cancelar </button>
+                        <Button variant = 'primary' onClick={ e => deletePlanillaProduccion( props.planilla.idPlanilla ) } >eliminar</Button>
+                        <Button variant = 'secondary' onClick={ e=> setModeDelete ( false ) } > cancelar </Button>
                     </td>
             }
         </tr>
