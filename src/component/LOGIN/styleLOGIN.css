@@ -24,3 +24,6 @@
 #mensaje{
     margin-top:20px
 }
+#ContenedorLogin{
+    box-shadow: black 2px 2px 2px;
+}
