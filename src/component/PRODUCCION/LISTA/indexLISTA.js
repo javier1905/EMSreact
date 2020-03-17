@@ -6,6 +6,7 @@ import Moment from 'moment'
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import { Table } from 'react-bootstrap'
+import ModalAltaPlanilla from './modalALTAPLANILLA'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -29,10 +30,10 @@ const controller = new AbortController()
 const ListaPlanilasProduccion = ( props ) => {
     var classes = useStyles()
     const [ vecPlanillasProduccion , setVecPlanillasProduccion ] = useState ( [  ] )
-    const [ fechaDesdeProduccion , setFechaDesdeProduccion] = useState ( null )
-    const [ fechaHastaProduccion , setFechaHastaProduccion] = useState ( null )
-    const [ fechaDesdeFundicion , setFechaDesdeFundicion] = useState ( null )
-    const [ fechaHastaFundicon , setFechaHastaFundicon] = useState ( null )
+    const [ fechaDesdeProduccion , setFechaDesdeProduccion] = useState ( new Moment (  ).add ( -1 , 'month' ) )
+    const [ fechaHastaProduccion , setFechaHastaProduccion] = useState ( new Date(  ) )
+    const [ fechaDesdeFundicion , setFechaDesdeFundicion] = useState ( new Moment (  ).add ( -1 , 'month' ) )
+    const [ fechaHastaFundicon , setFechaHastaFundicon] = useState ( new Date(  ) )
     const [ planillaSeleccionada , setPlanillaSeleccionada] = useState ( null )
     // const [ idMaquina , setIdMaquina] = useState ( '' )
     // const [ idPieza , setIdPieza] = useState ( '' )
@@ -69,8 +70,29 @@ const ListaPlanilasProduccion = ( props ) => {
         setPlanillaSeleccionada( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
         console.log ( planillaSeleccionada )
     }
+    const  actualizaListaPlanillas = ( ) => {
+        const filtros = { fechaDesdeProduccion: new Moment(fechaDesdeProduccion).format("DD/MM/YYYY") ,
+        fechaHastaProduccion: new Moment(fechaHastaProduccion).format("DD/MM/YYYY") ,
+            fechaDesdeFundicion: new Moment(fechaDesdeFundicion).format("DD/MM/YYYY") ,
+            fechaHastaFundicon: new Moment(fechaHastaFundicon).format("DD/MM/YYYY") , idMaquina :null , idPieza:null , idMolde:null , idTipoProceso:null , idTipoMaquina:null  
+        }
+            // const filtros = { fechaDesdeProduccion , fechaHastaProduccion ,
+            //     fechaDesdeFundicion , fechaHastaFundicon , idMaquina , idPieza , idMolde , idTipoProceso , idTipoMaquina  }
+            fetch ("https://ems-node-api.herokuapp.com/api/planillasProduccion/listado" ,  {
+            method : 'POST' ,
+            body : JSON.stringify( filtros ) ,
+            headers : new Headers ( {
+                "Accept" : "Application/json" ,
+                "Content-Type" : "Application/json"
+            })
+        })
+        .then ( dato => { return dato.json(  ) } )
+        .then ( json => { setVecPlanillasProduccion ( json ) } )
+        filtraPlanilla (  )
+    }
     return (
         <div>
+            <ModalAltaPlanilla/>
             <Paper className={classes.root}>
                 <div style={{background:'white',padding:20}}>
                     <h2>Listado Planilla Produccion</h2>
@@ -161,7 +183,7 @@ const ListaPlanilasProduccion = ( props ) => {
                                 {
                                     Array.isArray ( vecPlanillasProduccion ) && vecPlanillasProduccion.length !== 0 ?
                                     vecPlanillasProduccion.map ( ( planilla , indexPlanilla ) => {
-                                        return < PlanillaProduccion  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
+                                        return < PlanillaProduccion actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
                                     } )
                                     :
                                     <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>Sin Registros</td></tr>
@@ -207,10 +229,11 @@ const ListaPlanilasProduccion = ( props ) => {
                                                 </tbody>
                                             </Table>
                                         </div>
+                                        <h6>Operarios</h6>
                                         {
                                             planillaSeleccionada.vecOperarios.map ( ( o , i ) => {
                                                 return (
-                                                    <div key = { i }>
+                                                    <div key = { i } style = { { borderTop : 'grey solid 2px' , paddingTop : '10px' } }>
                                                         <div>
                                                             <h6>{ ` ${ o.apellidoTrabajador } ${ o.nombreTrabajador }` }</h6>
                                                         </div>
@@ -221,6 +244,8 @@ const ListaPlanilasProduccion = ( props ) => {
                                                                         <th>TURNO</th>
                                                                         <th>HS INICIO</th>
                                                                         <th>HS FIN</th>
+                                                                        <th>PRODUCCION</th>
+                                                                        <th>CALORIAS</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -228,38 +253,100 @@ const ListaPlanilasProduccion = ( props ) => {
                                                                         <td>{ o.turnoTrabajador }</td>
                                                                         <td>{ o.horaInicio }</td>
                                                                         <td>{ o.horaFin }</td>
+                                                                        <td>{ o.produccion }</td>
+                                                                        <td>{ o.calorias }</td>
                                                                     </tr>
                                                                 </tbody>
                                                             </Table>
                                                         </div>
-                                                        {
-                                                            o.vecRechazo.map ( ( r , indexRechazo ) => {
-                                                                return (
-                                                                    <div key = { indexRechazo }>
-                                                                        <Table responsive size = 'sm'>
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>TURNO</th>
-                                                                                    <th>HS INICIO</th>
-                                                                                    <th>HS FIN</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td>{ o.turnoTrabajador }</td>
-                                                                                    <td>{ o.horaInicio }</td>
-                                                                                    <td>{ o.horaFin }</td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </Table>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        }
+                                                        <div>
+                                                                    {
+                                                                        o.vecRechazo.length > 0 &&
+                                                                        <div style = { { borderTop : 'grey solid 1px' , paddingTop : 10} }>
+                                                                            <h6>Rechazos</h6>
+                                                                            {
+                                                                                o.vecRechazo.map ( ( r , indexRechazo ) => {
+                                                                                    return (
+                                                                                        <div key = { indexRechazo } >
+                                                                                            <Table responsive size = 'sm' >
+                                                                                                <thead>
+                                                                                                    <tr>
+                                                                                                        <th>CAUSA</th>
+                                                                                                        <th>TIPO</th>
+                                                                                                        <th>CANTIDAD</th>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                <tr>
+                                                                                                    <td>{ r.nombreRechazo }</td>
+                                                                                                    <td style = { { color : r.tipo ? 'red' : 'green' } } >{ r.tipo ? 'SCRAP' : 'RECHAZO' }</td>
+                                                                                                    <td>{ r.cantidadRechazo }</td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </Table>
+                                                                                        <Table responsive size = 'sm' key = { indexRechazo } >
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th>ZONA</th>
+                                                                                                    <th>CANTIDAD</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                {
+                                                                                                    r.vecZonas.map ( ( z , indexZona ) => {
+                                                                                                        return (
+                                                                                                            <tr key = { indexZona }>
+                                                                                                                <td>{ `${ z.letra }${ z.numero }` }</td>
+                                                                                                                <td>{ z.cantidad }</td>
+                                                                                                            </tr>
+                                                                                                        )
+                                                                                                    } )
+                                                                                                }
+                                                                                            </tbody>
+                                                                                        </Table>
+                                                                                    </div>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                        </div>
                                                     </div>
                                                 )
                                             } )
                                         }
+                                        <div style = { { borderTop : 'grey solid 3px' , paddingTop : '10px' } }>
+                                            {
+                                                planillaSeleccionada.vecParadasMaquinaSeleccionada.length > 0 &&
+                                                <div>
+                                                    <h6>Paradas de  maquina</h6>
+                                                    <Table responsive size = 'sm' >
+                                                        <thead>
+                                                            <tr>
+                                                                <th>MOTIVO</th>
+                                                                <th>DESDE</th>
+                                                                <th>HASTA</th>
+                                                                <th>TIPO</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {
+                                                                planillaSeleccionada.vecParadasMaquinaSeleccionada.map ( ( pm , indexPm ) => {
+                                                                    return(
+                                                                                <tr key = { indexPm }>
+                                                                                    <td>{ pm.nombreParadaMaquina }</td>
+                                                                                    <td>{ pm.desdeParadaMaquina }</td>
+                                                                                    <td>{ pm.hastaParadaMaquina }</td>
+                                                                                    <td style = { { color : pm.tipoParadaMaquina ? 'red' : 'green'  } }>{ pm.tipoParadaMaquina ? 'NO PROG' : 'PROG' }</td>
+                                                                                </tr>
+                                                                    )
+                                                                } )
+                                                            }
+                                                        </tbody>
+                                                    </Table>
+                                                </div>
+                                            }
+                                        </div>
                                 </div>
                                 :
                                 <div>No found</div>

@@ -41,7 +41,9 @@ class indexPRODUCCION extends React.Component {
                         <Baja/>
                     </Route>
                     <Route path={`${this.props.match.path}/lista`}>
-                        <Lista/>
+                        <SnackbarProvider maxSnack={3}>
+                            <Lista/>
+                        </SnackbarProvider>
                     </Route>
                 </Grid>
                 <div style={{clear:'both'}}></div>
