@@ -7,6 +7,9 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers
 import DateFnsUtils from '@date-io/date-fns'
 import { Table } from 'react-bootstrap'
 import ModalAltaPlanilla from './modalALTAPLANILLA'
+import AddlIcon from '@material-ui/icons/Add'
+import Tooltip from '@material-ui/core/Tooltip'
+import IconButton from '@material-ui/core/IconButton'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,6 +38,7 @@ const ListaPlanilasProduccion = ( props ) => {
     const [ fechaDesdeFundicion , setFechaDesdeFundicion] = useState ( new Moment (  ).add ( -1 , 'month' ) )
     const [ fechaHastaFundicon , setFechaHastaFundicon] = useState ( new Date(  ) )
     const [ planillaSeleccionada , setPlanillaSeleccionada] = useState ( null )
+    const [ show , setShow] = useState ( false )
     // const [ idMaquina , setIdMaquina] = useState ( '' )
     // const [ idPieza , setIdPieza] = useState ( '' )
     // const [ idMolde , setIdMolde] = useState ( '' )
@@ -90,9 +94,12 @@ const ListaPlanilasProduccion = ( props ) => {
         .then ( json => { setVecPlanillasProduccion ( json ) } )
         filtraPlanilla (  )
     }
+    const handleClose = () => {
+        setShow ( false )
+    }
     return (
         <div>
-            <ModalAltaPlanilla/>
+            <ModalAltaPlanilla show = { show } handleClose = { handleClose }/>
             <Paper className={classes.root}>
                 <div style={{background:'white',padding:20}}>
                     <h2>Listado Planilla Produccion</h2>
@@ -161,6 +168,13 @@ const ListaPlanilasProduccion = ( props ) => {
                                                 }}
                                             />
                     </MuiPickersUtilsProvider>
+                </div>
+                <div>
+                    <Tooltip title="Add">
+                        <IconButton onClick={ e => setShow ( true ) } aria-label="delete" >
+                            <AddlIcon />
+                        </IconButton>
+                    </Tooltip>
                 </div>
                 <div>
                     <div style = {{height:500,overflow:'scroll',overflowX: 'hidden' , width : '60%' , float : "left" , boxSizing : 'border-box' , padding : 10}} >

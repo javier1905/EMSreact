@@ -1,46 +1,33 @@
 import React  from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
+import DialogActions from '@material-ui/core/DialogActions'
+import Alta  from  '../ALTA/indexALTA'
 
 export default function ModalAltaPlanilla( props ) {
-  const [open, setOpen] = React.useState(true);
+  const [ancho, setAncho] = React.useState(window.innerWidth)
 
-//   const handleClickOpen = () => {
-//     setOpen(true);
-//   }
-
-//   useEffect ( () => {
-//     setOpen ( props.open)
-//   } , [  ])
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+//    const caturaancho = () => {
+//   window.addEventListener ( 'resize' , (  ) => {
+//     setAncho ( window.innerWidth )
+//     console.log(ancho)
+//   } )
+// }
   return (
-    <div>
+    <div style = { { width : ancho } }>
       <Dialog
-        open={open}
-        onClose={handleClose}
+        style = { { width : ancho } }
+        open={props.show}
+        onClose={ props.handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Alta Planilla Produccion"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-           FORMULARIO
-          </DialogContentText>
-        </DialogContent>
+        <Alta/>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={props.handleClose} color="primary">
             Disagree
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
+          <Button onClick={props.handleClose} color="primary" autoFocus>
             Agree
           </Button>
         </DialogActions>

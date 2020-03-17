@@ -11,17 +11,20 @@ class indexLOGIN extends React.Component {
     constructor(props){
         super(props)
         this.state={
+            alto : window.innerHeight 
         }
+        window.addEventListener( 'resize' , ( document , e) => {
+            this.setState( {alto : window.innerHeight} )
+        } )
     }
-    obtieneLargoWindows(){ return window.screen.height }
     render() {
         return (
-            <div id='ContenedorLogin' style={{height:this.obtieneLargoWindows()+'px'}}>
-                <div id='Slider' style={{height:this.obtieneLargoWindows()+'px'}}>
+            <div id='ContenedorLogin' style={{height: this.state.alto}}>
+                <div id='Slider' style={{height: this.state.alto}}>
                     <Carousel >
                         <Carousel.Item >
                             <img
-                            style={{height:this.obtieneLargoWindows()+'px'}}
+                            style={{height: this.state.alto}}
                             className="d-block w-100"
                             src= { granallado }
                             alt="First slide"
@@ -33,7 +36,7 @@ class indexLOGIN extends React.Component {
                         </Carousel.Item>
                         <Carousel.Item>
                             <img
-                            style={{height:this.obtieneLargoWindows()+'px'}}
+                            style={{height: this.state.alto}}
                             className="d-block w-100"
                             src= { mecanizado }
                             alt="Third slide"
@@ -45,7 +48,7 @@ class indexLOGIN extends React.Component {
                         </Carousel.Item>
                         <Carousel.Item>
                             <img
-                            style={{height:this.obtieneLargoWindows()+'px'}}
+                            style={{height: this.state.alto}}
                             className="d-block w-100"
                             src= { inyectora }
                             alt="Third slide"
@@ -58,7 +61,7 @@ class indexLOGIN extends React.Component {
                         </Carousel.Item>
                         </Carousel>
                     </div>
-                <div className="FormLogin" style={{height:this.obtieneLargoWindows()+'px'}}>
+                <div className="FormLogin" style={{height: this.state.alto}}>
                     <FormLOGIN/>
                 </div>
             </div>

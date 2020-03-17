@@ -22,7 +22,7 @@ class indexPRODUCCION extends React.Component {
             textAlign: 'center',
             color: theme.palette.text.secondary,
         },
-    }));
+    }))
     render() {
         // const classes = this.useStyles
         return (
