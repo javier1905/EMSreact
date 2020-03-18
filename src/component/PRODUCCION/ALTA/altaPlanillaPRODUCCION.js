@@ -800,7 +800,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             idPieza,
             idMaquina
         }
-        fetch(`https://ems-node-api.herokuapp.com/api/tiposProceso`, {
+        fetch(`https://ems-node-api.herokuapp.com/api/tiposProceso`, { signal : this.controller.signal } , {
             method: 'POST',
             body: JSON.stringify(dato),
             headers: {
@@ -825,12 +825,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
     render() {
         const classes = this.useStyles
         return (
-            <Box  boxShadow={1}  bgcolor="background.default"  m={0} p={3}>
+            <Box  boxShadow={1}  bgcolor="background.default"  m={0} p={3} >
                 <Form onSubmit={this.miSubmit}>
                         <div className={classes.root}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12}> {/* INICIO CONTENEDOR FECHAS PRODUCCION Y FUNDICION */}
-                                        <h2 style={{marginTop:'10px'}}>PlanillaProduccion</h2>
                                         <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
                                             <KeyboardDatePicker
                                                 style={{marginRight:'10px',width:'180px'}}

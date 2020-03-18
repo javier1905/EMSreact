@@ -1,37 +1,41 @@
-import React  from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions'
+
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles'
+import Dialog from '@material-ui/core/Dialog'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import Typography from '@material-ui/core/Typography'
+import CloseIcon from '@material-ui/icons/Close'
+import Slide from '@material-ui/core/Slide'
 import Alta  from  '../ALTA/indexALTA'
-
-export default function ModalAltaPlanilla( props ) {
-  const [ancho, setAncho] = React.useState(window.innerWidth)
-
-//    const caturaancho = () => {
-//   window.addEventListener ( 'resize' , (  ) => {
-//     setAncho ( window.innerWidth )
-//     console.log(ancho)
-//   } )
-// }
+const useStyles = makeStyles(theme => ({
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(0),
+    flex: 1,
+  },
+}))
+const Transition = React.forwardRef ( function Transition( props , ref ) { return <Slide direction="up" ref={ref} {...props} /> } )
+export default function ModalAltaPlanilla ( props ) {
+  const classes = useStyles(  )
   return (
-    <div style = { { width : ancho } }>
-      <Dialog
-        style = { { width : ancho } }
-        open={props.show}
-        onClose={ props.handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <Alta/>
-        <DialogActions>
-          <Button onClick={props.handleClose} color="primary">
-            Disagree
-          </Button>
-          <Button onClick={props.handleClose} color="primary" autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
+    <div>
+      <Dialog fullScreen open = { props.show } onClose = { props.handleClose } TransitionComponent = { Transition }>
+        <AppBar className = { classes.appBar } >
+          <Toolbar>
+            <Typography variant="h3" className = { classes.title } >
+              Planilla Produccion
+            </Typography>
+            <IconButton edge="start" color="inherit" onClick = { props.handleClose } aria-label = "close">
+              <CloseIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+          <Alta/>
       </Dialog>
     </div>
-  );
+  )
 }
