@@ -1,5 +1,4 @@
 import React , { useEffect , useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import PlanillaProduccion from './planillaProduccion'
 import Moment from 'moment'
@@ -14,28 +13,12 @@ import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        flexGrow: 1
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-        marginTop:'none',
-        paddingTop:'none'
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    margin: {
-        margin: theme.spacing(1),
-    }
-}))
-const controller = new AbortController()
+import imgNofound from '../../../Imagenes/noFound.png'
+import Servicios from './serviceLista'
+import estilos from './styleLista'
 
 const ListaPlanilasProduccion = ( props ) => {
-    var classes = useStyles()
+    var classes = estilos (  )
     const [ vecPlanillasProduccion , setVecPlanillasProduccion ] = useState ( [  ] )
     const [ vecOperaciones , setVecOperaciones ] = useState ( [  ] )
     const [ vecMaquinas , setVecMaquinas ] = useState ( [  ] )
@@ -54,54 +37,26 @@ const ListaPlanilasProduccion = ( props ) => {
     const [ idTipoProceso , setIdTipoProceso] = useState ( '' )
     const [ idOperacion , setIdOperacion] = useState ( '' )
     useEffect ( (  ) => {
-        const  getPlanillasProduccion = ( ) => {
-            
-            const filtros = { fechaDesdeProduccion: new Moment(fechaDesdeProduccion).format("DD/MM/YYYY") ,
-            fechaHastaProduccion: new Moment(fechaHastaProduccion).format("DD/MM/YYYY") ,
-                fechaDesdeFundicion: new Moment(fechaDesdeFundicion).format("DD/MM/YYYY") ,
-                fechaHastaFundicon: new Moment(fechaHastaFundicon).format("DD/MM/YYYY") ,
-                idMaquina: idMaquina === '' ? null : idMaquina , idPieza: idPieza === '' ? null : idPieza ,
-                idMolde: idMolde === '' ? null : idMolde , idTipoProceso : idTipoProceso === '' ?null : idTipoProceso  ,
-                idOperacion : idOperacion === '' ? null : idOperacion
-            }
-                fetch ("https://ems-node-api.herokuapp.com/api/planillasProduccion/listado" ,  {
-                method : 'POST' ,
-                body : JSON.stringify( filtros ) ,
-                headers : new Headers ( {
-                    "Accept" : "Application/json" ,
-                    "Content-Type" : "Application/json"
-                })
-            })
-            .then ( dato => { return dato.json(  ) } )
-            .then ( json => { setVecPlanillasProduccion ( json ) } )
+        const planillasProduccion = async ( ) => {
+            const planillaPro = await Servicios.planillasProduccion ( fechaDesdeProduccion , fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon ,
+                idMaquina , idPieza ,  idMolde , idTipoProceso , idOperacion )
+            setVecPlanillasProduccion ( planillaPro )
         }
-        getPlanillasProduccion( )  }
-        , [ fechaDesdeProduccion ,  fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon , idMaquina , idPieza , idMolde , idTipoProceso ,  idOperacion]
+        planillasProduccion (  )
+    }
+        , [ fechaDesdeProduccion ,  fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon , idMaquina , idPieza , idMolde , idTipoProceso ,  idOperacion ]
     )
-
-    const filtraPlanilla = id => {
-        setPlanillaSeleccionada( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
+    const filtraPlanilla = id => { setPlanillaSeleccionada( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
         console.log ( planillaSeleccionada )
     }
     const  actualizaListaPlanillas = ( ) => {
-        const filtros = { fechaDesdeProduccion: new Moment(fechaDesdeProduccion).format("DD/MM/YYYY") ,
-        fechaHastaProduccion: new Moment(fechaHastaProduccion).format("DD/MM/YYYY") ,
-            fechaDesdeFundicion: new Moment(fechaDesdeFundicion).format("DD/MM/YYYY") ,
-            fechaHastaFundicon: new Moment(fechaHastaFundicon).format("DD/MM/YYYY") ,
-            idMaquina: idMaquina === '' ? null : idMaquina , idPieza: idPieza === '' ? null : idPieza ,
-            idMolde: idMolde === '' ? null : idMolde , idTipoProceso : idTipoProceso === '' ?null : idTipoProceso  ,
-            idOperacion : idOperacion === '' ? null : idOperacion
+        const planillasProduccion = async ( ) => {
+            const planillaPro = await Servicios.planillasProduccion ( fechaDesdeProduccion , fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon ,
+                idMaquina , idPieza ,  idMolde , idTipoProceso , idOperacion )
+            setVecPlanillasProduccion ( planillaPro )
         }
-            fetch ("https://ems-node-api.herokuapp.com/api/planillasProduccion/listado" ,  {
-            method : 'POST' ,
-            body : JSON.stringify( filtros ) ,
-            headers : new Headers ( {
-                "Accept" : "Application/json" ,
-                "Content-Type" : "Application/json"
-            })
-        })
-        .then ( dato => { return dato.json(  ) } )
-        .then ( json => { setVecPlanillasProduccion ( json ) } )
+        setPlanillaSeleccionada ( null )
+        planillasProduccion (  )
         filtraPlanilla (  )
     }
     const handleClose = (  ) => {
@@ -109,132 +64,96 @@ const ListaPlanilasProduccion = ( props ) => {
         setShow ( false )
     }
     useEffect ( (  ) => {
-        const getOperaciones = (  ) => {
-            fetch('https://ems-node-api.herokuapp.com/api/operaciones', { signal : controller.signal } , {
-                method:'GET',
-                headers: new Headers({
-                    'Accept': 'Applitaction/json',
-                    'Content-Type': 'Application/json'
-                })
-            })
-            .then ( dato => { return dato.json (  ) } )
-            .then ( json => {
-                setVecOperaciones ( json )
-            } )
-            .catch ( e => {  } )
+        const op = async (  ) => {
+            const o = await Servicios.operaciones(  )
+            setIdOperacion ( '' )
+            setVecOperaciones ( o )
         }
-        getOperaciones (  )
+        op (  )
     } , [  ] )
     useEffect ( (  ) => {
-        const getMaquinasXoperacion =   (  ) => {
-            fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`, { signal : controller.signal } , {
-                method:'GET',
-                headers: new Headers ( {
-                    'Accept': 'Applitaction/json',
-                    'Content-Type': 'Application/json'
-                } )
-            } )
-            .then ( dato => { return dato.json ( ) } )
-            .then ( json => {
-                setIdPieza ( '' )
-                setVecPiezas ( [  ] )
-                setIdMolde ( '' )
-                setVecMoldes ( '' )
-                setIdMaquina ( '' )
-                setVecMaquinas ( json )
-            })
-            .catch ( e => { console.log( e.message ) } )
+        const maquinas = async (  ) => {
+            var Listamaquina
+            if ( idOperacion === '' ) { Listamaquina = await Servicios.maquinas (  ) }
+            else { Listamaquina = await Servicios.maquinasXoperaxion ( idOperacion ) }
+            setPlanillaSeleccionada ( null )
+            setIdPieza ( '' )
+            setIdMolde ( '' )
+            setIdTipoProceso ( '' )
+            setIdMaquina ( '' )
+            setVecMaquinas ( Listamaquina )
         }
-        getMaquinasXoperacion (  )
+        maquinas (  )
     }
     , [ idOperacion ]
     )
     useEffect ( (  ) => {
-        const getPiezasXmaquina = (  ) => {
-            fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}` , { signal : controller.signal } , {
-                method:'GET',
-                headers: new Headers ( {
-                    'Accept': 'Applitaction/json',
-                    'Content-Type': 'Application/json'
-                } )
-            } )
-            .then ( dato => { return dato.json (  ) } )
-            .then ( json => {
-                setIdPieza ( '' )
-                setVecMoldes ( [  ] )
-                setVecPiezas ( json)
-            } )
-            .catch ( e => {  } )
+        const piezas = async (  )  => {
+            var ListaPiezas
+            if ( idMaquina === '' ) { ListaPiezas = await Servicios.piezas (  )  }
+            else { ListaPiezas = await  Servicios.piezasXmaquina ( idMaquina ) }
+            setIdPieza ( '' )
+            setVecPiezas ( ListaPiezas )
         }
-        getPiezasXmaquina (  )
+        setPlanillaSeleccionada ( null )
+        piezas (  )
     },
     [ idMaquina ]
     )
     useEffect ( (  ) => {
-        const getMoldesXpieza = (  ) => {
-            fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}` , { signal : controller.signal } , {
-                method:'GET',
-                headers: new Headers({
-                    'Accept': 'Applitaction/json',
-                    'Content-Type': 'Application/json'
-                })
-            })
-            .then ( dato => { return dato.json(  ) } )
-            .then ( json => { setVecMoldes ( json )  } )
-            .catch ( e => {  } )
+        const moldes = async ( ) => {
+            const listaMoldes = await Servicios.moldesXpieza ( idPieza )
+            if( idPieza !== '' ){ setVecMoldes ( listaMoldes ) }
         }
-        getMoldesXpieza (  )
+        setPlanillaSeleccionada ( null )
+        setIdMolde ( '' )
+        moldes (  )
     } ,
     [ idPieza ]
     )
-
     useEffect ( (  ) => {
-        const getTipoProcesoXpiezaMaquina = ( idPieza , idMaquina ) => {
-            const dato = {
-                idPieza,
-                idMaquina
-            }
-            fetch ( `https://ems-node-api.herokuapp.com/api/tiposProceso`, { signal : controller.signal } , {
-                method : 'POST',
-                body : JSON.stringify ( dato ) ,
-                headers : {
-                    'Accept' : 'Application/json' ,
-                    'Content-Type' : 'Application/json'
-                }
-            })
-            .then(dato => { return dato.json (  ) } )
-            .then( json => { setVecTiposProceso ( json ) } )
-            .catch( e =>{ } )
+        const tipoProceso = async (  ) => {
+            var listaTipoProceso = [  ]
+            if ( idPieza !== '' && idMaquina !== '') { listaTipoProceso = await Servicios.tipoProcesosXmaquinaYpieza ( idPieza , idMaquina ) }
+            else { listaTipoProceso = await Servicios.tipoProcesos ( ) }
+            setIdTipoProceso ( '' )
+            setVecTiposProceso (  listaTipoProceso )
         }
-        getTipoProcesoXpiezaMaquina (  )
+        setPlanillaSeleccionada ( null )
+        tipoProceso (  )
     },
-     [ idPieza ]
+    [ idPieza , idMaquina ]
     )
+    useEffect ( (  ) => {
+        setPlanillaSeleccionada ( null )
+    } ,
+    [ idMolde ]
+     )
     // useEffect( (  ) => {
     //     return (  ) => controller.abort(  )
     // })
     return (
         <div>
-            <ModalAltaPlanilla show = { show } handleClose = { handleClose }/>
-            <Paper className={classes.root}>
-                <div style={{background:'white',padding:20}}>
+            <ModalAltaPlanilla show = { show } handleClose = { handleClose } />
+            <Paper className = { classes.root } >
+                <div style = { { background : 'white' , padding : 20 } } >
                     <h2>Listado Planilla Produccion</h2>
-                    <h6 style={{marginTop:15}}>Filtros</h6>
+                    <h6 style = { { marginTop : 15 } } >Filtros</h6>
                     <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl} >
-                                            <KeyboardDatePicker
-                                                style={{marginRight:'10px',width:'220px'}}
-                                                size='small'
-                                                variant='standard'
-                                                margin="none"
-                                                id="fechaDesdeProduccion"
-                                                label="fechaDesdeProduccion"
-                                                format="dd/MM/yyyy"
-                                                value={ fechaDesdeProduccion }
-                                                onChange={ e => { setFechaDesdeProduccion( e ) } }
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />
+                        <KeyboardDatePicker
+                            style={{marginRight:'10px',width:'220px'}}
+                            size='small'
+                            variant='standard'
+                            margin="none"
+                            id="fechaDesdeProduccion"
+                            label="fechaDesdeProduccion"
+                            format="dd/MM/yyyy"
+                            value={ fechaDesdeProduccion }
+                            onChange={ e => { setFechaDesdeProduccion( e ) } }
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
                     </MuiPickersUtilsProvider>
                     <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
                         <KeyboardDatePicker
@@ -287,13 +206,13 @@ const ListaPlanilasProduccion = ( props ) => {
                     <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                         <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
                         <Select
-                            // ref={this.cbx_operacion}
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={ idOperacion }
                             name='idOperacion'
                             onChange = { e => { setIdOperacion ( e.target.value ) } }
                         >
+                            <MenuItem value = '' >None</MenuItem>
                         {
                             Array.isArray( vecOperaciones )?
                                 vecOperaciones.map((ope,indiceOperacion)=>{
@@ -307,13 +226,13 @@ const ListaPlanilasProduccion = ( props ) => {
                     <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                         <InputLabel id="idMaquina">Maquina</InputLabel>
                         <Select
-                            // ref={this.cbx_maquina}
                             labelId = "IdMaquina"
                             id = "demo-simple-select"
                             value = { idMaquina  }
                             name = 'idMaquina'
                             onChange={ e => { setIdMaquina ( e.target.value ) }  }
                         >
+                            <MenuItem value = '' >None</MenuItem>
                         {
                             Array.isArray( vecMaquinas )?
                                 vecMaquinas.map((maq,indiceMaquina)=>{
@@ -327,13 +246,13 @@ const ListaPlanilasProduccion = ( props ) => {
                     <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                         <InputLabel id="idPieza">Pieza</InputLabel>
                         <Select
-                            // ref={this.cbx_pieza}
                             labelId="idPieza"
                             id="demo-simple-select"
                             value={ idPieza  }
                             name='idPieza'
                             onChange={ e => { setIdPieza ( e.target.value ) } }
                         >
+                            <MenuItem value = '' >None</MenuItem>
                         {
                             Array.isArray(  vecPiezas )?
                             vecPiezas.map ( ( pie , indicePieza ) => {
@@ -354,13 +273,14 @@ const ListaPlanilasProduccion = ( props ) => {
                             name='idMolde'
                             onChange = { e => { setIdMolde ( e.target.value ) } }
                         >
+                            <MenuItem value = '' >None</MenuItem>
                             {
                                 Array.isArray (  vecMoldes ) ?
                                 vecMoldes.map ( ( mol , indiceMolde ) => {
                                     return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
                                 })
                                 :
-                                <MenuItem></MenuItem>
+                                <MenuItem value = '' > </MenuItem>
                             }
                         </Select>
                     </FormControl>
@@ -374,6 +294,7 @@ const ListaPlanilasProduccion = ( props ) => {
                             name = 'idTipoProceso'
                             onChange = { e => { setIdTipoProceso ( e.target.value ) } }
                         >
+                            <MenuItem value = '' >None</MenuItem>
                             {
                                 Array.isArray ( vecTiposProceso )?
                                     vecTiposProceso.map ( ( tpro , indiceTipoProceso ) => {
@@ -387,13 +308,13 @@ const ListaPlanilasProduccion = ( props ) => {
                 </div>
                 <div>
                     <Tooltip title="Add">
-                        <IconButton onClick={ e => setShow ( true ) } aria-label="delete" >
+                        <IconButton onClick={ e => setShow ( true ) } aria-label="New" >
                             <AddlIcon />
                         </IconButton>
                     </Tooltip>
                 </div>
                 <div>
-                    <div style = {{height:500,overflow:'scroll',overflowX: 'hidden' , width : '60%' , float : "left" , boxSizing : 'border-box' , padding : 10}} >
+                    <div style = {{height:500,overflow:'scroll',overflowX: 'hidden' , width : '70%' , float : "left" , boxSizing : 'border-box' , padding : 10}} >
                         <Table responsive  hover>
                             <thead>
                                 <tr>
@@ -416,12 +337,13 @@ const ListaPlanilasProduccion = ( props ) => {
                                         return < PlanillaProduccion actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
                                     } )
                                     :
-                                    <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>Sin Registros</td></tr>
+                                    <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>
+                                        <img style = { { boxSizing : 'border-box' , padding : 30 , width : '100%' } } alt = 'Sin resultados' src  = { imgNofound }></img></td></tr>
                                 }
                             </tbody>
                         </Table>
                     </div>
-                    <div style = { { width : '40%' , float : "right" , background : 'white' , boxSizing : 'border-box' , padding : 10}}>
+                    <div style = { { width : '30%' , float : "right" , background : 'white' , boxSizing : 'border-box' , padding : 10}}>
                         {
                             planillaSeleccionada ?
                                 <div>
@@ -579,7 +501,7 @@ const ListaPlanilasProduccion = ( props ) => {
                                         </div>
                                 </div>
                                 :
-                                <div>No found</div>
+                                <div><img style = { { boxSizing : 'border-box' , padding : 30 , width : '100%' } } alt = 'Sin resultados' src  = { imgNofound }></img></div>
                         }
                     </div>
                     <div style = {{clear : 'both'}}></div>

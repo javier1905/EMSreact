@@ -170,7 +170,7 @@ class Menu2 extends React.Component {
             </Menu>
         )
         return (
-            <div>
+            <div id = 'containerMENU' >
                 <div>
                     <div className={classes.grow}>
                         <AppBar position="static">

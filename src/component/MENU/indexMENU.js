@@ -2,6 +2,7 @@ import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 import Menu from './MENU2'
+import './styleMENU.css'
 
 class indexMENU extends React.Component {
     constructor(props) {
@@ -10,15 +11,15 @@ class indexMENU extends React.Component {
     }
     render() { 
         return (
-            <div>
-                <Menu user={this.props.UsuarioLOGIN}/>
+            <div >
+                <Menu user={this.props.UsuarioLOGIN}  />
             </div>
         );
     }
 }
 const mapStateToProps = state =>{
     return{
-        UsuarioLOGIN:state.UsuarioLOGIN
+        UsuarioLOGIN : state.UsuarioLOGIN
     }
 }
 

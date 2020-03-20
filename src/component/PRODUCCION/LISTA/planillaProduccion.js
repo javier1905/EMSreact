@@ -1,6 +1,5 @@
 import React ,{ useState } from 'react'
 import Moment from 'moment'
-// import { Button } from 'react-bootstrap'
 import { withSnackbar } from 'notistack'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -11,7 +10,6 @@ import Tooltip from '@material-ui/core/Tooltip'
 const PlanillaProduccion = ( props ) => {
     const [ modeDelete , setModeDelete ] = useState ( false )
     const deletePlanillaProduccion = ( idPlanilla ) => {
-        console.log( idPlanilla )
         const deletePlaPro = (  ) => {
             fetch ( "https://ems-node-api.herokuapp.com/api/planillasProduccion/eliminar"  , {
                 method : 'POST' ,
@@ -76,21 +74,19 @@ const PlanillaProduccion = ( props ) => {
                         <td> { props.planilla.nombreMaquina } </td>
                         <td> { props.planilla.nombrePieza  } </td>
                         <td> { props.planilla.nombreMolde } </td>
-                        <td> {calculaProduccion().totalProduccion } </td>
-                        <td> {calculaProduccion().totalRechazo } </td>
-                        <td> {calculaProduccion().totalScrap } </td>
-                        {/* <td><Button onClick={ e => setModeDelete( true ) }>Editar</Button></td> */}
-                        {/* <td><Button onClick={ e => setModeDelete( true ) }>Eliminar</Button></td> */}
+                        <td> {calculaProduccion(  ).totalProduccion } </td>
+                        <td> {calculaProduccion(  ).totalRechazo } </td>
+                        <td> {calculaProduccion(  ).totalScrap } </td>
                         <td>
                         <Tooltip title="Update">
-                            <IconButton onClick={ e => setModeDelete( true ) } aria-label="update" >
+                            <IconButton style ={ { padding : 0 , margin : 0 } } onClick={ e => setModeDelete( true ) } aria-label="update" >
                                 <UpdateIcon />
                             </IconButton>
                         </Tooltip>
                         </td>
                         <td>
                         <Tooltip title="Delete">
-                            <IconButton onClick={ e => setModeDelete( true ) } aria-label="delete" >
+                            <IconButton style ={ { padding : 0 , margin : 0 } } onClick={ e => setModeDelete( true ) } aria-label="delete" >
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
@@ -99,13 +95,11 @@ const PlanillaProduccion = ( props ) => {
                     :
                     <td colSpan = { 10 }>
                         ¿ Esta seguro de eliminar esta planilla ?
-                        {/* <Button variant = 'primary' onClick={ e => deletePlanillaProduccion( props.planilla.idPlanilla ) } >eliminar</Button> */}
                         <Tooltip title="Delete">
                             <IconButton onClick={ e => deletePlanillaProduccion( props.planilla.idPlanilla ) } aria-label="delete" >
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>
-                        {/* <Button variant = 'secondary' onClick={ e=> setModeDelete ( false ) } > cancelar </Button> */}
                         <Tooltip title="Cancel">
                             <IconButton onClick={ e=> setModeDelete ( false ) } aria-label="cancel" >
                                 <CancelIcon />
