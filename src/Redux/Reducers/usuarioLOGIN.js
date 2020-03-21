@@ -1,12 +1,12 @@
-import {type as findUsuarioLOG} from '../Actions/findUsuarioLOGIN'
+import { type as findUsuarioLOG } from '../Actions/findUsuarioLOGIN'
 const defaultState = ''
 
-function UsuarioLOGIN(state = defaultState ,{type,payload}){
-    switch (type) {
-        case findUsuarioLOG:{
+function UsuarioLOGIN ( state = defaultState , { type , payload } ) {
+    switch ( type ) {
+        case findUsuarioLOG : {
             return payload
         }
-        default: return state
+        default : return state
     }
 }
 export default UsuarioLOGIN

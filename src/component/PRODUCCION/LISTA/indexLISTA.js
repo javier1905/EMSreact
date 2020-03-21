@@ -1,4 +1,5 @@
 import React , { useEffect , useState } from 'react'
+import { useDispatch } from 'react-redux'
 import Paper from '@material-ui/core/Paper'
 import PlanillaProduccion from './planillaProduccion'
 import Moment from 'moment'
@@ -16,9 +17,12 @@ import Select from '@material-ui/core/Select'
 import imgNofound from '../../../Imagenes/noFound.png'
 import Servicios from './serviceLista'
 import estilos from './styleLista'
+import findPlanillaUpdate from '../../../Redux/Actions/findPlanillaUpdate'
+
 
 const ListaPlanilasProduccion = ( props ) => {
     var classes = estilos (  )
+    const dispatch = useDispatch (  )
     const [ vecPlanillasProduccion , setVecPlanillasProduccion ] = useState ( [  ] )
     const [ vecOperaciones , setVecOperaciones ] = useState ( [  ] )
     const [ vecMaquinas , setVecMaquinas ] = useState ( [  ] )
@@ -31,6 +35,7 @@ const ListaPlanilasProduccion = ( props ) => {
     const [ fechaHastaFundicon , setFechaHastaFundicon] = useState ( new Date(  ) )
     const [ planillaSeleccionada , setPlanillaSeleccionada] = useState ( null )
     const [ show , setShow] = useState ( false )
+    const [ showUpdate , setShowUpdate] = useState ( false )
     const [ idMaquina , setIdMaquina] = useState ( '' )
     const [ idPieza , setIdPieza] = useState ( '' )
     const [ idMolde , setIdMolde] = useState ( '' )
@@ -47,7 +52,7 @@ const ListaPlanilasProduccion = ( props ) => {
         , [ fechaDesdeProduccion ,  fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon , idMaquina , idPieza , idMolde , idTipoProceso ,  idOperacion ]
     )
     const filtraPlanilla = id => { setPlanillaSeleccionada( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
-        console.log ( planillaSeleccionada )
+
     }
     const  actualizaListaPlanillas = ( ) => {
         const planillasProduccion = async ( ) => {
@@ -62,6 +67,11 @@ const ListaPlanilasProduccion = ( props ) => {
     const handleClose = (  ) => {
         actualizaListaPlanillas (  )
         setShow ( false )
+    }
+    const handleCloseUpdate = (  ) => {
+        dispatch ( findPlanillaUpdate ( '' ) )
+        actualizaListaPlanillas (  )
+        setShowUpdate ( false )
     }
     useEffect ( (  ) => {
         const op = async (  ) => {
@@ -128,13 +138,12 @@ const ListaPlanilasProduccion = ( props ) => {
         setPlanillaSeleccionada ( null )
     } ,
     [ idMolde ]
-     )
-    // useEffect( (  ) => {
-    //     return (  ) => controller.abort(  )
-    // })
+    )
+    const showModalUpdate = (  ) => { setShowUpdate ( true ) }
     return (
         <div>
-            <ModalAltaPlanilla show = { show } handleClose = { handleClose } />
+            <ModalAltaPlanilla  show = { show } handleClose = { handleClose } />
+            <ModalAltaPlanilla  show = { showUpdate } handleClose = { handleCloseUpdate } />
             <Paper className = { classes.root } >
                 <div style = { { background : 'white' , padding : 20 } } >
                     <h2>Listado Planilla Produccion</h2>
@@ -266,7 +275,6 @@ const ListaPlanilasProduccion = ( props ) => {
                     <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                         <InputLabel id="idMolde">Molde</InputLabel>
                         <Select
-                            // ref={this.cbx_molde}
                             labelId="idMolde"
                             id="cbx_molde"
                             value={ idMolde }
@@ -287,7 +295,6 @@ const ListaPlanilasProduccion = ( props ) => {
                     <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
                         <InputLabel id="idTipoProceso">Tipo Proceso</InputLabel>
                         <Select
-                            // ref={this.cbx_tipoProceso}
                             labelId = "idTipoProceso"
                             id = "cbx_molde"
                             value = { idTipoProceso }
@@ -334,7 +341,7 @@ const ListaPlanilasProduccion = ( props ) => {
                                 {
                                     Array.isArray ( vecPlanillasProduccion ) && vecPlanillasProduccion.length !== 0 ?
                                     vecPlanillasProduccion.map ( ( planilla , indexPlanilla ) => {
-                                        return < PlanillaProduccion actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
+                                        return < PlanillaProduccion showModalUpdate = { showModalUpdate } actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
                                     } )
                                     :
                                     <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>

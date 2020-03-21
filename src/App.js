@@ -1,24 +1,24 @@
 import React from 'react';
-import {BrowserRouter as Router, Route,Switch} from 'react-router-dom'
+import { BrowserRouter as Router , Route , Switch } from 'react-router-dom'
 import Login from './component/LOGIN/indexLOGIN'
 import Home from './component/HOME/indexHOME'
-import {Provider} from 'react-redux'
+import { Provider } from 'react-redux'
 import store from './Redux/store'
-import {CssBaseline} from '@material-ui/core'
+import { CssBaseline } from '@material-ui/core'
 import 'typeface-roboto'
 
-function App() {
+function App (  ) {
   return (
-    <div className="App">
-      <Provider store={store}>
+    <div className = "App" >
+      <Provider store = { store } >
         <CssBaseline />
         <Router>
           <Switch>
             <React.Fragment>
-                <Route exact path='/'>
+                <Route exact path = '/' >
                   <Login/>
                 </Route>
-                <Route path='/home'>
+                <Route path = '/home' >
                   <Home/>
                 </Route>
             </React.Fragment>
@@ -26,7 +26,7 @@ function App() {
         </Router>
       </Provider>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

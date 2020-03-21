@@ -6,9 +6,12 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import UpdateIcon from '@material-ui/icons/Update'
 import CancelIcon from '@material-ui/icons/Cancel'
 import Tooltip from '@material-ui/core/Tooltip'
+import { useDispatch } from 'react-redux'
+import findPlanillaUpdate from '../../../Redux/Actions/findPlanillaUpdate'
 
 const PlanillaProduccion = ( props ) => {
     const [ modeDelete , setModeDelete ] = useState ( false )
+    const dispatch = useDispatch (  )
     const deletePlanillaProduccion = ( idPlanilla ) => {
         const deletePlaPro = (  ) => {
             fetch ( "https://ems-node-api.herokuapp.com/api/planillasProduccion/eliminar"  , {
@@ -65,7 +68,7 @@ const PlanillaProduccion = ( props ) => {
         return { totalProduccion , totalRechazo , totalScrap }
     }
     return (
-        <tr style={ { padding : 20 ,cursor : 'pointer' } } onClick = { e => { props.filtraPlanilla( props.planilla.idPlanilla ) } } >
+        <tr style = { { padding : 20 , cursor : 'pointer' } } onClick = { e => { props.filtraPlanilla ( props.planilla.idPlanilla ) } } >
             {
                 ! modeDelete ?
                     <>
@@ -74,12 +77,12 @@ const PlanillaProduccion = ( props ) => {
                         <td> { props.planilla.nombreMaquina } </td>
                         <td> { props.planilla.nombrePieza  } </td>
                         <td> { props.planilla.nombreMolde } </td>
-                        <td> {calculaProduccion(  ).totalProduccion } </td>
-                        <td> {calculaProduccion(  ).totalRechazo } </td>
-                        <td> {calculaProduccion(  ).totalScrap } </td>
+                        <td> { calculaProduccion(  ).totalProduccion } </td>
+                        <td> { calculaProduccion(  ).totalRechazo } </td>
+                        <td> { calculaProduccion(  ).totalScrap } </td>
                         <td>
                         <Tooltip title="Update">
-                            <IconButton style ={ { padding : 0 , margin : 0 } } onClick={ e => setModeDelete( true ) } aria-label="update" >
+                            <IconButton style ={ { padding : 0 , margin : 0 } } onClick={ e => { dispatch ( findPlanillaUpdate ( props.planilla ) ) ; props.showModalUpdate (  ) } } aria-label="update" >
                                 <UpdateIcon />
                             </IconButton>
                         </Tooltip>
@@ -101,7 +104,7 @@ const PlanillaProduccion = ( props ) => {
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Cancel">
-                            <IconButton onClick={ e=> setModeDelete ( false ) } aria-label="cancel" >
+                            <IconButton onClick={ e => setModeDelete ( false ) } aria-label="cancel" >
                                 <CancelIcon />
                             </IconButton>
                         </Tooltip>

@@ -3,11 +3,11 @@ import AltaPlanillaPRODUCCION from './altaPlanillaPRODUCCION'
 import './styleAltaPlanillaPRODUCCION.css'
 
 class indexALTA extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
+    constructor ( props ) {
+        super ( props )
+        this.state = {  }
     }
-    render() {
+    render (  ) {
         return (
             <div>
                 <AltaPlanillaPRODUCCION/>
@@ -16,4 +16,4 @@ class indexALTA extends React.Component {
     }
 }
 
-export default indexALTA;
+export default indexALTA

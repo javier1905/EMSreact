@@ -19,18 +19,20 @@ import Alert from '@material-ui/lab/Alert'
 // import DeleteIcon from '@material-ui/icons/Delete'
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 import { withSnackbar } from 'notistack'
+import { connect } from 'react-redux'
+import servicios from './serviceAltaPlanilla'
 
 class AltaPlanillaPRODUCCION extends React.Component {
-    constructor(props) {
-        super(props)
+    constructor ( props ) {
+        super ( props )
         this.state = {
-            show:false,
-            fechaProduccion:null,
-            fechaFundicion:null,
-            HoraInicioProduccion:'',
-            HoraFinProduccion:'',
-            idOperacion:'',
-            idMaquina:'',
+            show : false ,
+            fechaProduccion : null ,
+            fechaFundicion : null ,
+            HoraInicioProduccion : '' ,
+            HoraFinProduccion : '' ,
+            idOperacion : '' ,
+            idMaquina : '' ,
             idPieza:'',
             idMolde:'',
             idTipoProceso:'',
@@ -43,7 +45,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecParadasMaquina:undefined,
             vecTurnos:undefined,
             vecDefectos:undefined,
-            vecTipoRechazo:[{idTipoRechazo:false,nombreTipoRechazo:'Rechazo'},{idTipoRechazo:true,nombreTipoRechazo:'Scrap'}],
+            vecTipoRechazo : [ { idTipoRechazo : false , nombreTipoRechazo : 'Rechazo' } , { idTipoRechazo : true , nombreTipoRechazo : 'Scrap' } ] ,
             vecOperariosCombo:undefined,
             campoParadaMaquina:'',
             campoDesdeParadaMaquina:'',
@@ -66,7 +68,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.txt_campoIdParadaMaquina = React.createRef()
         this.controller = new AbortController()
     }
-    capturaParaMaquina = e =>{
+    capturaParaMaquina = e => {
         const {HoraInicioProduccion, HoraFinProduccion,vecParadasMaquinaSeleccionada , campoIdParaMaquina,campoNombreParadaMaquina, campoDesdeParadaMaquina, campoHastaParadaMaquina,vecParadasMaquina} = this.state
         var val = true
         var ul = document.createElement('ul')
@@ -97,17 +99,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 val=false
             }
         }
-        if(campoDesdeParadaMaquina === ''){
-            var li2 = document.createElement('li')
+        if ( campoDesdeParadaMaquina === '') {
+            var li2 = document.createElement ( 'li' )
             li2.innerHTML = 'Seleccione la Hora Desde'
-            ul.append(li2)
-            val=false
+            ul.append ( li2 )
+            val = false
         }
-        if(campoHastaParadaMaquina === ''){
-            var li3 = document.createElement('li')
+        if ( campoHastaParadaMaquina === '' ) {
+            var li3 = document.createElement( 'li' )
             li3.innerHTML = 'Seleccione la Hora Hasta'
-            ul.append(li3)
-            val=false
+            ul.append ( li3 )
+            val = false
         }
         try{
             paradaDeMaquinaSeleccionada = {
@@ -129,18 +131,18 @@ class AltaPlanillaPRODUCCION extends React.Component {
             document.getElementById('txt_idParadaMquina').focus()
         }
         else{
-            setTimeout(()=>{
-                this.alertPM.current.removeChild(ul)
-                this.setState({showAlert:'none'})
-            },3000)
-            this.alertPM.current.append(ul)
-            this.setState({showAlert:'block'})
+            setTimeout ( (  ) => {
+                this.alertPM.current.removeChild ( ul )
+                this.setState ( { showAlert : 'none' } )
+            } , 3000 )
+            this.alertPM.current.append ( ul )
+            this.setState ( { showAlert : 'block' } )
         }
     }
-    handleDateChange = date => { this.setState({fechaProduccion:date})}
-    capturaFechaFundicion = date => { this.setState({fechaFundicion:date})}
-    getHoraInicioProduccion = e =>{this.setState({HoraInicioProduccion:e.target.value})}
-    getHoraFinProduccion = e =>{this.setState({HoraFinProduccion:e.target.value})}
+    handleDateChange = date => { this.setState ( { fechaProduccion : date } ) }
+    capturaFechaFundicion = date => { this.setState ( { fechaFundicion : date } ) }
+    getHoraInicioProduccion = e => { this.setState ( { HoraInicioProduccion : e.target.value } ) }
+    getHoraFinProduccion = e => { this.setState ( { HoraFinProduccion : e.target.value } ) }
     getHoraInicioOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
@@ -163,17 +165,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
         this.setState({vecOperarios:vecOperariosTemp})
     }
-    addOperario = e =>{
+    addOperario = e => {
         let Op = {
-            idOperario:'',
-            nombre:'',
-            apellido:'',
-            idTurno:'',
-            horaInicio:'',
-            horaFin:'',
-            produccion:'',
-            calorias:'',
-            vecRechazo:[]
+            idOperario : '' ,
+            nombre : '' ,
+            apellido : '' ,
+            idTurno : '' ,
+            horaInicio : '' ,
+            horaFin : '' ,
+            produccion : '' ,
+            calorias : '' ,
+            vecRechazo : [  ]
         }
         if(Array.isArray(this.state.vecTurnos)){
             if(this.state.vecTurnos.length === 0 ){
@@ -203,9 +205,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.setState({vecOperarios:newVecOperarios})
         }
     }
-    addZona = e =>{
-        let indexOperario = parseInt(e.target.name.split(' ')[1])
-        let indexRechazo = parseInt(e.target.name.split(' ')[2])
+    addZona = e => {
+        let indexOperario = parseInt ( e.target.name.split(' ')[1] )
+        let indexRechazo = parseInt ( e.target.name.split(' ')[2] )
         var txt_letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
         var txt_numero = document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`)
         var txt_cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`)
@@ -403,111 +405,22 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
         catch(e){console.log(e)}
     }
-    getOperaciones = () =>{
-        fetch('https://ems-node-api.herokuapp.com/api/operaciones',{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept': 'Applitaction/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{return dato.json()})
-        .then(json=>{ return this.setState({vecOperaciones:json,idOperacion:''})  })
-        .catch(e=>{
-            if(e.name === 'AbortError') return
-            throw Error
-        })
+    getOperaciones = async (  ) =>{ this.setState ( { vecOperaciones : await servicios.listaOperaciones (  ) , idOperacion : '' } )  }
+    getMaquinasXoperacion = async  idOperacion => {
+        this.setState ( { vecMaquinas : await servicios.listaMaquinaXoperacion ( idOperacion ) , vecPiezas : [  ] , vecMoldes : [  ] , idMaquina : '' } )
     }
-    getMaquinasXoperacion = idOperacion =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOperacion}`,{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept': 'Applitaction/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{return dato.json()})
-        .then(json=>{
-            this.setState({vecMaquinas:json,vecPiezas:[],vecMoldes:[],idMaquina:''})
-        })
-        .catch(e=>{  })
+    getPiezasXmaquina = async idMaquina => {
+        this.setState ( { vecPiezas : await servicios.listaPiezasXmaquina ( idMaquina ) , vecMoldes : [  ] , idMolde : '' , idPieza : '' } )
     }
-    getPiezasXmaquina = idMaquina =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaquina}`,{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept': 'Applitaction/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{ return dato.json() })
-        .then(json=>{ return this.setState({vecPiezas:json,vecMoldes:[],idMolde:'',idPieza:''}) })
-        .catch(e=>{  })
+    getMoldesXpieza = async idPieza =>{ this.setState ( { vecMoldes : await  servicios.listaMoldesXpieza ( idPieza ) , idMolde : '' } ) }
+    getTipoProcesoXpiezaMaquina = async ( idPieza , idMaquina ) => { this.setState ( { vecTiposProceso : await servicios.tipoProcesosXmaquinaYpieza ( idPieza , idMaquina )  } ) }
+    getParadasMaquina = async (  ) =>{
+        this.setState ( { vecParadasMaquina : await servicios.listaParadaMaquinas (  ) } )
+        try {  return this.cbx_paradasMaquina.current.value = undefined } catch ( e ) {  }
     }
-    getMoldesXpieza = idPieza =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza}`,{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept': 'Applitaction/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{ return dato.json() })
-        .then(json=>{ return this.setState({vecMoldes:json,idMolde:''}) })
-        .catch(e=>{  })
-    }
-    getParadasMaquina = () =>{
-        fetch('https://ems-node-api.herokuapp.com/api/paradasMaquina',{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept': 'Applitaction/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{return dato.json()})
-        .then(json=>{
-            this.setState({vecParadasMaquina:json})
-            try{  return this.cbx_paradasMaquina.current.value = undefined }
-            catch(e){}
-        })
-        .catch(e=>{  })
-    }
-    getTurnos = () =>{
-        fetch(`https://ems-node-api.herokuapp.com/api/turnos`,{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept': 'Applitaction/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{return dato.json()})
-        .then(json=>{ this.setState({vecTurnos:json,idTurno:''}) })
-        .catch(e=>{ this.setState({vecTurnos:[],idTurno:''}) })
-    }
-    getDefectos = () =>{
-        fetch('https://ems-node-api.herokuapp.com/api/defectos',{signal:this.controller.signal},{
-            method: 'GET',
-            headers: new Headers({
-                'Accept':'Application/json',
-                'Content-Type': 'Application/json'
-            })
-        })
-        .then(dato=>{return dato.json()})
-        .then(json=>{this.setState({vecDefectos:json})})
-        .catch(e=>{    })
-    }
-    getTrabajadores = () =>{
-        fetch('https://ems-node-api.herokuapp.com/api/trabajadores',{signal:this.controller.signal},{
-            method:'GET',
-            headers: new Headers({
-                'Accept' : 'Application/json',
-                'Content-Type' : 'Application/json'
-            })
-        })
-        .then(dato=>{return dato.json()})
-        .then(json=>{this.setState({vecOperariosCombo:json})})
-        .catch(err=>{ this.setState({vecOperariosCombo:[]}) })
-    }
+    getTurnos = async (  ) => { this.setState ( { vecTurnos : await servicios.listaTurnos (  ) , idTurno : '' } ) }
+    getDefectos = async (  ) => { this.setState ( { vecDefectos : await servicios.listaDefectos (  ) } ) }
+    getTrabajadores = async (  ) => { this.setState ( { vecOperariosCombo : await servicios.listaTrabajadores (  ) } )  }
     useStyles = makeStyles(theme => ({
         root: {
             flexGrow: 1
@@ -778,51 +691,56 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         campoIdParaMaquina:'',
                         campoNombreParadaMaquina:''
                     })
-                    console.log(json)
                 })
-                .catch(e => {
-                    this.props.enqueueSnackbar(`${e.mensaje}`,
+                .catch ( e => {
+                    this.props.enqueueSnackbar(`${e.mensaje}` ,
                     {
-                        variant: 'error',
-                        preventDuplicate: true,
-                        anchorOrigin: {
-                            vertical: 'bottom',
-                            horizontal: 'center',
+                        variant : 'error' ,
+                        preventDuplicate : true ,
+                        anchorOrigin : {
+                            vertical :  'bottom' ,
+                            horizontal : 'center' ,
                         }
                     })
                 })
         }
-        validacion()
-        e.preventDefault()
+        validacion (  )
+        e.preventDefault (  )
     }
-    getTipoProcesoXpiezaMaquina( idPieza , idMaquina ){
-        const dato = {
-            idPieza,
-            idMaquina
+    completaDatosUpdate = (  ) => {
+        const plaUpdate = this.props.planillaUpdate
+        if ( plaUpdate !== '' ) {
+            console.log( 'update ' )
+            console.log ( plaUpdate )
+            // const llenaVecOperacion = async (  ) => {
+            //     var listaOp = await servicios.listaOperaciones (  )
+            //     if ( listaOp ) {
+            //         this.setState ( { vecOperaciones : listaOp , idOperacion : plaUpdate.idOperacion } , (  ) => {  this.setState ( { })})
+            //     }
+            //     this.setState ( { vecOperaciones : await servicios.listaOperaciones (  ) } )
+            // }
+            this.setState ( { fechaProduccion : plaUpdate.fechaProduccion , fechaFundicion : plaUpdate.fechaFundicion ,
+                HoraInicioProduccion : plaUpdate.horaInicio , HoraFinProduccion : plaUpdate.horaFin , idOperacion : plaUpdate.idOperacion ,
+                idMaquina : plaUpdate.idMaquina , idPieza : plaUpdate.idPieza , idMolde : plaUpdate.idMolde , idTipoProceso : plaUpdate.idTipoProceso ,
+                vecOperarios : plaUpdate.vecOperarios , vecParadasMaquinaSeleccionada : plaUpdate.vecParadasMaquinaSeleccionada
+            } )
         }
-        fetch(`https://ems-node-api.herokuapp.com/api/tiposProceso`, { signal : this.controller.signal } , {
-            method: 'POST',
-            body: JSON.stringify(dato),
-            headers: {
-                'Accept' : 'Application/json',
-                'Content-Type' : 'Application/json'
-            }
-        })
-        .then(dato=>{return dato.json()})
-        .then(json => { this.setState( { vecTiposProceso:json } ) } )
-        .catch(e=>{ })
+        else {
+            console.log ( ' new ')
+        }
     }
-    componentDidMount(){
-        this.getOperaciones()
-        this.getParadasMaquina()
-        this.getTurnos()
-        this.getDefectos()
-        this.getTrabajadores()
+    componentDidMount (  ) {
+        this.getOperaciones (  )
+        this.getParadasMaquina (  )
+        this.getTurnos (  )
+        this.getDefectos (  )
+        this.getTrabajadores (  )
+        setTimeout ( (  ) => {
+            this.completaDatosUpdate (  )
+        }  ,3000 )
     }
-    componentWillUnmount(){
-        this.controller.abort()
-    }
-    render() {
+    componentWillUnmount (  ) { this.controller.abort (  ) }
+    render (  ) {
         const classes = this.useStyles
         return (
             <Box  boxShadow={1}  bgcolor="background.default"  m={0} p={3} >
@@ -1442,8 +1360,11 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         </div>
                 </Form>
             </Box>
-        );
+        )
     }
 }
 
-export default withSnackbar(AltaPlanillaPRODUCCION)
+const maspStateToProps = store => { return { planillaUpdate : store.PlanillaProduccionUpdate } }
+const wrapper = connect ( maspStateToProps )
+const componentConectadoRedux = wrapper ( AltaPlanillaPRODUCCION )
+export default withSnackbar ( componentConectadoRedux )

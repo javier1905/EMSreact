@@ -34,7 +34,7 @@ export default function ModalAltaPlanilla ( props ) {
             </IconButton>
           </Toolbar>
         </AppBar>
-          <Alta/>
+          <Alta planillaUpdate = { props.planillaUpdate } />
       </Dialog>
     </div>
   )
