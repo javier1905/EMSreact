@@ -42,18 +42,18 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecPiezas:[],
             vecMoldes:[],
             vecTiposProceso:[],
-            vecParadasMaquina:undefined,
-            vecTurnos:undefined,
-            vecDefectos:undefined,
+            vecParadasMaquina : undefined ,
+            vecTurnos : undefined ,
+            vecDefectos : undefined ,
             vecTipoRechazo : [ { idTipoRechazo : false , nombreTipoRechazo : 'Rechazo' } , { idTipoRechazo : true , nombreTipoRechazo : 'Scrap' } ] ,
-            vecOperariosCombo:undefined,
-            campoParadaMaquina:'',
-            campoDesdeParadaMaquina:'',
-            campoHastaParadaMaquina:'',
-            vecParadasMaquinaSeleccionada:[],
-            showAlert:'none',
-            mensajeAlertZona:'',
-            campoIdParaMaquina:'',
+            vecOperariosCombo : undefined ,
+            campoParadaMaquina : '' ,
+            campoDesdeParadaMaquina : '' ,
+            campoHastaParadaMaquina : '' ,
+            vecParadasMaquinaSeleccionada : [  ] ,
+            showAlert : 'none' ,
+            mensajeAlertZona : '' ,
+            campoIdParaMaquina : '' ,
             campoNombreParadaMaquina:'',
             showModalPM:false
         }
@@ -166,40 +166,20 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.setState({vecOperarios:vecOperariosTemp})
     }
     addOperario = e => {
-        let Op = {
-            idOperario : '' ,
-            nombre : '' ,
-            apellido : '' ,
-            idTurno : '' ,
-            horaInicio : '' ,
-            horaFin : '' ,
-            produccion : '' ,
-            calorias : '' ,
-            vecRechazo : [  ]
-        }
+        let Op = { idOperario : '' , nombre : '' , apellido : '' , idTurno : '' , horaInicio : '' , horaFin : '' , produccion : '' , calorias : '' , vecRechazo : [  ] }
         if(Array.isArray(this.state.vecTurnos)){
-            if(this.state.vecTurnos.length === 0 ){
-                this.getTurnos()
-            }
+            if(this.state.vecTurnos.length === 0 ){ this.getTurnos (  ) }
         }
         if(Array.isArray(this.state.vecOperariosCombo)){
-            if(this.state.vecOperariosCombo.length === 0 ){
-                this.getTrabajadores()
-            }
+            if(this.state.vecOperariosCombo.length === 0 ) { this.getTrabajadores (  ) }
         }
         let newVecOperarios = [...this.state.vecOperarios,Op]
         this.setState({vecOperarios:newVecOperarios})
     }
-    addRechazo = e =>{
-        let indexOperario = parseInt(e.target.name)
-        let newRechazo = {
-            idRechazo:'',
-            nombreRechazo:'',
-            tipo:'',
-            cantidadRechazo:'',
-            vecZonas:[]
-        }
-        if(this.state.vecOperarios[indexOperario]){
+    addRechazo = e => {
+        let indexOperario = parseInt ( e.target.name )
+        let newRechazo = { idRechazo : '' , nombreRechazo : '' , tipo : '' , cantidadRechazo : '' , vecZonas : [  ]  }
+        if ( this.state.vecOperarios[ indexOperario ] ) {
             let newVecOperarios = this.state.vecOperarios
             newVecOperarios[indexOperario].vecRechazo = [...newVecOperarios[indexOperario].vecRechazo,newRechazo]
             this.setState({vecOperarios:newVecOperarios})
@@ -347,26 +327,26 @@ class AltaPlanillaPRODUCCION extends React.Component {
         var indexRechazo
         if(nombre.split(' ')[2]){indexRechazo = parseInt(nombre.split(' ')[2]) }
         var vecOperariosCache = this.state.vecOperarios
-        try{
-            if(nombre.split(' ')[0] === 'idOperario'){
-                if(String (value).length !== 0 &&  this.state.vecOperariosCombo.find(o => o.idTrabajador === parseInt(value)) === undefined  ){
-                    vecOperariosCache[indexOperario].idOperario = ''
-                    vecOperariosCache[indexOperario].nombre = ''
+        try {
+            if ( nombre.split ( ' ' )[ 0 ] === 'idOperario' ) {
+                if ( String ( value ).length !== 0 &&  this.state.vecOperariosCombo.find ( o => o.idTrabajador === parseInt ( value ) ) === undefined ) {
+                    vecOperariosCache[ indexOperario ].nombre = ''
                 }
-                else{
-                    vecOperariosCache[indexOperario].idOperario = value
-                    vecOperariosCache[indexOperario].nombre = value
+                else {
+                    console.log( this.state.vecOperariosCombo.find ( o => o.idTrabajador === parseInt ( value ) ) )
+                    vecOperariosCache[ indexOperario ].idOperario = parseInt ( value )
+                    vecOperariosCache[ indexOperario ].nombre = parseInt ( value )
                 }
             }
-            if(nombre.split(' ')[0] === 'idTurno'){ 
+            if(nombre.split(' ')[0] === 'idTurno' ) {
                 var turno
-                if( Array.isArray (this.state.vecTurnos) ){
+                if( Array.isArray (this.state.vecTurnos) ) {
                 turno = this.state.vecTurnos.find( t =>  t.idTurno === parseInt(value) )
                 }
-                if(turno.hsInicioTurno){
-                    vecOperariosCache[indexOperario].horaInicio = String(turno.hsInicioTurno).substring(11,16)
-                    vecOperariosCache[indexOperario].horaFin =  String(turno.hsFinTurno).substring(11,16)
-                    vecOperariosCache[indexOperario].idTurno=value
+                if ( turno.hsInicioTurno ) {
+                    vecOperariosCache[ indexOperario ].horaInicio = String(turno.hsInicioTurno).substring(11,16)
+                    vecOperariosCache[ indexOperario ].horaFin =  String(turno.hsFinTurno).substring(11,16)
+                    vecOperariosCache[ indexOperario ].idTurno = parseInt ( value )
                 }
             }
             if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
@@ -385,13 +365,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = ''
                 }
                 else{
-                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = value
-                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value
+                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = parseInt ( value )
+                    vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = parseInt ( value )
                 }
             }
-            if(nombre.split(' ')[0] === 'nombreRechazo'){
-                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = value
-                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo=value
+            if(nombre.split(' ')[0] === 'nombreRechazo') {
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].idRechazo = parseInt ( value )
+                vecOperariosCache[indexOperario].vecRechazo[indexRechazo].nombreRechazo = parseInt ( value )
             }
             if(nombre.split(' ')[0] === 'tipoRechazo'){
                 vecOperariosCache[indexOperario].vecRechazo[indexRechazo].tipo = value
@@ -401,27 +381,27 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 else{ div.setAttribute('style','border: none') }
             }
             if(nombre.split(' ')[0] === 'cantidadRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].cantidadRechazo = value}
-            this.setState({vecOperarios:vecOperariosCache})
+            this.setState ( { vecOperarios : vecOperariosCache } )
         }
-        catch(e){console.log(e)}
+        catch ( e ) { console.log ( e ) }
     }
-    getOperaciones = async (  ) =>{ this.setState ( { vecOperaciones : await servicios.listaOperaciones (  ) , idOperacion : '' } )  }
+    getOperaciones = async (  ) =>{ this.setState ( { vecOperaciones : await servicios.listaOperaciones ( this.controller ) , idOperacion : '' } )  }
     getMaquinasXoperacion = async  idOperacion => {
-        this.setState ( { vecMaquinas : await servicios.listaMaquinaXoperacion ( idOperacion ) , vecPiezas : [  ] , vecMoldes : [  ] , idMaquina : '' } )
+        this.setState ( { vecMaquinas : await servicios.listaMaquinaXoperacion ( idOperacion , this.controller ) , vecPiezas : [  ] , vecMoldes : [  ] , idMaquina : '' } )
     }
     getPiezasXmaquina = async idMaquina => {
-        this.setState ( { vecPiezas : await servicios.listaPiezasXmaquina ( idMaquina ) , vecMoldes : [  ] , idMolde : '' , idPieza : '' } )
+        this.setState ( { vecPiezas : await servicios.listaPiezasXmaquina ( idMaquina , this.controller ) , vecMoldes : [  ] , idMolde : '' , idPieza : '' } )
     }
-    getMoldesXpieza = async idPieza =>{ this.setState ( { vecMoldes : await  servicios.listaMoldesXpieza ( idPieza ) , idMolde : '' } ) }
+    getMoldesXpieza = async idPieza =>{ this.setState ( { vecMoldes : await  servicios.listaMoldesXpieza ( idPieza , this.controller ) , idMolde : '' } ) }
     getTipoProcesoXpiezaMaquina = async ( idPieza , idMaquina ) => { this.setState ( { vecTiposProceso : await servicios.tipoProcesosXmaquinaYpieza ( idPieza , idMaquina )  } ) }
     getParadasMaquina = async (  ) =>{
-        this.setState ( { vecParadasMaquina : await servicios.listaParadaMaquinas (  ) } )
+        this.setState ( { vecParadasMaquina : await servicios.listaParadaMaquinas ( this.controller ) } )
         try {  return this.cbx_paradasMaquina.current.value = undefined } catch ( e ) {  }
     }
-    getTurnos = async (  ) => { this.setState ( { vecTurnos : await servicios.listaTurnos (  ) , idTurno : '' } ) }
-    getDefectos = async (  ) => { this.setState ( { vecDefectos : await servicios.listaDefectos (  ) } ) }
-    getTrabajadores = async (  ) => { this.setState ( { vecOperariosCombo : await servicios.listaTrabajadores (  ) } )  }
-    useStyles = makeStyles(theme => ({
+    getTurnos = async (  ) => { this.setState ( { vecTurnos : await servicios.listaTurnos ( this.controller ) , idTurno : '' } ) }
+    getDefectos = async (  ) => { this.setState ( { vecDefectos : await servicios.listaDefectos ( this.controller ) } ) }
+    getTrabajadores = async (  ) => { this.setState ( { vecOperariosCombo : await servicios.listaTrabajadores ( this.controller ) } )  }
+    useStyles = makeStyles ( theme => ( {
         root: {
             flexGrow: 1
         },
@@ -435,47 +415,36 @@ class AltaPlanillaPRODUCCION extends React.Component {
         margin: {
             margin: theme.spacing(1),
         }
-    }))
+    } ) )
     eventClose = e => {
         var nomParadaMaquina
-        try{
-            nomParadaMaquina = this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e)).nombreParadaMaquina
-        }
-        catch(e){
-            nomParadaMaquina = ''
-        }
+        try{ nomParadaMaquina = this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina === parseInt ( e ) ).nombreParadaMaquina  }
+        catch ( e ) { nomParadaMaquina = ''  }
         var campoPM
-        if(e === undefined){
-            campoPM=''
-        }
-        else{
-            campoPM = parseInt(e)
-        }
-        if(nomParadaMaquina === '' || campoPM === ''){
-            this.setState({showModalPM:false})
-        }
-        else{
-            this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina})
-        }
+        if ( e === undefined ) { campoPM = '' }
+        else { campoPM = parseInt ( e ) }
+        if ( nomParadaMaquina === '' || campoPM === '' ) { this.setState ( { showModalPM : false } ) }
+        else{  this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina } ) }
     }
-    miSubmit = e =>{
+    miSubmit = e => {
         const  { fechaProduccion , fechaFundicion  , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
         var  dato = {
             fechaProduccion,
             fechaFundicion ,
             HoraInicioProduccion,
             HoraFinProduccion,
-            idOperacion, idMaquina,
-            idPieza,  idMolde, idTipoProceso,
-            vecOperarios,
+            idOperacion , idMaquina,
+            idPieza ,  idMolde , idTipoProceso,
+            vecOperarios ,
             vecParadasMaquinaSeleccionada
         }
-        const validacion = () => {
-            var dtp_fechaProduccion = document.getElementById('dtp_fechaProduccion')
-            if(fechaProduccion === null){
-                this.props.enqueueSnackbar('Ingrese la fecha de Procesado ', { variant: 'error',preventDuplicate: true})
-                dtp_fechaProduccion.focus()
-                dtp_fechaProduccion.select()
+        console.log ( dato )
+        const validacion = (  ) => {
+            var dtp_fechaProduccion = document.getElementById ( 'dtp_fechaProduccion' )
+            if ( fechaProduccion === null ) {
+                this.props.enqueueSnackbar ( 'Ingrese la fecha de Procesado ', { variant: 'error' , preventDuplicate : true } )
+                dtp_fechaProduccion.focus (  )
+                dtp_fechaProduccion.select (  )
                 return false
             }
             if(fechaFundicion === null){
@@ -514,7 +483,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         left: 0,
                         behavior: 'smooth'
                     })
-                    // dtp_fechaProduccion.scrollLeft = 0
                     return false
                 }
             }
@@ -550,7 +518,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 return false
             }
             var vecOP = true
-            vecOperarios.forEach((o,indexOperario)=>{
+            vecOperarios.forEach ( ( o , indexOperario ) => {
                 if(vecOP === false) { return true}
                 var cantRechazo = 0
                 if(o.idOperario === ''){
@@ -639,10 +607,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             vecRE = false
                             return false
                         }
-                    })
-                    if(vecRE === false) {return false}
+                    } )
+                    if ( vecRE === false ) { return false }
                 }
-                if(cantRechazo > parseInt(o.produccion)){
+                if ( cantRechazo > parseInt ( o.produccion ) ) {
                     this.props.enqueueSnackbar('Revise los rechazos porque hay mas que la cantidad producida ', { variant: 'error',preventDuplicate: true})
                     vecOP = false
                     return false
@@ -669,27 +637,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                             horizontal: 'center',
                         }
                     })
-                    this.setState({
-                        fechaProduccion:null,
-                        fechaFundicion:null,
-                        HoraInicioProduccion:'',
-                        HoraFinProduccion:'',
-                        idOperacion:'',
-                        idMaquina:'',
-                        idPieza:'',
-                        idMolde:'',
-                        idTipoProceso:'',
-                        vecOperarios:[],
-                        vecMaquinas:[],
-                        vecPiezas:[],
-                        vecMoldes:[],
-                        vecTiposProceso:[],
-                        campoParadaMaquina:'',
-                        campoDesdeParadaMaquina:'',
-                        campoHastaParadaMaquina:'',
-                        vecParadasMaquinaSeleccionada:[],
-                        campoIdParaMaquina:'',
-                        campoNombreParadaMaquina:''
+                    this.setState ( { fechaProduccion : null , fechaFundicion : null , HoraInicioProduccion : '' , HoraFinProduccion : '' , idOperacion : '' , idMaquina : '' ,
+                        idPieza : '' , idMolde : '' , idTipoProceso : '' , vecOperarios : [  ] , vecMaquinas : [  ] , vecPiezas : [  ] , vecMoldes : [  ] , vecTiposProceso : [  ] ,
+                        campoParadaMaquina : '' ,  campoDesdeParadaMaquina : '' , campoHastaParadaMaquina : '' , vecParadasMaquinaSeleccionada : [  ] ,
+                        campoIdParaMaquina : '' , campoNombreParadaMaquina : ''
                     })
                 })
                 .catch ( e => {
@@ -712,32 +663,46 @@ class AltaPlanillaPRODUCCION extends React.Component {
         if ( plaUpdate !== '' ) {
             console.log( 'update ' )
             console.log ( plaUpdate )
-            // const llenaVecOperacion = async (  ) => {
-            //     var listaOp = await servicios.listaOperaciones (  )
-            //     if ( listaOp ) {
-            //         this.setState ( { vecOperaciones : listaOp , idOperacion : plaUpdate.idOperacion } , (  ) => {  this.setState ( { })})
-            //     }
-            //     this.setState ( { vecOperaciones : await servicios.listaOperaciones (  ) } )
-            // }
-            this.setState ( { fechaProduccion : plaUpdate.fechaProduccion , fechaFundicion : plaUpdate.fechaFundicion ,
-                HoraInicioProduccion : plaUpdate.horaInicio , HoraFinProduccion : plaUpdate.horaFin , idOperacion : plaUpdate.idOperacion ,
-                idMaquina : plaUpdate.idMaquina , idPieza : plaUpdate.idPieza , idMolde : plaUpdate.idMolde , idTipoProceso : plaUpdate.idTipoProceso ,
+            this.setState ( { fechaProduccion : new Date ( plaUpdate.fechaProduccion ) , fechaFundicion : new Date ( plaUpdate.fechaFundicion ) ,
+                HoraInicioProduccion : plaUpdate.horaInicio , HoraFinProduccion : plaUpdate.horaFin ,
                 vecOperarios : plaUpdate.vecOperarios , vecParadasMaquinaSeleccionada : plaUpdate.vecParadasMaquinaSeleccionada
             } )
+            const getOp = async (  ) => {
+                this.setState ( { vecOperaciones : await servicios.listaOperaciones ( this.controller ) } , ( ) => { this.setState ( { idOperacion : plaUpdate.idOperacion } ) } )
+            }
+            getOp (  )
+            const getMaq = async (  ) => {
+                this.setState ( { vecMaquinas : await servicios.listaMaquinaXoperacion ( plaUpdate.idOperacion , this.controller ) } , ( ) => { this.setState ( { idMaquina : plaUpdate.idMaquina } ) } )
+            }
+            getMaq (  )
+            const getPie = async (  ) => {
+                this.setState ( { vecPiezas : await servicios.listaPiezasXmaquina ( plaUpdate.idMaquina , this.controller ) } , ( ) => { this.setState ( { idPieza : plaUpdate.idPieza } ) } )
+            }
+            getPie (  )
+            const getMol = async (  ) => {
+                this.setState ( { vecMoldes : await  servicios.listaMoldesXpieza ( plaUpdate.idPieza , this.controller ) } , ( ) => { this.setState ( { idMolde : plaUpdate.idMolde } ) } )
+            }
+            getMol (  )
+            const getTipoPro = async (  ) => {
+                this.setState ( { vecTiposProceso : await servicios.tipoProcesosXmaquinaYpieza ( plaUpdate.idPieza , plaUpdate.idMaquina ) } , ( ) => { this.setState ( { idTipoProceso : plaUpdate.idTipoProceso } ) } )
+            }
+            getTipoPro (  )
         }
         else {
             console.log ( ' new ')
         }
     }
     componentDidMount (  ) {
-        this.getOperaciones (  )
         this.getParadasMaquina (  )
         this.getTurnos (  )
         this.getDefectos (  )
         this.getTrabajadores (  )
-        setTimeout ( (  ) => {
+        if ( this.props.planillaUpdate ) {
             this.completaDatosUpdate (  )
-        }  ,3000 )
+        }
+        else {
+            this.getOperaciones (  )
+        }
     }
     componentWillUnmount (  ) { this.controller.abort (  ) }
     render (  ) {
@@ -814,7 +779,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 ref={this.cbx_operacion}
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"
-                                                value={this.state.idOperacion}
+                                                value = {
+                                                    Array.isArray( this.state.vecOperaciones ) && this.state.vecOperaciones.find ( opera => opera.idOperacion === this.state.idOperacion ) ?
+                                                    this.state.idOperacion
+                                                    :
+                                                    ''
+                                                }
                                                 name='idOperacion'
                                                 onChange={this.capturaDatos}
                                             >
@@ -834,7 +804,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 ref={this.cbx_maquina}
                                                 labelId="IdMaquina"
                                                 id="demo-simple-select"
-                                                value={this.state.idMaquina}
+                                                value = {
+                                                    Array.isArray (  this.state.vecMaquinas ) && this.state.vecMaquinas.find ( m => m.idMaquina ===  this.state.idMaquina ) ?
+                                                    this.state.idMaquina
+                                                    :
+                                                    ''
+                                                }
                                                 name='idMaquina'
                                                 onChange={this.capturaDatos}
                                             >
@@ -854,7 +829,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 ref={this.cbx_pieza}
                                                 labelId="idPieza"
                                                 id="demo-simple-select"
-                                                value={this.state.idPieza}
+                                                value={
+                                                    Array.isArray(  this.state.vecPiezas ) &&  this.state.vecPiezas.find ( pi => pi.idPieza ===  this.state.idPieza ) ?
+                                                    this.state.idPieza
+                                                    :
+                                                    ''
+                                                }
                                                 name='idPieza'
                                                 onChange={this.capturaDatos}
                                             >
@@ -874,7 +854,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 ref={this.cbx_molde}
                                                 labelId="idMolde"
                                                 id="cbx_molde"
-                                                value={this.state.idMolde}
+                                                value = {
+                                                    Array.isArray(  this.state.vecMoldes ) && this.state.vecMoldes.find ( mol => mol.idMolde === this.state.idMolde ) ?
+                                                    this.state.idMolde
+                                                    :
+                                                    ''
+                                                }
                                                 name='idMolde'
                                                 onChange={this.capturaDatos}
                                             >
@@ -894,9 +879,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 ref={this.cbx_tipoProceso}
                                                 labelId="idTipoProceso"
                                                 id="cbx_molde"
-                                                value={this.state.idTipoProceso}
-                                                name='idTipoProceso'
-                                                onChange={this.capturaDatos}
+                                                value = {
+                                                    Array.isArray(  this.state.vecTiposProceso ) && this.state.vecTiposProceso.find ( tp => tp.idTipoProceso ===  this.state.idTipoProceso ) ?
+                                                    this.state.idTipoProceso
+                                                    :
+                                                    ''
+                                                }
+                                                name = 'idTipoProceso'
+                                                onChange = { this.capturaDatos }
                                             >
                                                 {
                                                     Array.isArray(  this.state.vecTiposProceso )?
@@ -920,13 +910,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
                                                                 <Grid container spacing={1}  id='contenedorOperaio'>
                                                                         <TextField
-                                                                            style={{width:'70px',marginRight:'10px'}}
-                                                                            id={`idOperario ${i}`}
-                                                                            label="Legajo"
-                                                                            type='number'
-                                                                            name={`idOperario ${i}`}
-                                                                            onChange={this.capturaDatos}
-                                                                            value={this.state.vecOperarios[i].idOperario}
+                                                                            style = { { width : '70px' , marginRight : '10px' } }
+                                                                            id = {`idOperario ${ i }`}
+                                                                            label = "Legajo"
+                                                                            type = 'number'
+                                                                            name = {`idOperario ${ i }`}
+                                                                            onChange = { this.capturaDatos }
+                                                                            value = { this.state.vecOperarios[ i ].idOperario }
                                                                         />
                                                                         <FormControl  className={classes.formControl} style={{width:'180px',marginRight:'10px'}}>
                                                                             <InputLabel id="idNombre">Nombre</InputLabel>
@@ -934,7 +924,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                 style={{width:'180px',marginRight:'10px'}}
                                                                                 labelId="idNombre"
                                                                                 id="cbx_operarios"
-                                                                                value={this.state.vecOperarios[i].nombre}
+                                                                                value = {
+                                                                                    Array.isArray(  this.state.vecOperariosCombo ) && this.state.vecOperariosCombo.find ( o => o.idTrabajador === this.state.vecOperarios[i].idOperario ) ?
+                                                                                    this.state.vecOperarios[i].idOperario
+                                                                                    :
+                                                                                    ''
+                                                                                }
                                                                                 name={`nombreOperario ${i}`}
                                                                                 onChange={this.capturaDatos}
                                                                             >
@@ -953,9 +948,14 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             <Select
                                                                                 labelId='idTurnoLabel'
                                                                                 onChange={this.capturaDatos}
-                                                                                id={`idTurno ${i}`}
-                                                                                value={this.state.vecOperarios[i].idTurno}
-                                                                                name={`idTurno ${i}`}
+                                                                                id = { `idTurno ${ i }` }
+                                                                                value = {
+                                                                                    Array.isArray( this.state.vecTurnos ) && this.state.vecTurnos.find ( t =>  t.idTurno ===  this.state.vecOperarios[ i ].idTurno  ) ?
+                                                                                    this.state.vecOperarios[ i ].idTurno
+                                                                                    :
+                                                                                    ''
+                                                                                }
+                                                                                name = { `idTurno ${ i }` }
                                                                             >
                                                                                 {
                                                                                     Array.isArray( this.state.vecTurnos )?
@@ -1050,7 +1050,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         <Select
                                                                                             id={`nombreRechazo ${i} ${indexRechazo}`}
                                                                                             labelId='lbl_defecto'
-                                                                                            value={this.state.vecOperarios[i].vecRechazo[indexRechazo].nombreRechazo}
+                                                                                            value={
+                                                                                                Array.isArray(  this.state.vecDefectos ) && this.state.vecDefectos.find ( d => d.idDefecto === this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo )?
+                                                                                                this.state.vecOperarios[ i ].vecRechazo[ indexRechazo ].idRechazo
+                                                                                                :
+                                                                                                ''
+                                                                                            }
                                                                                             name={`nombreRechazo ${i} ${indexRechazo}`}
                                                                                             onChange = {this.capturaDatos}
                                                                                             onBlur={this.verificaRechazoCoincidente}
@@ -1158,7 +1163,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>
                                                                                                             <Button
                                                                                                                 aria-label="delete"
-                                                                                                                id={`${indexZona} id_txtZona`}
+                                                                                                                id={`${i} ${indexRechazo} ${indexZona} id_txtZona`}
                                                                                                                 className={classes.margin}
                                                                                                                 style={{margin:'0px',padding:'0px'}}
                                                                                                                 onClick={

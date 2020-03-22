@@ -369,6 +369,20 @@ const ListaPlanilasProduccion = ( props ) => {
                                                         </tr>
                                                     </tbody>
                                                 </Table>
+                                                <Table responsive size = 'sm'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>HS INICIO</th>
+                                                            <th>HS FIN </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>{ planillaSeleccionada.horaInicio }</td>
+                                                            <td>{ planillaSeleccionada.horaFin }</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </Table>
                                         </div>
                                         <div>
                                             <Table responsive size = 'sm' >

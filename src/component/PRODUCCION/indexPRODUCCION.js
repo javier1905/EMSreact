@@ -13,6 +13,10 @@ class indexPRODUCCION extends React.Component {
             ancho : window.innerWidth
         }
         window.addEventListener ( 'resize' , (  ) => { this.setState ( { ancho : window.innerWidth } ) } )
+        this.controller = new AbortController ( )
+    }
+    componentWillUnmount (  ) {
+        this.controller.abort( )
     }
     render (  ) {
         return (<div style = { { width : '100%' } } >

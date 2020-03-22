@@ -1,9 +1,9 @@
 var servicio = {  }
 
-servicio.listaOperaciones = async (  ) => {
+servicio.listaOperaciones = async ( controller ) => {
     var vecOperaciones = [  ]
     try {
-        const response = await fetch('https://ems-node-api.herokuapp.com/api/operaciones', { signal : new AbortController (  ).signal } , {
+        const response = await fetch('https://ems-node-api.herokuapp.com/api/operaciones', { signal : controller.signal } , {
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -16,10 +16,10 @@ servicio.listaOperaciones = async (  ) => {
     catch ( e ) { vecOperaciones = [  ] }
     return vecOperaciones
 }
-servicio.listaMaquinaXoperacion  = async idOp => {
+servicio.listaMaquinaXoperacion  = async ( idOp , controller )  => {
     var vecMaq = [  ]
     try {
-        const response = await fetch( `https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOp}`, { signal : new AbortController (  ).signal } , {
+        const response = await fetch( `https://ems-node-api.herokuapp.com/api/maquinas/xoperacion/${idOp}`, { signal : controller.signal } , {
             method:'GET',
             headers: new Headers({
                 'Accept': 'Applitaction/json',
@@ -32,10 +32,10 @@ servicio.listaMaquinaXoperacion  = async idOp => {
     catch ( e ) { vecMaq = [  ] }
     return vecMaq
 }
-servicio.listaPiezasXmaquina  = async idMaq => {
+servicio.listaPiezasXmaquina  = async ( idMaq , controller ) => {
     var vecPie = [  ]
     try {
-        const response = await fetch( `https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaq}`, { signal : new AbortController (  ).signal } , {
+        const response = await fetch( `https://ems-node-api.herokuapp.com/api/piezas/xmaquina/${idMaq}`, { signal : controller.signal } , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Applitaction/json' ,
@@ -48,10 +48,10 @@ servicio.listaPiezasXmaquina  = async idMaq => {
     catch ( e ) { vecPie = [  ] }
     return vecPie
 }
-servicio.listaMoldesXpieza  = async idPie => {
+servicio.listaMoldesXpieza  = async ( idPie , controller ) => {
     var vecMol = [  ]
     try {
-        const response = await fetch( `https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPie}`, { signal : new AbortController (  ).signal } , {
+        const response = await fetch( `https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPie}`, { signal : controller.signal } , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Applitaction/json' ,
@@ -64,10 +64,10 @@ servicio.listaMoldesXpieza  = async idPie => {
     catch ( e ) { vecMol = [  ] }
     return vecMol
 }
-servicio.listaParadaMaquinas  = async (  ) => {
+servicio.listaParadaMaquinas  = async  controller  => {
     var vecPm = [  ]
     try {
-        const response = await fetch( 'https://ems-node-api.herokuapp.com/api/paradasMaquina', { signal : new AbortController (  ).signal } , {
+        const response = await fetch( 'https://ems-node-api.herokuapp.com/api/paradasMaquina', { signal : controller.signal } , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Applitaction/json' ,
@@ -80,10 +80,10 @@ servicio.listaParadaMaquinas  = async (  ) => {
     catch ( e ) { vecPm = [  ] }
     return vecPm
 }
-servicio.listaTurnos  = async (  ) => {
+servicio.listaTurnos  = async controller => {
     var vecTur = [  ]
     try {
-        const response = await fetch( `https://ems-node-api.herokuapp.com/api/turnos` , { signal : new AbortController (  ).signal } , {
+        const response = await fetch( `https://ems-node-api.herokuapp.com/api/turnos` , { signal : controller.signal } , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Applitaction/json' ,
@@ -96,10 +96,10 @@ servicio.listaTurnos  = async (  ) => {
     catch ( e ) { vecTur = [  ] }
     return vecTur
 }
-servicio.listaDefectos  = async (  ) => {
+servicio.listaDefectos  = async controller => {
     var vecDef = [  ]
     try {
-        const response = await fetch( 'https://ems-node-api.herokuapp.com/api/defectos' , { signal : new AbortController (  ).signal } , {
+        const response = await fetch( 'https://ems-node-api.herokuapp.com/api/defectos' , { signal : controller.signal } , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Applitaction/json' ,
@@ -112,10 +112,10 @@ servicio.listaDefectos  = async (  ) => {
     catch ( e ) { vecDef = [  ] }
     return vecDef
 }
-servicio.listaTrabajadores  = async (  ) => {
+servicio.listaTrabajadores  = async controller => {
     var vecTrab = [  ]
     try {
-        const response = await fetch( 'https://ems-node-api.herokuapp.com/api/trabajadores' , { signal : new AbortController (  ).signal } , {
+        const response = await fetch( 'https://ems-node-api.herokuapp.com/api/trabajadores' , { signal : controller.signal } , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Applitaction/json' ,

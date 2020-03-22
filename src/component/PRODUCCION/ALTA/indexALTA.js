@@ -6,6 +6,10 @@ class indexALTA extends React.Component {
     constructor ( props ) {
         super ( props )
         this.state = {  }
+        this.controller = new AbortController (  )
+    }
+    componentWillUnmount (  ) {
+        this.controller.abort (  )
     }
     render (  ) {
         return (
