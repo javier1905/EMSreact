@@ -3,24 +3,18 @@ import {Form,Button,Table,} from 'react-bootstrap'
 import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns'
 import Grid from '@material-ui/core/Grid'
-import DateFnsUtils from '@date-io/date-fns'
-import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import { makeStyles } from '@material-ui/core/styles'
 import {TextField,Box} from '@material-ui/core'
-// import Fab from '@material-ui/core/Fab';
-// import AddIcon from '@material-ui/icons/Add';
-// import ButtonN from '@material-ui/core/Button'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import Alert from '@material-ui/lab/Alert'
-// import IconButton from '@material-ui/core/IconButton'
-// import DeleteIcon from '@material-ui/icons/Delete'
 import ModalPM from './MODALPARADASDEMAQUINA/modalPARADASDEMAQUINA'
 import { withSnackbar } from 'notistack'
 import { connect } from 'react-redux'
 import servicios from './serviceAltaPlanilla'
+import MyComponent from '../../AAprimary/misComponentes'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor ( props ) {
@@ -146,15 +140,15 @@ class AltaPlanillaPRODUCCION extends React.Component {
     getHoraInicioOperario = e =>{
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
-        if(e.target.value !== '06:00' && vecOperariosTemp[indexOperario].horaFin !== '06:00' && e.target.value === vecOperariosTemp[indexOperario].horaFin){
+        if ( e.target.value !== '06:00' && vecOperariosTemp[ indexOperario ].horaFin !== '06:00' && e.target.value === vecOperariosTemp[ indexOperario ].horaFin){
             vecOperariosTemp[indexOperario].horaInicio = ''
         }
-        else{
-            vecOperariosTemp[indexOperario].horaInicio = e.target.value
+        else {
+            vecOperariosTemp[ indexOperario ].horaInicio = e.target.value
         }
-        this.setState({vecOperarios:vecOperariosTemp})
+        this.setState ( { vecOperarios:vecOperariosTemp } )
     }
-    getHoraFinOperario = e =>{
+    getHoraFinOperario = e => {
         var vecOperariosTemp = this.state.vecOperarios
         var indexOperario = e.target.name.split(' ')[1]
         if(e.target.value !== '06:00' && vecOperariosTemp[indexOperario].horaInicio !== '06:00' && e.target.value === vecOperariosTemp[indexOperario].horaInicio){
@@ -259,15 +253,17 @@ class AltaPlanillaPRODUCCION extends React.Component {
         try{
             let indexOperario = parseInt(e.target.name.split(' ')[1])
             let indexRechazo = parseInt(e.target.name.split(' ')[2])
-            // var idRechazo = document.getElementById(`idRechazo ${indexOperario} ${indexRechazo}`).value
             var idRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].idRechazo
-            // var nombreRechazo = document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).value
             var nombreRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].nombreRechazo
-            // var tipoRechazo = document.getElementById(`tipoRechazo ${indexOperario} ${indexRechazo}`).value
-            var tipoRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].tipo
-            // var cantidadRechazo = document.getElementById(`cantidadRechazo ${indexOperario} ${indexRechazo}`).value ; console.log(document.getElementById(`nombreRechazo ${indexOperario} ${indexRechazo}`).target.value)
+            var tipoRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].tipo   
             var cantidadRechazo = this.state.vecOperarios[indexOperario].vecRechazo[indexRechazo].cantidadRechazo
-            if(idRechazo && nombreRechazo && tipoRechazo && cantidadRechazo){ // VERIFICO QUE TODOS LOS CAMPOS DE DEL RECHAZO ANALIZADO ESTEN COMPLETOS
+            var bandera = true
+            this.state.vecOperarios[indexOperario].vecRechazo.forEach ( r  => {
+                if ( r.cantidadRechazo === '' || r.idRechazo === '' || r.nombreRechazo === '' || r.tipo === '' ){
+                    bandera = false
+                }
+            })
+            if(idRechazo && nombreRechazo && tipoRechazo && cantidadRechazo && bandera === true){ // VERIFICO QUE TODOS LOS CAMPOS DE DEL RECHAZO ANALIZADO ESTEN COMPLETOS
                 cacheVecOp[indexOperario].vecRechazo.map((rech,indice) => {// RECORRO EL VEC RECHAZOS DE ESE OPERARIO
                     if(rech.idRechazo !== undefined && rech.nombreRechazo !== undefined && rech.tipo !== undefined && rech.cantidadRechazo !== undefined){
                         if(indice !== indexRechazo){ // indice { coincidencia } indexRechazo { analizado }
@@ -440,6 +436,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
         console.log ( dato )
         const validacion = (  ) => {
+            console.log ( HoraInicioProduccion , HoraFinProduccion ,  HoraInicioProduccion === HoraFinProduccion )
             var dtp_fechaProduccion = document.getElementById ( 'dtp_fechaProduccion' )
             if ( fechaProduccion === null ) {
                 this.props.enqueueSnackbar ( 'Ingrese la fecha de Procesado ', { variant: 'error' , preventDuplicate : true } )
@@ -486,8 +483,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     return false
                 }
             }
-            else  if(HoraInicioProduccion !== '06:00' && HoraFinProduccion !== ' 06:00' && HoraInicioProduccion === HoraFinProduccion) {
-                var dtp_idHoraIniciuoProduccion = document.getElementById('idHoraIniciuoProduccion')
+            if ( HoraInicioProduccion !== '06:00' && HoraFinProduccion !== ' 06:00' && HoraInicioProduccion === HoraFinProduccion ) {
+                var dtp_idHoraIniciuoProduccion = document.getElementById ( 'idHoraIniciuoProduccion' )
                 dtp_idHoraIniciuoProduccion.focus()
                 dtp_idHoraIniciuoProduccion.select()
                 this.props.enqueueSnackbar('No puede tener horas de inicio y fin  iguales', { variant: 'error'})
@@ -713,191 +710,61 @@ class AltaPlanillaPRODUCCION extends React.Component {
                         <div className={classes.root}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12}> {/* INICIO CONTENEDOR FECHAS PRODUCCION Y FUNDICION */}
-                                        <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl}>
-                                            <KeyboardDatePicker
-                                                style={{marginRight:'10px',width:'180px'}}
-                                                size='small'
-                                                variant='standard'
-                                                margin="none"
-                                                id="dtp_fechaProduccion"
-                                                label="Fecha Procesado"
-                                                format="dd/MM/yyyy"
-                                                value={this.state.fechaProduccion}
-                                                onChange={this.handleDateChange}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />
-                                            <KeyboardDatePicker
-                                                style={{marginRight:'10px',width:'180px'}}
-                                                size='small'
-                                                variant="outlined"
-                                                margin="none"
-                                                id="dtp_fechaFundicion"
-                                                label="Fecha Fundicion"
-                                                format="dd/MM/yyyy"
-                                                value={this.state.fechaFundicion}
-                                                onChange={this.capturaFechaFundicion}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }}
-                                            />
-                                        </MuiPickersUtilsProvider>
+                                        <MyComponent.fecha id="dtp_fechaFundicion" label="Fecha Fundicion" value = { this.state.fechaFundicion } onChange = { this.capturaFechaFundicion } />
+                                        <MyComponent.fecha id="dtp_fechaProduccion" label="Fecha Procesado" value = { this.state.fechaProduccion } onChange = { this.handleDateChange } />
                                     </Grid> {/* FIN CONTENEDOR FECHAS PRODUCCION Y FUNDICCION*/}
                                     <Grid item xs={12}> {/* INICIO TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
-                                        <TextField
-                                            style={{width:'100px',marginRight:'10px'}}
-                                            id="idHoraIniciuoProduccion"
-                                            label="Desde"
-                                            name='hsInicioOperario'
-                                            type="time"
-                                            onChange={this.getHoraInicioProduccion}
-                                            value ={this.state.HoraInicioProduccion}
-                                            className={classes.textField}
-                                            InputLabelProps={{
-                                            shrink: true,
-                                            }}
-                                        />
-                                        <TextField
-                                            style={{width:'100px',marginRight:'10px'}}
-                                            id="idHoraFinProduccion"
-                                            label="Hasta"
-                                            name='hsFinOperario'
-                                            type="time"
-                                            onChange={this.getHoraFinProduccion}
-                                            value ={this.state.HoraFinProduccion}
-                                            className={classes.textField}
-                                            InputLabelProps={{
-                                            shrink: true,
-                                            }}
-                                        />
+                                        <MyComponent.hora  id="idHoraIniciuoProduccion" label="Desde"  name='hsInicioOperario' value = { this.state.HoraInicioProduccion } onChange = { this.getHoraInicioProduccion } />
+                                        <MyComponent.hora  id="idHoraFinProduccion" label="Hasta"  name='hsFinOperario' value = { this.state.HoraFinProduccion } onChange = { this.getHoraFinProduccion } />
                                     </Grid> {/* FIN TURNO Y HORA DE INICIO Y FIN  DE LA PLANILLA */}
                                     <Grid item xs={12}> {/* INICIO OPERACION MAQUINA PIEZA Y MOLDE */}
-                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
-                                            <InputLabel id="demo-simple-select-label">Operacion</InputLabel>
-                                            <Select
-                                                ref={this.cbx_operacion}
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                value = {
-                                                    Array.isArray( this.state.vecOperaciones ) && this.state.vecOperaciones.find ( opera => opera.idOperacion === this.state.idOperacion ) ?
-                                                    this.state.idOperacion
-                                                    :
-                                                    ''
-                                                }
-                                                name='idOperacion'
-                                                onChange={this.capturaDatos}
-                                            >
-                                            {
-                                                Array.isArray( this.state.vecOperaciones )?
-                                                    this.state.vecOperaciones.map((ope,indiceOperacion)=>{
-                                                    return <MenuItem  key={indiceOperacion} value={ope.idOperacion}>{ope.nombreOperacion}</MenuItem>
-                                                    })
-                                                    :
-                                                    <MenuItem></MenuItem>
-                                            }
-                                            </Select>
-                                        </FormControl>
-                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
-                                            <InputLabel id="idMaquina">Maquina</InputLabel>
-                                            <Select
-                                                ref={this.cbx_maquina}
-                                                labelId="IdMaquina"
-                                                id="demo-simple-select"
-                                                value = {
-                                                    Array.isArray (  this.state.vecMaquinas ) && this.state.vecMaquinas.find ( m => m.idMaquina ===  this.state.idMaquina ) ?
-                                                    this.state.idMaquina
-                                                    :
-                                                    ''
-                                                }
-                                                name='idMaquina'
-                                                onChange={this.capturaDatos}
-                                            >
-                                            {
-                                                Array.isArray(  this.state.vecMaquinas )?
-                                                this.state.vecMaquinas.map((maq,indiceMaquina)=>{
-                                                    return <MenuItem key={indiceMaquina} value={maq.idMaquina}>{maq.nombreMaquina}</MenuItem>
-                                                })
-                                                :
-                                                <MenuItem></MenuItem>
-                                            }
-                                            </Select>
-                                        </FormControl>
-                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
-                                            <InputLabel id="idPieza">Pieza</InputLabel>
-                                            <Select
-                                                ref={this.cbx_pieza}
-                                                labelId="idPieza"
-                                                id="demo-simple-select"
-                                                value={
-                                                    Array.isArray(  this.state.vecPiezas ) &&  this.state.vecPiezas.find ( pi => pi.idPieza ===  this.state.idPieza ) ?
-                                                    this.state.idPieza
-                                                    :
-                                                    ''
-                                                }
-                                                name='idPieza'
-                                                onChange={this.capturaDatos}
-                                            >
-                                            {
-                                                Array.isArray(  this.state.vecPiezas )?
-                                                this.state.vecPiezas.map((pie,indicePieza)=>{
-                                                    return <MenuItem key={indicePieza} value={pie.idPieza}>{pie.nombrePieza}</MenuItem>
-                                                })
-                                                :
-                                                <MenuItem></MenuItem>
-                                            }
-                                            </Select>
-                                        </FormControl>
-                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
-                                            <InputLabel id="idMolde">Molde</InputLabel>
-                                            <Select
-                                                ref={this.cbx_molde}
-                                                labelId="idMolde"
-                                                id="cbx_molde"
-                                                value = {
-                                                    Array.isArray(  this.state.vecMoldes ) && this.state.vecMoldes.find ( mol => mol.idMolde === this.state.idMolde ) ?
-                                                    this.state.idMolde
-                                                    :
-                                                    ''
-                                                }
-                                                name='idMolde'
-                                                onChange={this.capturaDatos}
-                                            >
-                                                {
-                                                    Array.isArray(  this.state.vecMoldes )?
-                                                    this.state.vecMoldes.map((mol,indiceMolde)=>{
-                                                        return <MenuItem key={indiceMolde} value={mol.idMolde}>{mol.nombreMolde}</MenuItem>
-                                                    })
-                                                    :
-                                                    <MenuItem></MenuItem>
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                        <FormControl  className={classes.formControl} style={{width:'140px',marginRight:'10px'}}>
-                                            <InputLabel id="idTipoProceso">Tipo Proceso</InputLabel>
-                                            <Select
-                                                ref={this.cbx_tipoProceso}
-                                                labelId="idTipoProceso"
-                                                id="cbx_molde"
-                                                value = {
-                                                    Array.isArray(  this.state.vecTiposProceso ) && this.state.vecTiposProceso.find ( tp => tp.idTipoProceso ===  this.state.idTipoProceso ) ?
-                                                    this.state.idTipoProceso
-                                                    :
-                                                    ''
-                                                }
-                                                name = 'idTipoProceso'
-                                                onChange = { this.capturaDatos }
-                                            >
-                                                {
-                                                    Array.isArray(  this.state.vecTiposProceso )?
-                                                    this.state.vecTiposProceso.map((tpro,indiceTipoProceso)=>{
-                                                        return <MenuItem key={indiceTipoProceso} value={tpro.idTipoProceso}>{tpro.nombreTipoProceso}</MenuItem>
-                                                    })
-                                                    :
-                                                    <MenuItem></MenuItem>
-                                                }
-                                            </Select>
-                                        </FormControl>
+                                    <MyComponent.listaDesplegable
+                                        name='idOperacion'
+                                        onChange = { this.capturaDatos }
+                                        value = { this.state.idOperacion }
+                                        ref = { this.cbx_operacion }
+                                        label = 'Operacion'
+                                        id = 'myOperacion'
+                                        array = { this.state.vecOperaciones }
+                                        member = { { valueMember : 'idOperacion' , displayMember : 'nombreOperacion' } }
+                                    />
+                                    <MyComponent.listaDesplegable
+                                        name='idMaquina'
+                                        onChange = { this.capturaDatos }
+                                        value = { this.state.idMaquina }
+                                        ref = { this.cbx_maquina }
+                                        label = 'Maquina'
+                                        id = 'myMaquina'
+                                        array = { this.state.vecMaquinas }
+                                        member = { { valueMember : 'idMaquina' , displayMember : 'nombreMaquina' } }
+                                    />
+                                    <MyComponent.listaDesplegable
+                                        name='idPieza'
+                                        onChange = { this.capturaDatos }
+                                        value = { this.state.idPieza }
+                                        ref = { this.cbx_pieza }
+                                        label = 'Pieza'
+                                        array = { this.state.vecPiezas }
+                                        member = { { valueMember : 'idPieza' , displayMember : 'nombrePieza' } }
+                                    />
+                                    <MyComponent.listaDesplegable
+                                        name='idMolde'
+                                        onChange = { this.capturaDatos }
+                                        value = { this.state.idMolde }
+                                        ref = { this.cbx_molde }
+                                        label = 'Molde'
+                                        array = { this.state.vecMoldes }
+                                        member = { { valueMember : 'idMolde' , displayMember : 'nombreMolde' } }
+                                    />
+                                    <MyComponent.listaDesplegable
+                                        name='idTipoProceso'
+                                        onChange = { this.capturaDatos }
+                                        value = { this.state.idTipoProceso }
+                                        ref = { this.cbx_tipoProceso }
+                                        label = 'Tipo Proceso'
+                                        array = { this.state.vecTiposProceso }
+                                        member = { { valueMember : 'idTipoProceso' , displayMember : 'nombreTipoProceso' } }
+                                    />
                                     </Grid>  {/* FIN OPERACION MAQUINA PIEZA Y MOLDE */}
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
                                         <h2>Operarios</h2>
@@ -918,98 +785,52 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange = { this.capturaDatos }
                                                                             value = { this.state.vecOperarios[ i ].idOperario }
                                                                         />
-                                                                        <FormControl  className={classes.formControl} style={{width:'180px',marginRight:'10px'}}>
-                                                                            <InputLabel id="idNombre">Nombre</InputLabel>
-                                                                            <Select
-                                                                                style={{width:'180px',marginRight:'10px'}}
-                                                                                labelId="idNombre"
-                                                                                id="cbx_operarios"
-                                                                                value = {
-                                                                                    Array.isArray(  this.state.vecOperariosCombo ) && this.state.vecOperariosCombo.find ( o => o.idTrabajador === this.state.vecOperarios[i].idOperario ) ?
-                                                                                    this.state.vecOperarios[i].idOperario
-                                                                                    :
-                                                                                    ''
-                                                                                }
-                                                                                name={`nombreOperario ${i}`}
-                                                                                onChange={this.capturaDatos}
-                                                                            >
-                                                                                {
-                                                                                    Array.isArray(  this.state.vecOperariosCombo )?
-                                                                                    this.state.vecOperariosCombo.map((op,indiceOperario)=>{
-                                                                                    return <MenuItem key={indiceOperario} value={op.idTrabajador}>{op.nombreTrabajador} { op.apellidoTrabajador }</MenuItem>
-                                                                                    })
-                                                                                    :
-                                                                                    <MenuItem></MenuItem>
-                                                                                }
-                                                                            </Select>
-                                                                        </FormControl>
-                                                                        <FormControl  className={classes.formControl} style={{width:'130px',marginRight:'10px'}} >
-                                                                        <InputLabel  id='idTurnoLabel'>Turno</InputLabel>
-                                                                            <Select
-                                                                                labelId='idTurnoLabel'
-                                                                                onChange={this.capturaDatos}
-                                                                                id = { `idTurno ${ i }` }
-                                                                                value = {
-                                                                                    Array.isArray( this.state.vecTurnos ) && this.state.vecTurnos.find ( t =>  t.idTurno ===  this.state.vecOperarios[ i ].idTurno  ) ?
-                                                                                    this.state.vecOperarios[ i ].idTurno
-                                                                                    :
-                                                                                    ''
-                                                                                }
-                                                                                name = { `idTurno ${ i }` }
-                                                                            >
-                                                                                {
-                                                                                    Array.isArray( this.state.vecTurnos )?
-                                                                                    this.state.vecTurnos.map((tur,indiceTurno)=>{
-                                                                                    return <MenuItem key={indiceTurno} value={tur.idTurno}>{tur.descripcionTurno}</MenuItem>
-                                                                                    })
-                                                                                    :
-                                                                                    <MenuItem value=''></MenuItem>
-                                                                                }
-                                                                            </Select>
-                                                                        </FormControl>
-                                                                        <TextField
-                                                                            style={{width:'100px',marginRight:'10px'}}
-                                                                            id={`hsInicioOperario ${i}`}
-                                                                            label="Desde"
-                                                                            name={`hsInicioOperario ${i}`}
-                                                                            type="time"
-                                                                            onChange={this.getHoraInicioOperario}
-                                                                            value ={this.state.vecOperarios[i].horaInicio}
-                                                                            className={classes.textField}
-                                                                            InputLabelProps={{
-                                                                            shrink: true,
-                                                                            }}
+                                                                        <MyComponent.listaDesplegable
+                                                                            name = {`nombreOperario ${i}`}
+                                                                            onChange = { this.capturaDatos }
+                                                                            value = { this.state.vecOperarios[i].idOperario }
+                                                                            label = 'Nombre'
+                                                                            id = "cbx_operarios"
+                                                                            width = { 180 }
+                                                                            array = { this.state.vecOperariosCombo }
+                                                                            member = { { valueMember : 'idTrabajador' , displayMember : 'nombreTrabajador' , displayMember2 : 'apellidoTrabajador' } }
                                                                         />
-                                                                        <TextField
-                                                                            style={{width:'100px',marginRight:'10px'}}
-                                                                            id={`hsFinOperario ${i}`}
-                                                                            label="Hasta"
-                                                                            name={`hsFinOperario ${i}`}
-                                                                            type="time"
-                                                                            onChange={this.getHoraFinOperario}
-                                                                            value ={this.state.vecOperarios[i].horaFin}
-                                                                            className={classes.textField}
-                                                                            InputLabelProps={{
-                                                                            shrink: true,
-                                                                            }}
+                                                                        <MyComponent.listaDesplegable
+                                                                            name = { `idTurno ${ i }` }
+                                                                            onChange = { this.capturaDatos }
+                                                                            value = { this.state.vecOperarios[ i ].idTurno }
+                                                                            label = 'Turno'
+                                                                            id = { `idTurno ${ i }` }
+                                                                            array = { this.state.vecTurnos }
+                                                                            member = { { valueMember : 'idTurno' , displayMember : 'descripcionTurno' } }
                                                                         />
-                                                                        <TextField
-                                                                            style={{width:'105px',marginRight:'10px'}}
-                                                                            id={`txt_produccionOperario ${i}`}
-                                                                            label="Produccion"
-                                                                            type='number'
-                                                                            name={`produccionOperario ${i}`}
-                                                                            onChange={this.capturaDatos}
-                                                                            value={this.state.vecOperarios[i].produccion}
+                                                                        <MyComponent.hora
+                                                                            id = {`hsInicioOperario ${i}`}
+                                                                            label = "Desde"
+                                                                            name = {`hsInicioOperario ${i}`}
+                                                                            value = { this.state.vecOperarios[i].horaInicio }
+                                                                            onChange = { this.getHoraInicioOperario }
                                                                         />
-                                                                        <TextField
-                                                                            style={{width:'80px',marginRight:'10px'}}
-                                                                            id={`txt_caloriasOperario ${i}`}
-                                                                            label="Calorias"
-                                                                            type='number'
-                                                                            name={`caloriasOperario ${i}`}
-                                                                            onChange={this.capturaDatos}
-                                                                            value={this.state.vecOperarios[i].calorias}
+                                                                        <MyComponent.hora
+                                                                            id = {`hsFinOperario ${i}`}
+                                                                            label = "Hasta"
+                                                                            name = {`hsFinOperario ${i}`}
+                                                                            value = { this.state.vecOperarios[i].horaFin }
+                                                                            onChange = { this.getHoraFinOperario }
+                                                                        />
+                                                                        <MyComponent.numero
+                                                                            id = {`txt_produccionOperario ${i}`}
+                                                                            label = "Produccion"
+                                                                            name = {`produccionOperario ${i}`}
+                                                                            onChange = { this.capturaDatos }
+                                                                            value = { this.state.vecOperarios[i].produccion }
+                                                                        />
+                                                                        <MyComponent.numero
+                                                                            id = {`txt_caloriasOperario ${i}`}
+                                                                            label = "Calorias"
+                                                                            name = {`caloriasOperario ${i}`}
+                                                                            onChange = { this.capturaDatos }
+                                                                            value = { this.state.vecOperarios[i].calorias }
                                                                         />
                                                                         {/* <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN> */}
                                                                         <Button size="sm" name={i} onClick={this.addRechazo}> Add rechazos </Button>
@@ -1035,49 +856,32 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                         return <Box className='contenedorRechazo'  boxShadow={3}  bgcolor="background.default"  m={1} p={3} id={`contenedorRechazosYzonas ${i} ${indexRechazo}`} key={`${i}${indexRechazo}`} >
                                                                             <Grid container spacing={1}>
                                                                                 <Grid item xs={12} className='contenedorRechazos'>
-                                                                                    <TextField
-                                                                                        style={{width:'105px',marginRight:'10px'}}
-                                                                                        id={`idRechazo ${i} ${indexRechazo}`}
-                                                                                        label="Id rech"
-                                                                                        type='number'
-                                                                                        name={`idRechazo ${i} ${indexRechazo}`}
-                                                                                        onChange={this.capturaDatos}
-                                                                                        value={this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo}
-                                                                                        onBlur={this.verificaRechazoCoincidente}
+                                                                                    <MyComponent.numero
+                                                                                        id = {`idRechazo ${i} ${indexRechazo}`}
+                                                                                        label = "Id rech"
+                                                                                        name = {`idRechazo ${i} ${indexRechazo}`}
+                                                                                        onChange = { this.capturaDatos }
+                                                                                        value = { this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo }
+                                                                                        onBlur = { this.verificaRechazoCoincidente }
                                                                                     />
-                                                                                    <FormControl  className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
-                                                                                        <InputLabel id='lbl_defecto'>Defecto</InputLabel>
-                                                                                        <Select
-                                                                                            id={`nombreRechazo ${i} ${indexRechazo}`}
-                                                                                            labelId='lbl_defecto'
-                                                                                            value={
-                                                                                                Array.isArray(  this.state.vecDefectos ) && this.state.vecDefectos.find ( d => d.idDefecto === this.state.vecOperarios[i].vecRechazo[indexRechazo].idRechazo )?
-                                                                                                this.state.vecOperarios[ i ].vecRechazo[ indexRechazo ].idRechazo
-                                                                                                :
-                                                                                                ''
-                                                                                            }
-                                                                                            name={`nombreRechazo ${i} ${indexRechazo}`}
-                                                                                            onChange = {this.capturaDatos}
-                                                                                            onBlur={this.verificaRechazoCoincidente}
-                                                                                        >
-                                                                                            {
-                                                                                                Array.isArray(  this.state.vecDefectos )?
-                                                                                                this.state.vecDefectos.map((def,indexDefecto)=>{
-                                                                                                    return <MenuItem key={indexDefecto} value={def.idDefecto}>{def.nombreDefecto}</MenuItem>
-                                                                                                })
-                                                                                                :
-                                                                                                <MenuItem></MenuItem>
-                                                                                            }
-                                                                                        </Select>
-                                                                                    </FormControl>
+                                                                                    <MyComponent.listaDesplegable
+                                                                                        name = { `nombreRechazo ${i} ${indexRechazo}` }
+                                                                                        onChange = { this.capturaDatos }
+                                                                                        onBlur = { this.verificaRechazoCoincidente }
+                                                                                        value = { this.state.vecOperarios[ i ].vecRechazo[ indexRechazo ].idRechazo }
+                                                                                        label = 'Defecto'
+                                                                                        id = { `nombreRechazo ${i} ${indexRechazo}` }
+                                                                                        array = { this.state.vecDefectos }
+                                                                                        member = { { valueMember : 'idDefecto' , displayMember : 'nombreDefecto' } }
+                                                                                    />
                                                                                     <FormControl  className={classes.formControl}  style={{width:'140px',marginRight:'10px'}}>
                                                                                         <InputLabel id='lbl_TipoRecha'>Tipo Rech</InputLabel>
                                                                                         <Select
-                                                                                            id={`tipoRechazo ${i} ${indexRechazo}`}
+                                                                                            id = { `tipoRechazo ${i} ${indexRechazo}` }
                                                                                             labelId='lbl_TipoRecha'
-                                                                                            value={this.state.vecOperarios[i].vecRechazo[indexRechazo].tipo}
-                                                                                            name={`tipoRechazo ${i} ${indexRechazo}`}
-                                                                                            onChange = {this.capturaDatos}
+                                                                                            value = { this.state.vecOperarios[i].vecRechazo[indexRechazo].tipo }
+                                                                                            name = { `tipoRechazo ${i} ${indexRechazo}` }
+                                                                                            onChange = { this.capturaDatos }
                                                                                             onBlur={this.verificaRechazoCoincidente}
                                                                                         >
                                                                                             {
@@ -1090,15 +894,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                             }
                                                                                         </Select>
                                                                                     </FormControl>
-                                                                                    <TextField
-                                                                                        style={{width:'105px',marginRight:'10px'}}
-                                                                                        id={`cantidadRechazo ${i} ${indexRechazo}`}
-                                                                                        label="Cantidad"
-                                                                                        type='number'
-                                                                                        name={`cantidadRechazo ${i} ${indexRechazo}`}
-                                                                                        onChange={this.capturaDatos}
-                                                                                        value={this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo}
-                                                                                        onBlur={this.verificaRechazoCoincidente}
+                                                                                    <MyComponent.numero
+                                                                                        id = {`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                        label = "Cantidad"
+                                                                                        name = {`cantidadRechazo ${i} ${indexRechazo}`}
+                                                                                        onChange = { this.capturaDatos }
+                                                                                        value = { this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo }
+                                                                                        onBlur = { this.verificaRechazoCoincidente }
                                                                                     />
                                                                                     <Button
                                                                                         aria-label="delete"

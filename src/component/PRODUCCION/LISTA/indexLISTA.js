@@ -148,9 +148,9 @@ const ListaPlanilasProduccion = ( props ) => {
                 <div style = { { background : 'white' , padding : 20 } } >
                     <h2>Listado Planilla Produccion</h2>
                     <h6 style = { { marginTop : 15 } } >Filtros</h6>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils} className={classes.formControl} >
+                    <MuiPickersUtilsProvider utils = { DateFnsUtils } className={classes.formControl } >
                         <KeyboardDatePicker
-                            style={{marginRight:'10px',width:'220px'}}
+                            style= { { marginRight : '10px' , width : '220px' } }
                             size='small'
                             variant='standard'
                             margin="none"
