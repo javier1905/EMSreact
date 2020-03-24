@@ -1,91 +1,93 @@
-import React from 'react'
-import {Form,Button,Alert} from 'react-bootstrap'
-import { withRouter } from 'react-router-dom';
+import React  from 'react'
+import { findDOMNode } from 'react-dom'
+import {Form,Alert} from 'react-bootstrap'
+import Button from '@material-ui/core/Button'
+import { withRouter } from 'react-router-dom'
+import MyComponent from '../AAprimary/misComponentes'
+import Typography from '@material-ui/core/Typography'
+import $ from 'jquery'
+import './styleLOGIN.css'
 
 class FormLOGIN extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             userName:undefined,
             password:undefined,
-            bandera:false,
-            mensaje:''
-        };
+            bandera : false,
+            mensaje : ''
+        }
+        this.MyAlert = React.createRef (  )
     }
     caturaUser = e =>{
         if(e.target.name ==='userName'){
             this.setState({userName:e.target.value})
         }
         if(e.target.name === 'password'){
-            this.setState({password:e.target.value})
+            this.setState ( { password : e.target.value } )
         }
     }
     miSubmit = e => {
         const {userName,password} = this.state
         const d = {userName,password}
-        fetch('https://ems-node-api.herokuapp.com/api/logueo',{
-            method: 'POST',
-            body: JSON.stringify(d),
-            headers:{
-                'Accept': 'Application/json',
-                'Content-Type': 'Application/json'
+        fetch ( 'https://ems-node-api.herokuapp.com/api/logueo' , {
+            method : 'POST',
+            body : JSON.stringify( d ) ,
+            headers : {
+                'Accept' : 'Application/json',
+                'Content-Type' : 'Application/json'
             }
         })
-        .then(json => json.json())
-        .then(dato =>{
+        .then ( json => json.json (  ) )
+        .then ( dato => {
             if(dato.token) {
                 sessionStorage.setItem('token',dato.token)
                 this.props.history.push('/home')
             }
-            else if (dato.mensaje){
-                setTimeout(()=>{this.setState({bandera:false,mensaje:''})},4000)
-                this.setState({bandera:true,mensaje:dato.mensaje})
+            else if (dato.mensaje) {
+                const  alert = findDOMNode ( this.refs.alert )
+                $(alert).slideToggle (  )
+                setTimeout ( (  ) => {
+                    this.setState ( { mensaje : '' } )
+                    $(alert).slideToggle (  )
+                } , 4000 )
+                this.setState({ mensaje:dato.mensaje})
             }
         })
-        e.preventDefault()
+        e.preventDefault (  )
     }
     render() {
         return (
             <div>
-                <Form onSubmit={this.miSubmit}>
-                    <h1>Inicio de Sesion</h1>
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Nombre de Usuario</Form.Label>
-                        <Form.Control
-                            name="userName"
-                            onChange={this.caturaUser}
-                            placeholder="UserName"
-                            required
-                        />
-                        <Form.Text className="text-muted">
-                            We'll never share your email with anyone else.
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Contraseña</Form.Label>
-                        <Form.Control
-                            name="password"
-                            onChange={this.caturaUser}
-                            type="password"
-                            placeholder="Password"
-                            required
-                        />
-                    </Form.Group>
-                    <Button
-                        id='buttonIniciarSesion'
-                        variant="primary"
-                        type="submit"
-                    >
-                        Iniciar Sesion
+                <Form onSubmit = { this.miSubmit }  >
+                    <Typography style = { { marginBottom : 30 } } variant = 'h2' >Inicio de Sesion</Typography>
+                    <MyComponent.texto
+                        id = 'user'
+                        name="userName"
+                        onChange = { this.caturaUser }
+                        required
+                        value = { this.state.userName }
+                        label = 'Nombre de Usuario'
+                        width = '100%'
+                    />
+                    <MyComponent.password
+                        id = 'pass'
+                        required
+                        name = "password"
+                        value = { this.state.password }
+                        onChange = { this.caturaUser }
+                    />
+                    <Button variant="contained" color="primary" style = { { marginTop : 25 , width : '100%' , padding : 20 } }  type = 'submit'>
+                        <Typography variant = 'h5'>Iniciar Sesion</Typography>
                     </Button>
                 </Form>
                 <div>
                 </div>
-                {this.state.bandera && <Alert id='mensaje' variant='danger'>
+                <Alert ref = 'alert' id='mensaje' variant='danger' style = { { display : 'none' } }>
                     {this.state.mensaje}
-                </Alert>}
+                </Alert>
             </div>
-        );
+        )
     }
 }
 export default withRouter(FormLOGIN);

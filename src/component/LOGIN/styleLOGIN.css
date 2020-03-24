@@ -27,3 +27,7 @@
 #ContenedorLogin{
     box-shadow: black 2px 2px 2px;
 }
+#user , #pass {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}

@@ -7,6 +7,16 @@ import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
+import clsx from 'clsx'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import Input from '@material-ui/core/Input'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import IconButton from '@material-ui/core/IconButton'
+import DeleteIcon from '@material-ui/icons/Delete'
+import UpdateIcon from '@material-ui/icons/Update'
+import Tooltip from '@material-ui/core/Tooltip'
+import AddlIcon from '@material-ui/icons/Add'
 
 var componente = {  }
 
@@ -22,7 +32,10 @@ const useStyles = makeStyles ( theme => ( {
         marginTop: theme.spacing(2),
     },
     margin: {
-        margin: theme.spacing(1),
+        margin: theme.spacing(0),
+    },
+    textField: {
+        width: '25ch',
     }
 } ) )
 
@@ -110,5 +123,103 @@ componente.listaDesplegable = React.forwardRef ( ( props , ref ) => {
                     }
                     </Select>
                 </FormControl> )
+} )
+componente.password = React.forwardRef ( ( props , ref ) => {
+    const classes = useStyles (  )
+    const [values, setValues] = React.useState ( {
+        amount : '',
+        weight : '',
+        weightRange : '',
+        showPassword : false
+    })
+    const handleClickShowPassword = (  ) => { setValues ( { ...values , showPassword : !values.showPassword } )  }
+    const handleMouseDownPassword = e => { e.preventDefault (  ) }
+
+    return ( <FormControl className = { clsx(classes.margin, classes.textField)} style = { { width : props.width ? props.width : '100%' } } >
+        <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+        <Input
+            className = { props.className ? props.className : 'pass' }
+            required = { props.required ? true : false }
+            style = { { width : props.width ? props.width : '100%'   } }
+            name = { props.name ? props.name : 'myPass' }
+            ref = { ref }
+            id = { props.id ? props.id : 'txt_password' }
+            type = {values.showPassword ? 'text' : 'password'}
+            value = { props.value ? props.value : '' }
+            onChange = { props.onChange }
+            endAdornment = {
+                <InputAdornment position = "end">
+                <IconButton
+                    aria-label = "toggle password visibility"
+                    onClick = { handleClickShowPassword }
+                    onMouseDown = { handleMouseDownPassword }
+                >
+                    {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+                </InputAdornment>
+            }
+        />
+    </FormControl> )
+} )
+componente.texto = React.forwardRef ( ( props , ref ) => {
+    return ( <TextField
+        className = { props.className ? props.className : 'text' }
+        ref = { ref }
+        required = { props.required ? true : false }
+        style = { { width : props.width ? props.width : '105px' } }
+        id = { props.id ? props.id : 'txt_number' }
+        type = 'text'
+        label = { props.label ? props.label : 'label' }
+        name = { props.name ? props.name : 'text' }
+        onChange = { props.onChange }
+        onBlur = { props.onBlur }
+        value = { props.value ? props.value : '' }
+    /> )
+} )
+
+componente.botonUpdate = React.forwardRef ( ( props , ref ) => {
+    const [info] = React.useState (props.info ? props.info : '')
+    return ( <Tooltip title="Update">
+    <IconButton
+            className = { props.className ? props.className : 'text' }
+            ref = { ref }
+            name = { props.name ? props.name : 'updateIcon' }
+            id = { props.id ? props.id : 'btnUpdate' }
+            style ={ { padding : 0 , margin : 0 } }
+            onClick =   {  e => { props.MetodUpdate ( info ) } }
+            aria-label="update" >
+        <UpdateIcon />
+    </IconButton>
+</Tooltip> )
+} )
+componente.botonDelete = React.forwardRef ( ( props , ref ) => {
+    const [info] = React.useState (props.info ? props.info : '')
+    return ( <Tooltip title="Delete">
+    <IconButton
+            className = { props.className ? props.className : 'text' }
+            ref = { ref }
+            name = { props.name ? props.name : 'deleteIcon' }
+            id = { props.id ? props.id : 'btnUpdate' }
+            style ={ { padding : 0 , margin : 0 } }
+            onClick =   {  e => { props.MetodDelete ( info ) } }
+            aria-label="Delete" >
+        <DeleteIcon />
+    </IconButton>
+</Tooltip> )
+} )
+componente.botonAdd = React.forwardRef ( ( props , ref ) => {
+    const [info] = React.useState (props.info ? props.info : '')
+    return ( <Tooltip title = { props.texto ? props.texto : "Update"}>
+    <IconButton
+            className = { props.className ? props.className : 'text' }
+            ref = { ref }
+            name = { props.name ? props.name : 'updateIcon' }
+            id = { props.id ? props.id : 'btnUpdate' }
+            style ={ { padding : 0 , margin : 0 } }
+            onClick =   {  e => { props.MetodAdd ( info ) } }
+            aria-label={ props.texto ? props.texto : "Update"} >
+        <AddlIcon />
+    </IconButton>
+</Tooltip> )
 } )
 export default componente

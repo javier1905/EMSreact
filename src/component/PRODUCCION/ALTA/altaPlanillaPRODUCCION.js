@@ -179,9 +179,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
             this.setState({vecOperarios:newVecOperarios})
         }
     }
-    addZona = e => {
-        let indexOperario = parseInt ( e.target.name.split(' ')[1] )
-        let indexRechazo = parseInt ( e.target.name.split(' ')[2] )
+    addZona = info => {
+        let indexOperario = parseInt ( info.split(' ')[1] )
+        let indexRechazo = parseInt ( info.split(' ')[2] )
         var txt_letra = document.getElementById(`letraZona ${indexOperario} ${indexRechazo}`)
         var txt_numero = document.getElementById(`numeroZona ${indexOperario} ${indexRechazo}`)
         var txt_cantidad = document.getElementById(`cantidadZona ${indexOperario} ${indexRechazo}`)
@@ -711,6 +711,37 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
     }
     componentWillUnmount (  ) { this.controller.abort (  ) }
+
+    myUpdate = info => {
+        var index = parseInt(String(info).split(' ')[0])
+        var idPM = this.state.vecParadasMaquinaSeleccionada[index].idParadaMaquina
+        var nombrePM = this.state.vecParadasMaquinaSeleccionada[index].nombreParadaMaquina
+        var desdePM = this.state.vecParadasMaquinaSeleccionada[index].desdeParadaMaquina
+        var hastaPM = this.state.vecParadasMaquinaSeleccionada[index].hastaParadaMaquina
+        var vecPM = this.state.vecParadasMaquinaSeleccionada
+        vecPM.splice(parseInt(index),1)
+        this.setState({vecParadasMaquinaSeleccionada:vecPM,campoIdParaMaquina:idPM,campoNombreParadaMaquina:nombrePM,campoDesdeParadaMaquina:desdePM,campoHastaParadaMaquina:hastaPM})
+    }
+    myDelete = info => {
+        var vecPM = this.state.vecParadasMaquinaSeleccionada
+        vecPM.splice(parseInt(info),1)
+        this.setState({vecParadasMaquinaSeleccionada:vecPM})
+    }
+    myDeleteOperario = info => {
+        var vecOP = this.state.vecOperarios
+        vecOP.splice(parseInt(info.split(' ')[0]),1)
+        this.setState({vecOperarios:vecOP})
+    }
+    myDeleteRechazo = info => {
+        var vecRE = this.state.vecOperarios
+        vecRE[parseInt(info.split(' ')[0])].vecRechazo.splice(parseInt(info.split(' ')[1]),1)
+        this.setState({vecOperarios:vecRE})
+    }
+    myDeleteZona = info => {
+        var vecZN = this.state.vecOperarios
+        vecZN[parseInt(info.split(' ')[0])].vecRechazo[parseInt(info.split(' ')[1])].vecZonas.splice(parseInt(info.split(' ')[2]),1)
+        this.setState({vecOperarios:vecZN})
+    }
     render (  ) {
         const classes = this.useStyles
         return (
@@ -841,23 +872,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange = { this.capturaDatos }
                                                                             value = { this.state.vecOperarios[i].calorias }
                                                                         />
-                                                                        {/* <ButtonN variant="outlined" color="primary" type='button' onClickCapture={this.addRechazo} name={i}  >Add Rechazos</ButtonN> */}
-                                                                        <Button size="sm" name={i} onClick={this.addRechazo}> Add rechazos </Button>
-                                                                        <Button
-                                                                            aria-label="delete"
-                                                                            id={`${i} id_Operario`}
-                                                                            className={classes.margin}
-                                                                            style={{margin:'0px',padding:'0px',display:'block',width:'70px',float:'right'}}
-                                                                            onClick={
-                                                                                e=>{
-                                                                                    var vecOP = this.state.vecOperarios
-                                                                                    vecOP.splice(parseInt(e.target.id.split(' ')[0]),1)
-                                                                                    this.setState({vecOperarios:vecOP})
-                                                                                }
-                                                                            }
-                                                                        >
-                                                                            Eliminar
-                                                                        </Button>
+                                                                        <MyComponent.botonDelete info = {`${i} id_Operario`} MetodDelete =   { this.myDeleteOperario } />
                                                                 </Grid>
                                                                 { // !RECORRE VECTOR RECHAZOS
                                                                     Array.isArray( this.state.vecOperarios[i].vecRechazo) ?
@@ -911,21 +926,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value = { this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo }
                                                                                         onBlur = { this.verificaRechazoCoincidente }
                                                                                     />
-                                                                                    <Button
-                                                                                        aria-label="delete"
-                                                                                        id={`${i} ${indexRechazo} id_rechazo`}
-                                                                                        className={classes.margin}
-                                                                                        style={{margin:'0px',padding:'0px',display:'block',width:'70px',float:'right'}}
-                                                                                        onClick={
-                                                                                            e=>{
-                                                                                                var vecRE = this.state.vecOperarios
-                                                                                                vecRE[i].vecRechazo.splice(parseInt(e.target.id.split(' ')[1]),1)
-                                                                                                this.setState({vecOperarios:vecRE})
-                                                                                            }
-                                                                                        }
-                                                                                    >
-                                                                                        Eliminar
-                                                                                    </Button>
+                                                                                    <MyComponent.botonDelete info = {`${i} ${indexRechazo} id_rechazo`} MetodDelete = { this.myDeleteRechazo } />
                                                                                 </Grid>
                                                                                 <Grid item xs={12}>
                                                                                     <TextField
@@ -949,7 +950,12 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         type='number'
                                                                                     >
                                                                                     </TextField>
-                                                                                    <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button>
+                                                                                    {/* <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button> */}
+                                                                                    <MyComponent.botonAdd
+                                                                                        texto = 'Add Zona'
+                                                                                        info = {`btnAddZona ${i} ${indexRechazo}`}
+                                                                                        MetodAdd = {this.addZona }
+                                                                                    />
                                                                                     <Alert id={`alert ${i} ${indexRechazo}`} style={{display:'none'}} severity="error">
                                                                                         {this.state.mensajeAlertZona}
                                                                                     </Alert>
@@ -972,7 +978,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>{z.numero}</td>
                                                                                                         <td>{z.cantidad}</td>
                                                                                                         <td>
-                                                                                                            <Button
+                                                                                                        <MyComponent.botonDelete info = {`${i} ${indexRechazo} ${indexZona} id_txtZona`} MetodDelete = { this.myDeleteZona } />
+                                                                                                            {/* <Button
                                                                                                                 aria-label="delete"
                                                                                                                 id={`${i} ${indexRechazo} ${indexZona} id_txtZona`}
                                                                                                                 className={classes.margin}
@@ -986,7 +993,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                                 }
                                                                                                             >
                                                                                                                 Eliminar
-                                                                                                            </Button>
+                                                                                                            </Button> */}
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 })
@@ -1114,44 +1121,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
                                                                     <td>
-                                                                        <Button
-                                                                                variant='secondary'
-                                                                                id={`${indexParadaMaq} id_PMseleccionada`}
-                                                                                aria-label="update"
-                                                                                className={classes.margin}
-                                                                                style={{margin:'0px',padding:'0px'}}
-                                                                                onClick={
-                                                                                e=>{
-                                                                                    var index = parseInt(String(e.target.id).split(' ')[0])
-                                                                                    var idPM = this.state.vecParadasMaquinaSeleccionada[index].idParadaMaquina
-                                                                                    var nombrePM = this.state.vecParadasMaquinaSeleccionada[index].nombreParadaMaquina
-                                                                                    var desdePM = this.state.vecParadasMaquinaSeleccionada[index].desdeParadaMaquina
-                                                                                    var hastaPM = this.state.vecParadasMaquinaSeleccionada[index].hastaParadaMaquina
-                                                                                    var vecPM = this.state.vecParadasMaquinaSeleccionada
-                                                                                    vecPM.splice(parseInt(index),1)
-                                                                                    this.setState({vecParadasMaquinaSeleccionada:vecPM,campoIdParaMaquina:idPM,campoNombreParadaMaquina:nombrePM,campoDesdeParadaMaquina:desdePM,campoHastaParadaMaquina:hastaPM})
-                                                                                }
-                                                                            }
-                                                                        >
-                                                                            Update
-                                                                        </Button>
+                                                                        <MyComponent.botonUpdate info = {`${indexParadaMaq} id_PMseleccionada`} MetodUpdate =   { this.myUpdate } />
                                                                     </td>
                                                                     <td>
-                                                                    <Button
-                                                                        aria-label="delete"
-                                                                        id={indexParadaMaq}
-                                                                        className={classes.margin}
-                                                                        style={{margin:'0px',padding:'0px'}}
-                                                                        onClick={
-                                                                            e=>{
-                                                                                var vecPM = this.state.vecParadasMaquinaSeleccionada
-                                                                                vecPM.splice(parseInt(e.target.id),1)
-                                                                                this.setState({vecParadasMaquinaSeleccionada:vecPM})
-                                                                            }
-                                                                        }
-                                                                    >
-                                                                        Eliminar
-                                                                    </Button>
+                                                                    <MyComponent.botonDelete info = {indexParadaMaq} MetodDelete =   { this.myDelete } />
                                                                     </td>
                                                                 </tr>
                                                             })
