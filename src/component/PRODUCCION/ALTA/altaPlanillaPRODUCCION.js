@@ -613,18 +613,27 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     return false
                 }
             })
+            var url = ''
             if(vecOP === false) { return }
-            fetch('https://ems-node-api.herokuapp.com/api/planillasProduccion',{
-                // fetch('http://localhost:5000/api/planillasProduccion',{
-                    method: 'POST',
-                    body: JSON.stringify(dato),
-                    headers:  new Headers ({
-                        'Accept': 'Application/json',
-                        'Content-Type': 'Application/json'
+            if ( this.props.planillaUpdate ) {
+                dato.idPlanilla = this.props.planillaUpdate.idPlanilla
+                url = 'https://ems-node-api.herokuapp.com/api/planillasProduccion/update'
+                // url = 'http://localhost:5000/api/planillasProduccion/update'
+            }
+            else{
+                url = 'https://ems-node-api.herokuapp.com/api/planillasProduccion/insert'
+            }
+            fetch( url , {
+                    method : 'POST' ,
+                    body: JSON.stringify ( dato ) ,
+                    headers :  new Headers ( {
+                        'Accept' : 'Application/json' ,
+                        'Content-Type' :  'Application/json'
                     })
                 })
-                .then(dato => { return dato.json() })
-                .then(json =>{
+                .then ( dato => { return dato.json (  ) } )
+                .then ( json => {
+                    console.log ( json )
                     this.props.enqueueSnackbar(`${json.mensaje}`,
                     {
                         variant: 'success',

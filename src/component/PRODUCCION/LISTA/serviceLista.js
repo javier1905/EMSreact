@@ -147,7 +147,8 @@ consultas.planillasProduccion = async ( fDesdeProduccion ,  fHastaProduccion ,
         idOperacion : idOp === '' ? null : idOp
     }
     try {
-        const response = await fetch( `https://ems-node-api.herokuapp.com/api/planillasProduccion/listado`,  {
+        // const response = await fetch( `http://localhost:5000/api/planillasProduccion/listar`,  {
+        const response = await fetch( `https://ems-node-api.herokuapp.com/api/planillasProduccion/listar`,  {
             method : 'POST',
             body : JSON.stringify ( filtros ) ,
             headers : new Headers ( {

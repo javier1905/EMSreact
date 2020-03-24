@@ -14,7 +14,7 @@ const PlanillaProduccion = ( props ) => {
     const dispatch = useDispatch (  )
     const deletePlanillaProduccion = ( idPlanilla ) => {
         const deletePlaPro = (  ) => {
-            fetch ( "https://ems-node-api.herokuapp.com/api/planillasProduccion/eliminar"  , {
+            fetch ( "https://ems-node-api.herokuapp.com/api/planillasProduccion/delete"  , {
                 method : 'POST' ,
                 body : JSON.stringify ( { idPlanilla } ) ,
                 headers : new Headers ({
