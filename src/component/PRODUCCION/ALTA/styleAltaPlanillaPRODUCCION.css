@@ -86,5 +86,9 @@ margin-right: 10px;
     display: inline-block;
     box-sizing: border-box;
     width: 48%;
-   
+}
+td , th , thead {
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
 }

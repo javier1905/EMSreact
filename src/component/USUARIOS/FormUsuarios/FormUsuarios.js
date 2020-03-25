@@ -75,7 +75,7 @@ class FormUsuarios extends React.Component {
             if(this.props.user === undefined){
                 // INSERT
                 const {nombre,apellido,userName,email,perfil,password1} = this.state
-                fetch('https://ems-node-api.herokuapp.com/api/usuarios',{signal:this.controller.signal},{
+                fetch('https://ems-node-api.herokuapp.com/api/usuarios' , {
                     method:'POST',
                     body:JSON.stringify({nombre,apellido,userName,perfil,email,password:password1 }),
                     headers:{
@@ -108,7 +108,7 @@ class FormUsuarios extends React.Component {
             else{
                 //UPDATE
                 const {id,nombre,apellido,userName,email,perfil,password1} = this.state
-                fetch('https://ems-node-api.herokuapp.com/api/usuarios/'+id,{signal:this.controller.signal},{
+                fetch('https://ems-node-api.herokuapp.com/api/usuarios/'+id , {
                     method:'PUT',
                     body:JSON.stringify({nombre,apellido,email,userName,perfil,password:password1}),
                     headers:{

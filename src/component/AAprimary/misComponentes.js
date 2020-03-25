@@ -14,9 +14,14 @@ import Input from '@material-ui/core/Input'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
+import SearchIcon from '@material-ui/icons/Search'
 import UpdateIcon from '@material-ui/icons/Update'
 import Tooltip from '@material-ui/core/Tooltip'
 import AddlIcon from '@material-ui/icons/Add'
+import SaveIcon from '@material-ui/icons/Save'
+import Button from '@material-ui/core/Button'
+
+
 
 var componente = {  }
 
@@ -36,7 +41,10 @@ const useStyles = makeStyles ( theme => ( {
     },
     textField: {
         width: '25ch',
-    }
+    },
+    button: {
+        margin: theme.spacing(1),
+      }
 } ) )
 
 componente.fecha = React.forwardRef ( ( props , ref ) => {
@@ -179,16 +187,16 @@ componente.texto = React.forwardRef ( ( props , ref ) => {
 
 componente.botonUpdate = React.forwardRef ( ( props , ref ) => {
     const [info] = React.useState (props.info ? props.info : '')
-    return ( <Tooltip title="Update">
+    return ( <Tooltip title= { props.texto ? props.texto : 'Update' } >
     <IconButton
             className = { props.className ? props.className : 'text' }
             ref = { ref }
             name = { props.name ? props.name : 'updateIcon' }
             id = { props.id ? props.id : 'btnUpdate' }
-            style ={ { padding : 0 , margin : 0 } }
-            onClick =   {  e => { props.MetodUpdate ( info ) } }
-            aria-label="update" >
-        <UpdateIcon />
+            style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
+            onClick =   {  e => { props.MetodUpdate ( info , e ) } }
+            aria-label = { props.texto ? props.texto : 'Update' } >
+        <UpdateIcon fontSize = { props.fontSize ? props.fontSize : 'small' } />
     </IconButton>
 </Tooltip> )
 } )
@@ -200,10 +208,10 @@ componente.botonDelete = React.forwardRef ( ( props , ref ) => {
             ref = { ref }
             name = { props.name ? props.name : 'deleteIcon' }
             id = { props.id ? props.id : 'btnUpdate' }
-            style ={ { padding : 0 , margin : 0 } }
+            style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
             onClick =   {  e => { props.MetodDelete ( info ) } }
             aria-label="Delete" >
-        <DeleteIcon />
+        <DeleteIcon fontSize = { props.fontSize ? props.fontSize : 'small' }  style = { { padding : 0 } } />
     </IconButton>
 </Tooltip> )
 } )
@@ -215,11 +223,43 @@ componente.botonAdd = React.forwardRef ( ( props , ref ) => {
             ref = { ref }
             name = { props.name ? props.name : 'updateIcon' }
             id = { props.id ? props.id : 'btnUpdate' }
-            style ={ { padding : 0 , margin : 0 } }
-            onClick =   {  e => { props.MetodAdd ( info ) } }
+            style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
+            onClick =   {  e => { props.MetodAdd ( info , e ) } }
             aria-label={ props.texto ? props.texto : "Update"} >
-        <AddlIcon />
+        <AddlIcon fontSize = { props.fontSize ? props.fontSize : 'small' } />
     </IconButton>
+</Tooltip> )
+} )
+componente.botonSearch = React.forwardRef ( ( props , ref ) => {
+    const [info] = React.useState (props.info ? props.info : '')
+    return ( <Tooltip title = { props.texto ? props.texto : "Search"}>
+    <IconButton
+            className = { props.className ? props.className : 'text' }
+            ref = { ref }
+            name = { props.name ? props.name : 'SeachteIcon' }
+            id = { props.id ? props.id : 'btnSearch' }
+            style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
+            onClick =   {  e => { props.MetodSearch ( info , e ) } }
+            aria-label={ props.texto ? props.texto : "Search"} >
+        <SearchIcon fontSize = { props.fontSize ? props.fontSize : 'small' } />
+    </IconButton>
+</Tooltip> )
+} )
+componente.botonSave = React.forwardRef ( ( props , ref ) => {
+    const classes = useStyles (  )
+    return (
+    <Tooltip title = { props.texto ? props.texto : "Save"}>
+        <Button
+            style = { props.style }
+            variant = "contained"
+            color = "primary"
+            size = "large"
+            type='submit'
+            className = { classes.button }
+            startIcon = { <SaveIcon /> }
+        >
+            Save
+        </Button>
 </Tooltip> )
 } )
 export default componente

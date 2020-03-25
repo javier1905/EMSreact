@@ -1,10 +1,10 @@
 import React from 'react'
-import {Form,Button,Table,} from 'react-bootstrap'
+import { Form , Table } from 'react-bootstrap'
 import './styleAltaPlanillaPRODUCCION.css'
 import 'date-fns'
 import Grid from '@material-ui/core/Grid'
 import { makeStyles } from '@material-ui/core/styles'
-import {TextField,Box} from '@material-ui/core'
+import { TextField , Box } from '@material-ui/core'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
@@ -15,6 +15,7 @@ import { withSnackbar } from 'notistack'
 import { connect } from 'react-redux'
 import servicios from './serviceAltaPlanilla'
 import MyComponent from '../../AAprimary/misComponentes'
+import Typography from '@material-ui/core/Typography'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor ( props ) {
@@ -159,7 +160,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         }
         this.setState({vecOperarios:vecOperariosTemp})
     }
-    addOperario = e => {
+    addOperario = ( info , e ) => {
         let Op = { idOperario : '' , nombre : '' , apellido : '' , idTurno : '' , horaInicio : '' , horaFin : '' , produccion : '' , calorias : '' , vecRechazo : [  ] }
         if(Array.isArray(this.state.vecTurnos)){
             if(this.state.vecTurnos.length === 0 ){ this.getTurnos (  ) }
@@ -170,8 +171,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
         let newVecOperarios = [...this.state.vecOperarios,Op]
         this.setState({vecOperarios:newVecOperarios})
     }
-    addRechazo = e => {
-        let indexOperario = parseInt ( e.target.name )
+    addRechazo = info => {
+        console.log (info)
+        let indexOperario = parseInt ( info )
         let newRechazo = { idRechazo : '' , nombreRechazo : '' , tipo : '' , cantidadRechazo : '' , vecZonas : [  ]  }
         if ( this.state.vecOperarios[ indexOperario ] ) {
             let newVecOperarios = this.state.vecOperarios
@@ -807,11 +809,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     />
                                     </Grid>  {/* FIN OPERACION MAQUINA PIEZA Y MOLDE */}
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
-                                        <h2>Operarios</h2>
+                                        <Typography variant = 'h2' style = { { marginBottom : 15 } } >Operarios</Typography>
                                         <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
-                                            <Button variant="primary"  onClick={this.addOperario}>
-                                                Agregar Operario
-                                            </Button>
+                                            <MyComponent.botonAdd texto = 'Add operario'  MetodAdd  = { this.addOperario } fontSize = 'large'  size = { 50 } />
                                             {
                                                 this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
@@ -872,8 +872,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange = { this.capturaDatos }
                                                                             value = { this.state.vecOperarios[i].calorias }
                                                                         />
+                                                                        <MyComponent.botonAdd info = {`${i}`} MetodAdd = { this.addRechazo } texto = 'Add Rechazo' />
                                                                         <MyComponent.botonDelete info = {`${i} id_Operario`} MetodDelete =   { this.myDeleteOperario } />
                                                                 </Grid>
+                                                                <Typography  variant = 'h4' style = { { marginBottom : 10 } } >Rechazos</Typography>
                                                                 { // !RECORRE VECTOR RECHAZOS
                                                                     Array.isArray( this.state.vecOperarios[i].vecRechazo) ?
                                                                     this.state.vecOperarios[i].vecRechazo.map((rech,indexRechazo)=>{
@@ -950,7 +952,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         type='number'
                                                                                     >
                                                                                     </TextField>
-                                                                                    {/* <Button size="sm" name={`btnAddZona ${i} ${indexRechazo}`} onClick={this.addZona}>Add</Button> */}
                                                                                     <MyComponent.botonAdd
                                                                                         texto = 'Add Zona'
                                                                                         info = {`btnAddZona ${i} ${indexRechazo}`}
@@ -979,21 +980,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>{z.cantidad}</td>
                                                                                                         <td>
                                                                                                         <MyComponent.botonDelete info = {`${i} ${indexRechazo} ${indexZona} id_txtZona`} MetodDelete = { this.myDeleteZona } />
-                                                                                                            {/* <Button
-                                                                                                                aria-label="delete"
-                                                                                                                id={`${i} ${indexRechazo} ${indexZona} id_txtZona`}
-                                                                                                                className={classes.margin}
-                                                                                                                style={{margin:'0px',padding:'0px'}}
-                                                                                                                onClick={
-                                                                                                                    e=>{
-                                                                                                                        var vecZN = this.state.vecOperarios
-                                                                                                                        vecZN[i].vecRechazo[indexRechazo].vecZonas.splice(parseInt(e.target.id.split(' ')[0]),1)
-                                                                                                                        this.setState({vecOperarios:vecZN})
-                                                                                                                    }
-                                                                                                                }
-                                                                                                            >
-                                                                                                                Eliminar
-                                                                                                            </Button> */}
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 })
@@ -1014,89 +1000,66 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     </Grid>
                                     <Grid item xs={12}>  {/* CONTENEDOR PARADAS DE MAQUINA  */}
                                         <div className=''>
-                                            <h2>Paradas de Maquina</h2>
+                                            <Typography variant = 'h2' style = { { marginBottom : 15 } } >Paradas de Maquina</Typography>
                                             <div className='contenedorFormPardasMaquina'>
-                                                <TextField
-                                                style={{width:'65px',marginRight:'10px'}}
-                                                id='txt_idParadaMquina'
-                                                ref={this.txt_campoIdParadaMaquina}
-                                                label='Cod PM'
-                                                type='number'
-                                                value={this.state.campoIdParaMaquina}
-                                                onChange={
-                                                    e=>{
-                                                        var PMselect=''
-                                                        try{ PMselect =this.state.vecParadasMaquina.find(pm=>pm.idParadaMaquina===parseInt(e.target.value)).nombreParadaMaquina }
-                                                        catch(e){ this.setState({campoNombreParadaMaquina:''}) }
-                                                        this.setState({campoIdParaMaquina:e.target.value})
-                                                        if(PMselect !== ''){ this.setState({campoNombreParadaMaquina:PMselect})  }
+                                                <MyComponent.numero
+                                                    label = 'Cod PM'
+                                                    value = { this.state.campoIdParaMaquina }
+                                                    id = 'txt_idParadaMquina'
+                                                    ref = { this.txt_campoIdParadaMaquina }
+                                                    onChange = {
+                                                        e => {
+                                                            var PMselect=''
+                                                            try{ PMselect =this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina===parseInt(e.target.value)).nombreParadaMaquina }
+                                                            catch(e){ this.setState({campoNombreParadaMaquina:''}) }
+                                                            this.setState({campoIdParaMaquina:e.target.value})
+                                                            if(PMselect !== ''){ this.setState({campoNombreParadaMaquina:PMselect})  }
+                                                        }
                                                     }
-                                                }
-                                                >
-                                                </TextField>
-                                                <TextField
-                                                style={{width:'300px',marginRight:'10px'}}
-                                                disabled={true}
-                                                label='Paradas de Mq'
-                                                type='text'
-                                                value={this.state.campoNombreParadaMaquina}
-                                                >
-                                                </TextField>
-                                                <Button  size='sm' variant='secondary' onClick={e=>this.setState({showModalPM:true})}>Buscar</Button>
+                                                />
+                                                <MyComponent.texto
+                                                    width = { 300 }
+                                                    disabled = { true }
+                                                    label = 'Paradas de Mq'
+                                                    value = { this.state.campoNombreParadaMaquina }
+                                                />
+                                                <MyComponent.botonSearch fontSize = 'large' size = { 50 } texto = 'Search ' MetodSearch = { ( info , e ) => { this.setState ( { showModalPM : true } ) } } />
                                                 <ModalPM eventClose={this.eventClose} show={this.state.showModalPM} vecParadasMaquina={this.state.vecParadasMaquina}/>
-                                                <TextField
-                                                    style={{width:'100px',marginRight:'10px'}}
+                                                <MyComponent.hora
+                                                    label = 'Desde'
                                                     id="txt_horaDesdeParadaMaquina"
-                                                    label="Desde"
                                                     name="txt_horaDesdeParadaMaquina"
-                                                    type="time"
-                                                    onChange={e=>{
-                                                        if(e.target.value !== '06:00' && this.state.campoHastaParadaMaquina !== '06:00' && e.target.value === this.state.campoHastaParadaMaquina){
+                                                    value = { this.state.campoDesdeParadaMaquina }
+                                                    onChange = { e => {
+                                                        if ( e.target.value !== '06:00' && this.state.campoHastaParadaMaquina !== '06:00' && e.target.value === this.state.campoHastaParadaMaquina){
                                                             this.setState({campoDesdeParadaMaquina:''})
                                                         }
                                                         else{
                                                             this.setState({campoDesdeParadaMaquina:e.target.value})
                                                         }
                                                     }}
-                                                    value ={this.state.campoDesdeParadaMaquina}
-                                                    className={classes.textField}
-                                                    InputLabelProps={{
-                                                    shrink: true,
-                                                    }}
-                                                    inputProps={{
-                                                    step: 300, // 5 min
-                                                    }}
                                                 />
-                                                <TextField
-                                                    style={{width:'100px',marginRight:'10px'}}
+                                                <MyComponent.hora
                                                     id="txt_horaHastaParadaMaquina"
                                                     label="Hasta"
                                                     name='txt_horaHastaParadaMaquina'
-                                                    type="time"
-                                                    onChange={e=>{
+                                                    onChange = { e => {
                                                         if(e.target.value !== '06:00' && this.state.campoDesdeParadaMaquina !== '06:00' && e.target.value === this.state.campoDesdeParadaMaquina){
                                                             this.setState({campoHastaParadaMaquina:''})
                                                         }
                                                         else{
-                                                            this.setState({campoHastaParadaMaquina:e.target.value})
+                                                            this.setState ( { campoHastaParadaMaquina : e.target.value } )
                                                         }
-                                                    }}
-                                                    value ={this.state.campoHastaParadaMaquina}
-                                                    className={classes.textField}
-                                                    InputLabelProps={{
-                                                    shrink: true,
-                                                    }}
-                                                    inputProps={{
-                                                    step: 300, // 5 min
-                                                    }}
+                                                    } }
+                                                    value = { this.state.campoHastaParadaMaquina }
                                                 />
-                                                <Button onClick={this.capturaParaMaquina} >Cargar</Button>
+                                                <MyComponent.botonAdd fontSize = 'large' size = { 50 } texto = 'Add paradaMaquina'  MetodAdd = { this.capturaParaMaquina } />
                                             </div>
-                                            <Alert ref={this.alertPM} style={{display:this.state.showAlert}} severity="error">
-                                                <h6 id='h6Alert'>Error !</h6>
-                                                <div style={{display:this.state.showAlert}} ></div>
+                                            <Alert ref = { this.alertPM } style = { { display:this.state.showAlert } } severity = "error">
+                                                <Typography id='h6Alert' variant = 'h6' style = { { marginBottom : 15 } } >Error !</Typography>
+                                                <div style = { { display : this.state.showAlert } } ></div>
                                             </Alert>
-                                            <Table style={{marginTop:'10px'}}>
+                                            <Table style = { { marginTop : '10px' } } >
                                                 <thead>
                                                     <tr>
                                                         <th>Id</th>
@@ -1111,9 +1074,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                 </thead>
                                                 <tbody>
                                                     {
-                                                        Array.isArray(  this.state.vecParadasMaquinaSeleccionada )?
-                                                            this.state.vecParadasMaquinaSeleccionada.map((parMaq,indexParadaMaq)=>{
-                                                                return <tr key={indexParadaMaq}>
+                                                        Array.isArray (  this.state.vecParadasMaquinaSeleccionada )?
+                                                            this.state.vecParadasMaquinaSeleccionada.map ( ( parMaq,indexParadaMaq ) => {
+                                                                return <tr key = { indexParadaMaq } >
                                                                     <td>{parMaq.idParadaMaquina}</td>
                                                                     <td>{parMaq.nombreParadaMaquina}</td>
                                                                     <td>{parMaq.desdeParadaMaquina}</td>
@@ -1138,14 +1101,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                 </Grid>
                         </div>
                         <div>
-                            <Button
-                                variant='primary'
-                                size='lg'
-                                block
-                                type='submit'
-                            >
-                                Guardar Planilla de Produccion
-                            </Button>
+                            <MyComponent.botonSave style = { { width : 300 , padding : 20 } } />
                         </div>
                 </Form>
             </Box>

@@ -527,7 +527,7 @@ const ListaPlanilasProduccion = ( props ) => {
                     </div>
                     <div style = {{clear : 'both'}}></div>
                 </div>
-                <div style={{background:'red',padding:20}}>footer</div>
+                {/* <div style={{background:'red',padding:20}}>footer</div> */}
             </Paper>
         </div>
     )
