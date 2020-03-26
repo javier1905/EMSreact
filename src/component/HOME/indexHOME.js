@@ -4,6 +4,7 @@ import Usuarios from '../USUARIOS/indexUSUARIOS'
 import Produccion from '../PRODUCCION/indexPRODUCCION'
 import Menu from '../MENU/indexMENU'
 import VerificaLOGIN from '../../credenciales/verificaLOGIN'
+import Compras from '../COMPRAS/compras'
 
 class indexHOME extends React.Component {
     constructor ( props ) {
@@ -21,6 +22,9 @@ class indexHOME extends React.Component {
                     </Route>
                     <Route path = {`${rutaPadre}/produccion`} >
                         <Produccion/>
+                    </Route>
+                    <Route path = {`${rutaPadre}/compras`} >
+                        <Compras/>
                     </Route>
                 </>
                 <VerificaLOGIN/>

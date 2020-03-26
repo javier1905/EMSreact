@@ -811,7 +811,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
                                         <Typography variant = 'h2' style = { { marginBottom : 15 } } >Operarios</Typography>
                                         <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
-                                            <MyComponent.botonAdd texto = 'Add operario'  MetodAdd  = { this.addOperario } fontSize = 'large'  size = { 50 } />
+                                            <MyComponent.botonAdd texto = 'Add operario'  onClick  = { this.addOperario } fontSize = 'large'  size = { 50 } />
                                             {
                                                 this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
@@ -872,8 +872,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange = { this.capturaDatos }
                                                                             value = { this.state.vecOperarios[i].calorias }
                                                                         />
-                                                                        <MyComponent.botonAdd info = {`${i}`} MetodAdd = { this.addRechazo } texto = 'Add Rechazo' />
-                                                                        <MyComponent.botonDelete info = {`${i} id_Operario`} MetodDelete =   { this.myDeleteOperario } />
+                                                                        <MyComponent.botonAdd info = {`${i}`} onClick = { this.addRechazo } texto = 'Add Rechazo' />
+                                                                        <MyComponent.botonDelete info = {`${i} id_Operario`} onClick =   { this.myDeleteOperario } />
                                                                 </Grid>
                                                                 <Typography  variant = 'h4' style = { { marginBottom : 10 } } >Rechazos</Typography>
                                                                 { // !RECORRE VECTOR RECHAZOS
@@ -928,7 +928,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value = { this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo }
                                                                                         onBlur = { this.verificaRechazoCoincidente }
                                                                                     />
-                                                                                    <MyComponent.botonDelete info = {`${i} ${indexRechazo} id_rechazo`} MetodDelete = { this.myDeleteRechazo } />
+                                                                                    <MyComponent.botonDelete info = {`${i} ${indexRechazo} id_rechazo`} onClick = { this.myDeleteRechazo } />
                                                                                 </Grid>
                                                                                 <Grid item xs={12}>
                                                                                     <TextField
@@ -955,7 +955,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                     <MyComponent.botonAdd
                                                                                         texto = 'Add Zona'
                                                                                         info = {`btnAddZona ${i} ${indexRechazo}`}
-                                                                                        MetodAdd = {this.addZona }
+                                                                                        onClick = {this.addZona }
                                                                                     />
                                                                                     <Alert id={`alert ${i} ${indexRechazo}`} style={{display:'none'}} severity="error">
                                                                                         {this.state.mensajeAlertZona}
@@ -979,7 +979,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>{z.numero}</td>
                                                                                                         <td>{z.cantidad}</td>
                                                                                                         <td>
-                                                                                                        <MyComponent.botonDelete info = {`${i} ${indexRechazo} ${indexZona} id_txtZona`} MetodDelete = { this.myDeleteZona } />
+                                                                                                        <MyComponent.botonDelete info = {`${i} ${indexRechazo} ${indexZona} id_txtZona`} onClick = { this.myDeleteZona } />
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 })
@@ -1023,7 +1023,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     label = 'Paradas de Mq'
                                                     value = { this.state.campoNombreParadaMaquina }
                                                 />
-                                                <MyComponent.botonSearch fontSize = 'large' size = { 50 } texto = 'Search ' MetodSearch = { ( info , e ) => { this.setState ( { showModalPM : true } ) } } />
+                                                <MyComponent.botonSearch fontSize = 'large' size = { 50 } texto = 'Search ' onClick = { ( info , e ) => { this.setState ( { showModalPM : true } ) } } />
                                                 <ModalPM eventClose={this.eventClose} show={this.state.showModalPM} vecParadasMaquina={this.state.vecParadasMaquina}/>
                                                 <MyComponent.hora
                                                     label = 'Desde'
@@ -1053,7 +1053,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     } }
                                                     value = { this.state.campoHastaParadaMaquina }
                                                 />
-                                                <MyComponent.botonAdd fontSize = 'large' size = { 50 } texto = 'Add paradaMaquina'  MetodAdd = { this.capturaParaMaquina } />
+                                                <MyComponent.botonAdd fontSize = 'large' size = { 50 } texto = 'Add paradaMaquina'  onClick = { this.capturaParaMaquina } />
                                             </div>
                                             <Alert ref = { this.alertPM } style = { { display:this.state.showAlert } } severity = "error">
                                                 <Typography id='h6Alert' variant = 'h6' style = { { marginBottom : 15 } } >Error !</Typography>
@@ -1084,10 +1084,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
                                                                     <td>
-                                                                        <MyComponent.botonUpdate info = {`${indexParadaMaq} id_PMseleccionada`} MetodUpdate =   { this.myUpdate } />
+                                                                        <MyComponent.botonUpdate info = {`${indexParadaMaq} id_PMseleccionada`} onClick =  { this.myUpdate } />
                                                                     </td>
                                                                     <td>
-                                                                    <MyComponent.botonDelete info = {indexParadaMaq} MetodDelete =   { this.myDelete } />
+                                                                    <MyComponent.botonDelete info = {indexParadaMaq} onClick =   { this.myDelete } />
                                                                     </td>
                                                                 </tr>
                                                             })

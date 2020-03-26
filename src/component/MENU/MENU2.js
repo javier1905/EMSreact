@@ -96,7 +96,7 @@ function PrimarySearchAppBar(props) {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleMenuClose = () => {    
+  const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
@@ -203,9 +203,9 @@ function PrimarySearchAppBar(props) {
           <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/produccion`)}}>
               <span>Produccion</span>
             </IconButton>
-            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/produccion`)}}>
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/compras`)}}>
 
-            <span>Mantenimineto</span>
+            <span>Compras</span>
 
             </IconButton>
             <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/produccion`)}}>
