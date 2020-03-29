@@ -1,11 +1,15 @@
 var servicios = { }
 
-
-
 servicios.listaClientes = async (  ) => {
     var vecClientes = [  ]
     try {
-        const result = await fetch (`https://ems-node-api.herokuapp.com/api/clientes/list` )
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/clientes/list` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
         if ( result ) {
             const json = await  result.json (  )
             vecClientes = json
@@ -20,7 +24,13 @@ servicios.listaClientes = async (  ) => {
 servicios.listaTtiposMaterial = async (  ) => {
     var vecTiposMaterial = [  ]
     try {
-        const result = await fetch (`https://ems-node-api.herokuapp.com/api/tiposMaterial/list` )
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/tiposMaterial/list`, {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
         if ( result ) {
             const json = await  result.json (  )
             vecTiposMaterial = json
@@ -71,6 +81,44 @@ servicios.listPiezas = async (  ) => {
         vecPiezas =  [  ]
     }
     return vecPiezas
+}
+servicios.updatePieza = async ( idPieza , nombrePieza , idCliente , idTipoMaterial ) => {
+    var mensaje = { }
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/piezas/update` , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idPieza , nombrePieza , idCliente , idTipoMaterial } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await  result.json (  )
+            mensaje.exito = json.mensaje
+        }
+    }
+    catch ( e ) { mensaje.fracaso =  e.message  }
+    return mensaje
+}
+servicios.deletPieza = async ( idPieza ) => {
+    var mensaje = { }
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/piezas/delete` , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idPieza } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await  result.json (  )
+            mensaje.exito = json.mensaje
+        }
+    }
+    catch ( e ) { mensaje.fracaso =  e.message  }
+    return mensaje
 }
 
 

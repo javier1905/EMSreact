@@ -6,8 +6,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { withSnackbar } from 'notistack'
 import { Alert } from 'react-bootstrap'
 import $ from 'jquery'
-import { set } from 'date-fns'
-
 
 const FormAltaClientes = ( props ) => {
     const [loadingCli , setLoadingCli] = useState ( true )
@@ -21,12 +19,7 @@ const FormAltaClientes = ( props ) => {
         const vecC = async (  ) => {
             const response  = await Servicios.listaClientes (  )
             if ( response ) {
-                setVecClientes ( response)
-                if ( props.pieza ) {
-                    setNombrePieza ( props.pieza.nombrePieza )
-                    setIdCliente (  props.pieza.idCliente)
-                    setIdTipoMaterial ( props.pieza.idTipoMaterial )
-                }
+                setVecClientes ( response )
                 setLoadingCli ( false)
             }
         }
@@ -42,7 +35,6 @@ const FormAltaClientes = ( props ) => {
         }
         vecTmat (   )
     } , [ loadingTmat ] )
-    
     const miSubmit = e => {
         const SavePieza = async (  ) => {
             try {
@@ -60,6 +52,8 @@ const FormAltaClientes = ( props ) => {
                             horizontal: 'center',
                         }
                     })
+                    props.addPieza (  )
+                    props.actualizaVecPiezas (  )
                 }
             }
             catch ( e ) {

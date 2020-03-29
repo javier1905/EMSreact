@@ -108,30 +108,30 @@ componente.listaDesplegable = React.forwardRef ( ( props , ref ) => {
     var vec = ( Array.isArray ( props.array ) && props.array ) ? props.array : [  ]
     return ( <FormControl  className = { classes.formControl } style = { { width : `${width}px` , marginRight : '10px' } } >
                     <InputLabel id = "demo-simple-select-label" style = { { width : `${width}px` } } > { label } </InputLabel>
-                    <Select
-                        style = { { width : `${width}px` } }
-                        ref = { ref }
-                        labelId = "demo-simple-select-label"
-                        id = { props.id ? props.id : 'lista' }
-                        value = {
-                            Array.isArray( vec ) && vec.find ( x => parseInt ( x[el.valueMember] ) === parseInt ( valor ) ) ?
-                            valor
-                            :
-                            ''
+                        <Select
+                            style = { { width : `${width}px` } }
+                            ref = { ref }
+                            labelId = "demo-simple-select-label"
+                            id = { props.id ? props.id : 'lista' }
+                            value = {
+                                Array.isArray( vec ) && vec.find ( x => parseInt ( x[el.valueMember] ) === parseInt ( valor ) ) ?
+                                valor
+                                :
+                                ''
+                            }
+                            name = { props.name ? props.name : 'lista' }
+                            onChange = { props.onChange }
+                            onBlur = { props.onBlur }
+                        >
+                        {
+                            Array.isArray ( vec ) ?
+                                vec.map ( ( element , i ) => {
+                                return <MenuItem  key = { i } value = { element[el.valueMember] } > { element[el.displayMember] } { element[el.displayMember2] ? element[el.displayMember2] : '' } </MenuItem>
+                                })
+                                :
+                                <MenuItem></MenuItem>
                         }
-                        name = { props.name ? props.name : 'lista' }
-                        onChange = { props.onChange }
-                        onBlur = { props.onBlur }
-                    >
-                    {
-                        Array.isArray ( vec ) ?
-                            vec.map ( ( element , i ) => {
-                            return <MenuItem  key = { i } value = { element[el.valueMember] } > { element[el.displayMember] } { element[el.displayMember2] ? element[el.displayMember2] : '' } </MenuItem>
-                            })
-                            :
-                            <MenuItem></MenuItem>
-                    }
-                    </Select>
+                        </Select>
                 </FormControl> )
 } )
 componente.password = React.forwardRef ( ( props , ref ) => {
@@ -177,7 +177,7 @@ componente.texto = React.forwardRef ( ( props , ref ) => {
         ref = { ref }
         required = { props.required ? true : false }
         style = { { width : props.width ? props.width : '105px' } }
-        id = { props.id ? props.id : 'txt_number' }
+        id = { props.id ? props.id : 'txt_texto' }
         type = 'text'
         label = { props.label ? props.label : 'label' }
         name = { props.name ? props.name : 'text' }
