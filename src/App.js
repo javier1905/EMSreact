@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import store from './Redux/store'
 import { CssBaseline } from '@material-ui/core'
 import 'typeface-roboto'
+import Management from './component/MANAGEMENT/management'
 
 function App (  ) {
   return (
@@ -20,6 +21,9 @@ function App (  ) {
                 </Route>
                 <Route path = '/home' >
                   <Home/>
+                </Route>
+                <Route path = '/management'>
+                  <Management />
                 </Route>
             </React.Fragment>
           </Switch>

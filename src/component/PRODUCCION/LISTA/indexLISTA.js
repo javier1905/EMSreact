@@ -51,8 +51,13 @@ const ListaPlanilasProduccion = ( props ) => {
     }
         , [ fechaDesdeProduccion ,  fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon , idMaquina , idPieza , idMolde , idTipoProceso ,  idOperacion ]
     )
-    const filtraPlanilla = id => { setPlanillaSeleccionada( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
+    const filtraPlanilla = id => {
+        setPlanillaSeleccionada ( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
+        // vecPlanillasProduccion.forEach ( ( pla , i ) => {
+        //     if (pla.idPlanilla === id) {
 
+        //     }
+        // } )
     }
     const  actualizaListaPlanillas = ( ) => {
         const planillasProduccion = async ( ) => {
@@ -341,7 +346,7 @@ const ListaPlanilasProduccion = ( props ) => {
                                 {
                                     Array.isArray ( vecPlanillasProduccion ) && vecPlanillasProduccion.length !== 0 ?
                                     vecPlanillasProduccion.map ( ( planilla , indexPlanilla ) => {
-                                        return < PlanillaProduccion showModalUpdate = { showModalUpdate } actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
+                                        return < PlanillaProduccion fondo = {  planilla ===  planillaSeleccionada  ? '#DEDEE2' : 'white' } showModalUpdate = { showModalUpdate } actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
                                     } )
                                     :
                                     <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>

@@ -139,9 +139,9 @@ function PrimarySearchAppBar(props) {
                                             <div></div>
                                         }
                                     </div>
-      <MenuItem onClick={handleMenuClose}><span onClick={e=>{props.history.push('/home/produccion')}}>Profile</span></MenuItem>
-      <MenuItem onClick={handleMenuClose}><span onClick={e=>{props.history.push('/home/usuarios')}}>Management user</span></MenuItem>
-      <MenuItem onClick={handleMenuClose}><span onClick={e=>{props.history.push('/home/produccion')}}>Profile</span></MenuItem>
+      <MenuItem onClick={handleMenuClose}><span onClick={e=>{props.history.push('/management/produccion')}}>Profile</span></MenuItem>
+      <MenuItem onClick={handleMenuClose}><span onClick={e=>{props.history.push('/management/usuarios')}}>Management user</span></MenuItem>
+      <MenuItem onClick={handleMenuClose}><span onClick={e=>{props.history.push('/management/produccion')}}>Profile</span></MenuItem>
     </Menu>
   );
 
@@ -200,22 +200,19 @@ function PrimarySearchAppBar(props) {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap >
-          <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/produccion`)}}>
+          <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/management/produccion`)}}>
               <span>Produccion</span>
             </IconButton>
-            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/compras`)}}>
-
-            <span>Compras</span>
-
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/management/compras`)}}>
+              <span>Compras</span>
             </IconButton>
-            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/home/produccion`)}}>
-        
-              <span>Matriceria</span>                
-        
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/management/produccion`)}}>
+              <span>Matriceria</span>
             </IconButton>
-             
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/management/ingenieria`)}}>
+              <span>Ingenieria</span>
+            </IconButton>
           </Typography>
-
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="show 4 new mails" color="inherit">

@@ -68,7 +68,7 @@ const PlanillaProduccion = ( props ) => {
         return { totalProduccion , totalRechazo , totalScrap }
     }
     return (
-        <tr style = { { padding : 20 , cursor : 'pointer' } } onClick = { e => { props.filtraPlanilla ( props.planilla.idPlanilla ) } } >
+        <tr style = { { padding : 20 , cursor : 'pointer' , background : props.fondo } } onClick = { e => { props.filtraPlanilla ( props.planilla.idPlanilla ) } } >
             {
                 ! modeDelete ?
                     <>
