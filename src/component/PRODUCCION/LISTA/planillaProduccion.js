@@ -8,6 +8,7 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import Tooltip from '@material-ui/core/Tooltip'
 import { useDispatch } from 'react-redux'
 import findPlanillaUpdate from '../../../Redux/Actions/findPlanillaUpdate'
+import MyComponent from '../../AAprimary/misComponentes'
 
 const PlanillaProduccion = ( props ) => {
     const [ modeDelete , setModeDelete ] = useState ( false )
@@ -94,9 +95,10 @@ const PlanillaProduccion = ( props ) => {
                             </IconButton>
                         </Tooltip>
                         </td>
+                        <td><MyComponent.botonImprimir  onClick = { e => props.generatePDF (  ) } /></td>
                     </>
                     :
-                    <td colSpan = { 10 }>
+                    <td colSpan = { 11 }>
                         ¿ Esta seguro de eliminar esta planilla ?
                         <Tooltip title="Delete">
                             <IconButton onClick={ e => deletePlanillaProduccion( props.planilla.idPlanilla ) } aria-label="delete" >

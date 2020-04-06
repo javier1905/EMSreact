@@ -120,7 +120,66 @@ servicios.deletPieza = async ( idPieza ) => {
     catch ( e ) { mensaje.fracaso =  e.message  }
     return mensaje
 }
-
+servicios.listaProcesos = async (  ) => {
+    var vecProcesos = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/procesos/list` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecProcesos = json
+        }
+    }
+    catch ( e ) {
+        vecProcesos = [  ]
+    }
+    return vecProcesos
+}
+servicios.listaMaquinas = async (  ) => {
+    var vecMaquinas = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/maquinas` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecMaquinas = json
+        }
+    }
+    catch ( e ) {
+        vecMaquinas = [  ]
+    }
+    return vecMaquinas
+}
+servicios.listaTiposProceso = async (  ) => {
+    var vecTiposProceso = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/tiposProceso` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecTiposProceso = json
+        }
+    }
+    catch ( e ) {
+        vecTiposProceso = [  ]
+    }
+    return vecTiposProceso
+}
 
 
 export default servicios

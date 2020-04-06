@@ -18,7 +18,9 @@ import imgNofound from '../../../Imagenes/noFound.png'
 import Servicios from './serviceLista'
 import estilos from './styleLista'
 import findPlanillaUpdate from '../../../Redux/Actions/findPlanillaUpdate'
-
+import jsPDF from 'jspdf'
+import $ from 'jquery'
+import 'jspdf-autotable'
 
 const ListaPlanilasProduccion = ( props ) => {
     var classes = estilos (  )
@@ -51,14 +53,7 @@ const ListaPlanilasProduccion = ( props ) => {
     }
         , [ fechaDesdeProduccion ,  fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon , idMaquina , idPieza , idMolde , idTipoProceso ,  idOperacion ]
     )
-    const filtraPlanilla = id => {
-        setPlanillaSeleccionada ( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) )
-        // vecPlanillasProduccion.forEach ( ( pla , i ) => {
-        //     if (pla.idPlanilla === id) {
-
-        //     }
-        // } )
-    }
+    const filtraPlanilla = id => { setPlanillaSeleccionada ( vecPlanillasProduccion.find ( pla =>  parseInt ( pla.idPlanilla ) === parseInt ( id ) ) ) }
     const  actualizaListaPlanillas = ( ) => {
         const planillasProduccion = async ( ) => {
             const planillaPro = await Servicios.planillasProduccion ( fechaDesdeProduccion , fechaHastaProduccion , fechaDesdeFundicion , fechaHastaFundicon ,
@@ -145,6 +140,22 @@ const ListaPlanilasProduccion = ( props ) => {
     [ idMolde ]
     )
     const showModalUpdate = (  ) => { setShowUpdate ( true ) }
+
+    const generatePDF = (  ) => {
+        console.log (' generate pdf OK ' )
+        var doc = new jsPDF ( {
+            orientation: 'landscape',
+            
+            putOnlyUsedFonts: true ,
+            // unit: 'in',
+            // format: [1200, 600]
+        } )
+        doc.text ( 'Parte Diario' , 10 , 10 )        // // doc.autoTable( { html : '#parteDiario' } )
+        
+        // doc.addImage ( imgNofound , 'jpg' , 15, 40, 180, 180 )
+        doc.fromHTML($('#parteDiario').get(0), 5 , 5, { autoSize: true  } )
+        doc.save ( 'ParteDiario.pdf' )
+    }
     return (
         <div>
             <ModalAltaPlanilla  show = { show } handleClose = { handleClose } />
@@ -340,13 +351,14 @@ const ListaPlanilasProduccion = ( props ) => {
                                     <th>SCRAP</th>
                                     <th>EDITAR</th>
                                     <th>ELIMINAR</th>
+                                    <th>IMPRIMIR</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
                                     Array.isArray ( vecPlanillasProduccion ) && vecPlanillasProduccion.length !== 0 ?
                                     vecPlanillasProduccion.map ( ( planilla , indexPlanilla ) => {
-                                        return < PlanillaProduccion fondo = {  planilla ===  planillaSeleccionada  ? '#DEDEE2' : 'white' } showModalUpdate = { showModalUpdate } actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
+                                        return < PlanillaProduccion generatePDF = { generatePDF }  fondo = {  planilla ===  planillaSeleccionada  ? '#DEDEE2' : 'white' } showModalUpdate = { showModalUpdate } actualizaListaPlanillas = { actualizaListaPlanillas }  filtraPlanilla = { filtraPlanilla }  planilla = { planilla }  key = { indexPlanilla } />
                                     } )
                                     :
                                     <tr><td colSpan = { 10 } style={{textAlign:'center' , padding : 10 }}>
@@ -355,7 +367,7 @@ const ListaPlanilasProduccion = ( props ) => {
                             </tbody>
                         </Table>
                     </div>
-                    <div style = { { width : '30%' , float : "right" , background : 'white' , boxSizing : 'border-box' , padding : 10}}>
+                    <div id='parteDiario'  style = { { width : '30%' , float : "right" , background : 'white' , boxSizing : 'border-box' , padding : 10}}>
                         {
                             planillaSeleccionada ?
                                 <div>

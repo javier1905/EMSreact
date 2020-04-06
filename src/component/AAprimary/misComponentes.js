@@ -17,6 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import SearchIcon from '@material-ui/icons/Search'
 import UpdateIcon from '@material-ui/icons/Update'
 import CancelIcon from '@material-ui/icons/Cancel'
+import PrintIcon from '@material-ui/icons/Print'
 import AceptIcon from '@material-ui/icons/Done'
 import Tooltip from '@material-ui/core/Tooltip'
 import AddlIcon from '@material-ui/icons/Add'
@@ -53,6 +54,7 @@ componente.fecha = React.forwardRef ( ( props , ref ) => {
     const classes = useStyles (  )
     return ( <MuiPickersUtilsProvider utils = { DateFnsUtils } className = { classes.formControl } >
             <KeyboardDatePicker
+                disabled = { props.disabled ? props.disabled : false }
                 ref = { ref }
                 style = { { marginRight : '10px' , width : '180px' } }
                 size = { props.size ? props.size : 'small' }
@@ -176,7 +178,7 @@ componente.texto = React.forwardRef ( ( props , ref ) => {
         className = { props.className ? props.className : 'text' }
         ref = { ref }
         required = { props.required ? true : false }
-        style = { { width : props.width ? props.width : '105px' } }
+        style = { { width : props.width ? props.width : '105px' , marginRight : '10px' } }
         id = { props.id ? props.id : 'txt_texto' }
         type = 'text'
         label = { props.label ? props.label : 'label' }
@@ -244,6 +246,21 @@ componente.botonCancel = React.forwardRef ( ( props , ref ) => {
             onClick =   {  e => { props.onClick ( info , e ) } }
             aria-label={ props.texto ? props.texto : "Cancel"} >
         <CancelIcon fontSize = { props.fontSize ? props.fontSize : 'small' } />
+    </IconButton>
+</Tooltip> )
+} )
+componente.botonImprimir = React.forwardRef ( ( props , ref ) => {
+    const [info] = React.useState (props.info ? props.info : '')
+    return ( <Tooltip title = { props.texto ? props.texto : " to Print"}>
+    <IconButton
+            className = { props.className ? props.className : 'text' }
+            ref = { ref }
+            name = { props.name ? props.name : 'printlIcon' }
+            id = { props.id ? props.id : 'btnPrint' }
+            style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
+            onClick =   {  e => { props.onClick ( info , e ) } }
+            aria-label={ props.texto ? props.texto : "Print"} >
+        <PrintIcon fontSize = { props.fontSize ? props.fontSize : 'small' } />
     </IconButton>
 </Tooltip> )
 } )

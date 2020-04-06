@@ -31,6 +31,7 @@ const Pieza = ( props ) => {
         setNombrePieza ( props.pieza.nombrePieza )
         setIdCliente ( props.pieza.idCliente )
         setIdTipoMaterial ( props.pieza.idTipoMaterial )
+        props.actualizaModo ( undefined , props.pieza  )
         setModo ( 'normal' )
     }
     const updatePieza = ( info , e ) => {
@@ -155,7 +156,7 @@ const Pieza = ( props ) => {
                 <td colSpan = { 6 }>
                     { `Estas seguro de eliminar la pieza  ${nombrePieza}` }
                     <MyComponent.botonAcept onClick = { deletePieza } />
-                    <MyComponent.botonCancel onClick = { e => setModo ( 'normal' ) } />
+                    <MyComponent.botonCancel onClick = { e => { setModo ( 'normal' ) ; props.actualizaModo ( 'delete' , props.pieza  ) }  } />
                 </td>
             </tr>
     )
