@@ -1,31 +1,46 @@
 import React, { useState, useEffect } from 'react'
 import MyComponent from '../../AAprimary/misComponentes'
 import FormProceso from './formAltaProceso'
-import { SnackbarProvider } from 'notistack'
+import servicios from '../servicesIngenieria'
+import { withSnackbar } from 'notistack'
 
 const Proceso = ( props ) => {
     const [idProceso , setIdProceso] = useState ( '' )
     const [descipcionProceso , setDescipcionProceso] = useState ( '' )
-    // const [idPieza , setIdPieza] = useState ( '' )
     const [nombrePieza , setNombrePieza] = useState ( '' )
-    // const [idMaquina , setIdMaquina] = useState ( '' )
     const [nombreMaquina , setNombreMaquina] = useState ( '' )
-    // const [idTipoProceso , setIdTipoProceso] = useState ( '' )
     const [nombreTipoProceso , setNombreTipoProceso] = useState ( '' )
     const [open , setOpen] = useState ( false )
 
     useEffect ( (  ) => {
         setIdProceso ( props.proceso.idProceso )
         setDescipcionProceso ( props.proceso.descipcionProceso )
-        // setIdPieza ( props.proceso.idPieza )
         setNombrePieza ( props.proceso.nombrePieza )
-        // setIdMaquina ( props.proceso.idMaquina )
         setNombreMaquina ( props.proceso.nombreMaquina )
-        // setIdTipoProceso ( props.proceso.idTipoProceso )
         setNombreTipoProceso ( props.proceso.nombreTipoProceso )
     } , [ props ] )
     const handleClose = (  ) => {  setOpen ( false ) }
+    const deletePoceso = (  ) => {
+        const deletPro = async (  ) => {
+            var result = await servicios.deleteProceso ( parseInt ( idProceso ) )
+            if ( result ) {
+                props.enqueueSnackbar( result ,
+                    {
+                        variant: 'success',
+                        preventDuplicate: true,
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'center',
+                        }
+                    })
+                    props.actualizaModo ( 'normal' ,  undefined )
+                props.actualizaLista (  )
+            }
+        }
+        deletPro (  )
+    }
     return (
+        props.modo === 'normal' ?
         <tr>
             <td>{idProceso}</td>
             <td>{descipcionProceso}</td>
@@ -35,14 +50,20 @@ const Proceso = ( props ) => {
             <td>
                 <>
                     <MyComponent.botonUpdate texto = 'Update proceso' onClick = { e => setOpen ( true ) }/>
-                    <SnackbarProvider maxSnack = { 3 } >
-                        <FormProceso proceso = { props.proceso } handleClose = { handleClose } open = { open } />
-                    </SnackbarProvider>
+                    <FormProceso actualizaLista = { props.actualizaLista } proceso = { props.proceso } handleClose = { handleClose } open = { open } />
                 </>
             </td>
-            <td><MyComponent.botonDelete texto = 'Delete proceso' /></td>
+            <td><MyComponent.botonDelete texto = 'Delete proceso'  onClick = { e => props.actualizaModo ( 'delete' ,  props.proceso) } /></td>
+        </tr>
+        :
+        <tr>
+            <td colSpan = { 7 }>
+                    ¿ Esta seguro de eliminar a  { descipcionProceso }  ?
+                    <MyComponent.botonAcept texto =  'Delete procesos' onClick = { e => deletePoceso (  ) } />
+                    <MyComponent.botonCancel texto =  'Cancel delete'/>
+            </td>
         </tr>
     )
 }
 
-export default Proceso
+export default withSnackbar ( Proceso )

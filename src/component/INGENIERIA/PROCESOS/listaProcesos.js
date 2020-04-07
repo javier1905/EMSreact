@@ -6,10 +6,15 @@ import Loading from '@material-ui/core/CircularProgress'
 import noFound from '../../../Imagenes/noFound.png'
 import Proceso from './proceso'
 import Servicios from '../servicesIngenieria'
+import { SnackbarProvider } from 'notistack'
+import FormProceso from './formAltaProceso'
 
 const ListaProcesos= (  ) => {
     const [vecProcesos,setVecProcesos] = useState ( [  ] )
     const [loading,setLoading] = useState ( true )
+    const [open , setOpen] = useState ( false )
+    const [modo , setModo] = useState ( 'normal' )
+    const [procesosSeleccionado , setProcesoSeleccionado] = useState ( undefined )
 
     useEffect ( (  ) => {
         const getListaProcesos = async (  ) => {
@@ -21,52 +26,63 @@ const ListaProcesos= (  ) => {
         }
         getListaProcesos (  )
     } , [ loading ] )
+    const actualizaLista = (  ) => {
+        setLoading ( true )
+    }
+    const handleClose = (  ) => {  setOpen ( false ) }
+    const actualizaModo = ( modo , pro ) => {
+        setProcesoSeleccionado ( pro )
+        setModo ( modo )
+    }
     return (
         <div>
-            <Typography variant = 'h1'>Listado Procesos</Typography>
-            <div>
-                <MyComponent.botonAdd fontSize = 'large' size = { 60 } texto = 'Add proceso' />
-            </div>
-            <div id = 'containerTablaProcesos'>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Descripcion</th>
-                            <th>Pieza</th>
-                            <th>Maquina</th>
-                            <th>Tipo</th>
-                            <th>Editar</th>
-                            <th>Eliminar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            loading ?
+            <SnackbarProvider maxSnack = { 3 } >
+                <Typography variant = 'h1'>Listado Procesos</Typography>
+                <div>
+                    <MyComponent.botonAdd fontSize = 'large' size = { 60 } texto = 'Add proceso'  onClick = { e => setOpen ( true ) } />
+                    <FormProceso actualizaLista =  { actualizaLista } proceso = { undefined } handleClose = { handleClose } open = { open } />
+                </div>
+                <div id = 'containerTablaProcesos'>
+                    <Table>
+                        <thead>
                             <tr>
-                                <td colSpan = { 7 }>
-                                    <div>
-                                        <Loading/>
-                                    </div>
-                                </td>
+                                <th>Id</th>
+                                <th>Descripcion</th>
+                                <th>Pieza</th>
+                                <th>Maquina</th>
+                                <th>Tipo</th>
+                                <th>Editar</th>
+                                <th>Eliminar</th>
                             </tr>
-                            :
-                            Array.isArray ( vecProcesos ) && vecProcesos.length > 0 ?
-                                vecProcesos.map ( ( p , i ) => {
-                                    return (<Proceso proceso = { p }  key = { i } />)
-                                } )
-                                :
+                        </thead>
+                        <tbody>
+                            {
+                                loading ?
                                 <tr>
                                     <td colSpan = { 7 }>
                                         <div>
-                                            <img src = { noFound } alt = 'img no found '></img>
+                                            <Loading/>
                                         </div>
                                     </td>
                                 </tr>
-                        }
-                    </tbody>
-                </Table>
-            </div>
+                                :
+                                Array.isArray ( vecProcesos ) && vecProcesos.length > 0 ?
+                                    vecProcesos.map ( ( p , i ) => {
+                                        return (<Proceso actualizaModo = { actualizaModo }   modo = { p === procesosSeleccionado ? modo : 'normal' } actualizaLista = { actualizaLista } proceso = { p }  key = { i } />)
+                                    } )
+                                    :
+                                    <tr>
+                                        <td colSpan = { 7 }>
+                                            <div>
+                                                <img src = { noFound } alt = 'img no found '></img>
+                                            </div>
+                                        </td>
+                                    </tr>
+                            }
+                        </tbody>
+                    </Table>
+                </div>
+            </SnackbarProvider>
         </div>
     )
 }

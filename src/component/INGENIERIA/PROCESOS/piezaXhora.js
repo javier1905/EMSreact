@@ -20,7 +20,7 @@ const PiezaxHora = ( props ) => {
         setIndex ( props.index )
     } , [ props ] )
     const validacion = (  ) => {
-        console.log (  ' fecha DESDE ' ,  props.fechaDesdeAnteriror , ' fecha HASTA ' , props.fechaHastaPosterior )
+
         var Alert = $( '#myAlert2' )
         if ( props.fechaDesdeAnteriror !== undefined &&  new Moment ( props.fechaDesdeAnteriror ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' ) >=   new Moment ( desdePiezasXhs ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' ) ) {
             setTimeout ( (  ) => {

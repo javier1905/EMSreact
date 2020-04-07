@@ -140,6 +140,70 @@ servicios.listaProcesos = async (  ) => {
     }
     return vecProcesos
 }
+servicios.insertProceso = async ( descripcionProceso , idPieza , idMaquina , idTiposProceso , vecPiezasXhora ) => {
+    var mensaje = ''
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/procesos/insert` , {
+            // const result = await fetch (`http://localhost:5000/api/procesos/insert` , {
+            method : 'POST' ,
+            body : JSON.stringify ( { descripcionProceso , idPieza , idMaquina , idTiposProceso , vecPiezasXhora } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            mensaje = json.mensaje
+        }
+    }
+    catch ( e ) {
+        mensaje = e.mensaje
+    }
+    return mensaje
+}
+servicios.updateProceso = async ( idProceso , descripcionProceso , idPieza , idMaquina , idTiposProceso , vecPiezasXhora ) => {
+    var mensaje = ''
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/procesos/update` , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idProceso , descripcionProceso , idPieza , idMaquina , idTiposProceso , vecPiezasXhora } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            mensaje = json.mensaje
+        }
+    }
+    catch ( e ) {
+        mensaje = e.mensaje
+    }
+    return mensaje
+}
+servicios.deleteProceso = async ( idProceso ) => {
+    var mensaje = ''
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/procesos/delete` , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idProceso } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            mensaje = json.mensaje
+        }
+    }
+    catch ( e ) {
+        mensaje = e.mensaje
+    }
+    return mensaje
+}
 servicios.listaMaquinas = async (  ) => {
     var vecMaquinas = [  ]
     try {

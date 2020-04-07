@@ -14,6 +14,9 @@ const ListaClientes = ( props ) => {
     const [ vecClientes , setVecClientes ] = useState ([])
     const [ banderaVec , setBanderaVec ] = useState ( true )
     const [ loading , setLoading ] = useState (true)
+    const [ modo , setModo ] = useState ('normal')
+    const [ clienteSeleccionado , setClienteSeleccionado ] = useState (undefined)
+
     const actualizaLista = (  ) => {
         setLoading (true)
         setBanderaVec ( false )
@@ -35,6 +38,12 @@ const ListaClientes = ( props ) => {
         getListClient (  )
         return ( ) =>  setBanderaVec ( true )
     } , [ banderaVec ] )
+    const updateSection = ( modo , cliente ) => {
+        const formAltaCliente = $('#formInserCliente')
+        formAltaCliente.slideUp (  )
+        setModo ( modo )
+        setClienteSeleccionado ( cliente )
+    }
     return (
     <div style = { { padding : 20 } }>
         <Typography variant = 'h1' >ListaClientes</Typography>
@@ -44,7 +53,9 @@ const ListaClientes = ( props ) => {
             size = { 50 }
             onClick = { ( info , e ) =>{
                 const formAltaCliente = $('#formInserCliente')
-                formAltaCliente.slideToggle()
+                formAltaCliente.slideToggle ( )
+                setModo ( 'normal' )
+                setClienteSeleccionado ( undefined )
             } }
         />
         <div id = 'formInserCliente' style = { { display : 'none'  } }>
@@ -76,7 +87,7 @@ const ListaClientes = ( props ) => {
                         :
                         ( banderaVec === true && Array.isArray ( vecClientes ) && vecClientes.length > 0 ) ?
                         vecClientes.map ( ( c , i )  => {
-                            return(<Cliente actualizaLista = { actualizaLista } cliente = { c }  key = { i } /> ) } )
+                            return(<Cliente modo = { clienteSeleccionado === c ? modo : 'normal' }  updateSection = { updateSection }  actualizaLista = { actualizaLista } cliente = { c }  key = { i } /> ) } )
                         :
                         <tr><td colSpan = { 5 }><img alt = 'No Found' src = { NoFounf }></img></td></tr>
                     }

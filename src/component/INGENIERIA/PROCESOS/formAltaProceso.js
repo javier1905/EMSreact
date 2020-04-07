@@ -25,6 +25,7 @@ const FormProcesos =  ( props ) => {
     const [idMaquina , setIdMaquina] = useState ( '' )
     const [idTipoProceso , setIdTipoProceso] = useState ( '' )
     const [descipcionProceso , setDescipcionProceso] = useState ( '' )
+    const [idProceso , setIdProceso] = useState ( '' )
     const [vecPiezasXhora , setVecPiezasXhora] = useState ( [  ] )
 
     useEffect ( (  ) => {
@@ -32,11 +33,12 @@ const FormProcesos =  ( props ) => {
             const resTipoPro = await Servicios.listaTiposProceso (  )
             const resMaq = await Servicios.listaMaquinas (  )
             const response = await Servicios.listPiezas (  )
-            setDescipcionProceso ( props.proceso.descipcionProceso )
-            if ( response ) { setVecPiezas ( response ) ; setIdPieza ( props.proceso.idProceso )  }
-            if ( resMaq ) { setVecMaquinas ( resMaq ) ; setIdMaquina ( props.proceso.idMaquina )}
-            if ( resTipoPro ) { setVecTiposProceso ( resTipoPro ) ; setIdTipoProceso ( props.proceso.idTipoProceso )  }
-            if ( props.open ) { setVecPiezasXhora ( props.proceso.vecPiezasXhora ) }
+            props.proceso !== undefined && setIdProceso ( parseInt ( props.proceso.idProceso ) )
+            props.proceso !== undefined && setDescipcionProceso ( props.proceso.descipcionProceso )
+            if ( response ) { setVecPiezas ( response ) ; props.proceso !== undefined && setIdPieza ( props.proceso.idProceso )  }
+            if ( resMaq ) { setVecMaquinas ( resMaq ) ; props.proceso !== undefined && setIdMaquina ( props.proceso.idMaquina )}
+            if ( resTipoPro ) { setVecTiposProceso ( resTipoPro ) ; props.proceso !== undefined && setIdTipoProceso ( props.proceso.idTipoProceso )  }
+            if ( props.open ) { props.proceso !== undefined && setVecPiezasXhora ( props.proceso.vecPiezasXhora ) }
         }
         getVecPiezas (  )
         setOpen ( props.open )
@@ -62,14 +64,15 @@ const FormProcesos =  ( props ) => {
     }
     const MethodInsertPiezaXhora =  ( piezaXhora ) => {
         var vec = vecPiezasXhora
-        if ( vec.length > 0 ) {
+        if ( Array.isArray ( vec ) && vec.length > 0 ) {
             vec[vec.length - 1].hastaPiezasXhs = new Moment (  piezaXhora.desdePiezasXhs ).add ( -1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
         }
+
         vec = [...vec , piezaXhora ]
         setVecPiezasXhora ( vec )
     }
     const MethodDeletePiezaXhora = ( idPiezasXhs , index ) => {
-        console.log ( 'methos DELTE sussecc' , idPiezasXhs , index )
+
         var vec = vecPiezasXhora
         if ( vec.length === 1 ) { vec.splice ( index , 1 ) }
         else if ( index === 0 && vec.length > 1) {
@@ -87,7 +90,6 @@ const FormProcesos =  ( props ) => {
         setVecPiezasXhora ( vec )
     }
     const mySubmit = e => {
-        console.log ( ' prevent default funcionando')
         if ( descipcionProceso === '' || idPieza === '' || idMaquina === '' || idTipoProceso === '') {
             props.enqueueSnackbar(`complete todos los campos`,
             {
@@ -111,15 +113,55 @@ const FormProcesos =  ( props ) => {
             })
         }
         else {
-            props.enqueueSnackbar(`Listo para insertar `,
-            {
-                variant: 'success',
-                preventDuplicate: true,
-                anchorOrigin: {
-                    vertical: 'bottom',
-                    horizontal: 'center',
+            if ( props.proceso === undefined ) {
+
+                const isertPro = async (  ) => {
+                    const result = await Servicios.insertProceso ( descipcionProceso , idPieza , idMaquina , idTipoProceso , vecPiezasXhora )
+                    if ( result ) {
+                        props.enqueueSnackbar( result ,
+                        {
+                            variant: 'success',
+                            preventDuplicate: true,
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }
+                        })
+                        setIdProceso ( '' )
+                        setDescipcionProceso ( '' )
+                        setIdPieza ( '' )
+                        setIdTipoProceso ( '' )
+                        setVecPiezasXhora ( [  ] )
+                        props.handleClose (  )
+                        props.actualizaLista (  )
+                    }
                 }
-            })
+                isertPro (  )
+            }
+            else {
+                const updatePro = async (  ) => {
+                    const result = await Servicios.updateProceso ( idProceso , descipcionProceso , idPieza , idMaquina , idTipoProceso , vecPiezasXhora )
+                    if ( result ) {
+                        props.enqueueSnackbar( result ,
+                        {
+                            variant: 'success',
+                            preventDuplicate: true,
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }
+                        })
+                        setIdProceso ( '' )
+                        setDescipcionProceso ( '' )
+                        setIdPieza ( '' )
+                        setIdTipoProceso ( '' )
+                        setVecPiezasXhora ( [  ] )
+                        props.handleClose (  )
+                        props.actualizaLista (  )
+                    }
+                }
+                updatePro (  )
+            }
         }
         e.preventDefault(  )
     }
