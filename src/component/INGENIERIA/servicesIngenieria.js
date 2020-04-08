@@ -244,6 +244,132 @@ servicios.listaTiposProceso = async (  ) => {
     }
     return vecTiposProceso
 }
-
+servicios.listaDefectos = async (  ) => {
+    var vecDefectos = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/defectos` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecDefectos = json
+        }
+    }
+    catch ( e ) {
+        vecDefectos = [  ]
+    }
+    return vecDefectos
+}
+servicios.deleteDefecto = async ( idDefecto ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/defectos/delete' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idDefecto } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.updateDefecto = async ( idDefecto , nombreDefecto , idOperacion ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/defectos/update' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idDefecto , nombreDefecto , idOperacion } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.insertDefecto = async ( nombreDefecto , idOperacion ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/defectos/insert' , {
+            method : 'POST' ,
+            body : JSON.stringify ( { nombreDefecto , idOperacion } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.listaOperaciones = async (  ) => {
+    var vecOperaciones = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/operaciones` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecOperaciones = json
+        }
+    }
+    catch ( e ) {
+        vecOperaciones = [  ]
+    }
+    return vecOperaciones
+}
 
 export default servicios
