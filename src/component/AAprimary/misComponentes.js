@@ -23,8 +23,8 @@ import Tooltip from '@material-ui/core/Tooltip'
 import AddlIcon from '@material-ui/icons/Add'
 import SaveIcon from '@material-ui/icons/Save'
 import Button from '@material-ui/core/Button'
-
-
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
 
 var componente = {  }
 
@@ -100,6 +100,22 @@ componente.numero = React.forwardRef ( ( props , ref ) => {
         onBlur = { props.onBlur }
         value = { props.value ? props.value : '' }
     /> )
+} )
+componente.boolean = React.forwardRef ( ( props , ref ) => {
+    return (
+        <FormControlLabel
+            labelPlacement="top"
+            control = {
+                <Checkbox
+                    ref = { ref }
+                    checked = { props.checked }
+                    onChange = { props.onChange }
+                    name = { props.name ? props.name : 'checkBox' }
+                    color = "primary"
+                />
+            }
+            label = { props.label ? props.label : 'checkBox' }
+      /> )
 } )
 componente.listaDesplegable = React.forwardRef ( ( props , ref ) => {
     const classes = useStyles (  )

@@ -371,5 +371,247 @@ servicios.listaOperaciones = async (  ) => {
     }
     return vecOperaciones
 }
+servicios.listaMoldes = async (  ) => {
+    var vecMoldes = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/moldes` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecMoldes = json
+        }
+    }
+    catch ( e ) {
+        vecMoldes = [  ]
+    }
+    return vecMoldes
+}
+servicios.deleteMolde = async ( idMolde ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/moldes/delete' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idMolde } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.updateMolde = async ( idMolde , nombreMolde , idPieza ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/moldes/update' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idMolde , nombreMolde , idPieza } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.insertMolde = async ( nombreMolde , idPieza ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/moldes/insert' , {
+            method : 'POST' ,
+            body : JSON.stringify ( { nombreMolde , idPieza } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
 
+
+
+
+
+
+
+
+servicios.listaParadasMaquina = async (  ) => {
+    var vecParadasMaquina = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/paradasMaquina` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecParadasMaquina = json
+        }
+    }
+    catch ( e ) {
+        vecParadasMaquina = [  ]
+    }
+    return vecParadasMaquina
+}
+servicios.deleteParadaMaquina = async ( idParadaMaquina ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/paradasMaquina/delete' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idParadaMaquina } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.updateParadaMaquina = async ( idParadaMaquina , nombreParadaMaquina , tipoParadaMaquina , idArea ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/paradasMaquina/update' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idParadaMaquina , nombreParadaMaquina , tipoParadaMaquina , idArea } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.insertParadaMaquina = async ( nombreParadaMaquina , tipoParadaMaquina , idArea ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/paradasMaquina/insert' , {
+            method : 'POST' ,
+            body : JSON.stringify ( { nombreParadaMaquina , tipoParadaMaquina , idArea } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+
+servicios.listaAreas = async (  ) => {
+    var vecAreas = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/areas` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecAreas = json
+        }
+    }
+    catch ( e ) {
+        vecAreas = [  ]
+    }
+    return vecAreas
+}
 export default servicios
