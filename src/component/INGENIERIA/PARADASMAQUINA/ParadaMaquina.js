@@ -101,6 +101,18 @@ const ParadaMaquina = ( props ) => {
         props.modo === 'normal' ?
         <tr>
             <td>{idParadaMaquina}</td>
+            {/* <td>
+                <select value = { idArea } onChange = { e => setIdArea ( e.target.value ) }>
+                    {
+                        ( Array.isArray ( vecAreas ) && vecAreas.length > 0 ) ?
+                        vecAreas.map ( ( a , i ) => {
+                        return ( <option key = { i } value = { a.idArea }>{a.nombreArea}</option> )
+                        } )
+                        :
+                        <option> none</option>
+                    }
+                </select>
+            </td> */}
             <td>{nombreParadaMaquina}</td>
             <td>{tipoParadaMaquina === true ? 'NO PROGRAMADA' : 'PROGRAMADA'}</td>
             <td>{nombreArea}</td>

@@ -614,4 +614,134 @@ servicios.listaAreas = async (  ) => {
     }
     return vecAreas
 }
+servicios.listaTiposMaquina = async (  ) => {
+    var vecTiposMaquina = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/tiposMaquina/list` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecTiposMaquina = json
+        }
+    }
+    catch ( e ) {
+        vecTiposMaquina = [  ]
+    }
+    return vecTiposMaquina
+}
+
+servicios.listaPlantas = async (  ) => {
+    var vecPlantas = [  ]
+    try {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/plantas/list` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( result ) {
+            const json = await result.json (  )
+            vecPlantas = json
+        }
+    }
+    catch ( e ) {
+        vecPlantas = [  ]
+    }
+    return vecPlantas
+}
+
+servicios.deleteMaquina = async ( idMaquina ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/maquinas/delete' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idMaquina } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.updateMaquina = async ( idMaquina , nombreMaquina , descripcionMaquina , idTipoMaquina , idPlanta ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/maquinas/update' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idMaquina , nombreMaquina , descripcionMaquina , idTipoMaquina , idPlanta } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.insertMaquina = async ( nombreMaquina , descripcionMaquina , idTipoMaquina , idPlanta ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/maquinas/insert' , {
+            method : 'POST' ,
+            body : JSON.stringify ( { nombreMaquina , descripcionMaquina , idTipoMaquina , idPlanta } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+
 export default servicios
