@@ -743,5 +743,143 @@ servicios.insertMaquina = async ( nombreMaquina , descripcionMaquina , idTipoMaq
     }
     return response
 }
+servicios.listaPuestos = async (  ) => {
+    var vecPuestos = [  ]
+    try {
+        const response = await fetch ( 'https://ems-node-api.herokuapp.com/api/puestos/list' , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Appliaction/json'
+            } )
+        } )
+        if ( response ) {
+            const json = await response.json (  )
+            if ( !json.status ) {
+                vecPuestos = json
+            }
+            else {
+                vecPuestos = [  ]
+            }
+        }
+    }
+    catch ( e ) {
+        vecPuestos = [  ]
+    }
+    return vecPuestos
+}
+servicios.listaTrabajadores = async (  ) => {
+    var vecTrabajadores = [  ]
+    try {
+        const response = await fetch ( 'https://ems-node-api.herokuapp.com/api/trabajadores' , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Appliaction/json'
+            } )
+        } )
+        if ( response ) {
+            const json = await response.json (  )
+            if ( !json.status ) {
+                vecTrabajadores = json
+            }
+            else {
+                vecTrabajadores = [  ]
+            }
+        }
+    }
+    catch ( e ) {
+        console.log ( e )
+        vecTrabajadores = [  ]
+    }
+    return vecTrabajadores
+}
+servicios.deleteTrabajador = async ( idTrabajador ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/trabajadores/delete' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idTrabajador } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.updateTrabajador = async ( idTrabajador , nombreTrabajador , apellidoTrabajador , nacimientoTrabajador , ingresoTrabajador , idPuesto ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/trabajadores/update' , {
+            method : 'PUT' ,
+            body : JSON.stringify ( { idTrabajador , nombreTrabajador , apellidoTrabajador , nacimientoTrabajador , ingresoTrabajador , idPuesto } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
+servicios.insertTrabajador = async ( nombreTrabajador , apellidoTrabajador , nacimientoTrabajador , ingresoTrabajador , idPuesto ) => {
+    var response = { mensaje : '' ,  status : 0 }
+    try {
+        const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/trabajadores/insert' , {
+            method : 'POST' ,
+            body : JSON.stringify ( { nombreTrabajador , apellidoTrabajador , nacimientoTrabajador , ingresoTrabajador , idPuesto } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json.status === 200 ) {
+                response.mensaje = json.mensaje
+                response.status = 200
+            }
+            else {
+                response.mensaje = json.mensaje
+                response.status = 403
+            }
+        }
+    }
+    catch ( e )  {
+        response.mensaje = e.message
+        response.status = 403
+    }
+    return response
+}
 
 export default servicios

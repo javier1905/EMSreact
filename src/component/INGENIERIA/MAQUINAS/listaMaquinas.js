@@ -78,7 +78,7 @@ const ListaMaquinas = ( props ) => {
                             {
                                 loading ?
                                 <tr>
-                                    <td colSpan = { 5 } >
+                                    <td colSpan = { 7 } >
                                         <Loading />
                                     </td>
                                 </tr>
