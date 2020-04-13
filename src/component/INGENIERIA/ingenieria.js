@@ -6,19 +6,23 @@ import ListaMoldes from './MOLDES/listaMoldes'
 import ListaParadasMaquina from './PARADASMAQUINA/listaParadasMaquina'
 import ListaMaquinas  from './MAQUINAS/listaMaquinas'
 import ListarTrabajadores from './TRABAJADORES/listaTrabajadores'
-// import { AppBar , Tabs , Tab  } from '@material-ui/core'
 import TabPanel from './tabPanelIngenieria'
-// import {Phone as PhoneIcon , Favorite as FavoriteIcon , PersonPin as PersonPinIcon , Help as HelpIcon , ShoppingBasket , ThumbDown , ThumbUp } from '@material-ui/icons'
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import PhoneIcon from '@material-ui/icons/Phone';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import PersonPinIcon from '@material-ui/icons/PersonPin';
-import HelpIcon from '@material-ui/icons/Help';
-import ShoppingBasket from '@material-ui/icons/ShoppingBasket';
-import ThumbDown from '@material-ui/icons/ThumbDown';
-import ThumbUp from '@material-ui/icons/ThumbUp';
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import ExtensionIcon from '@material-ui/icons/Extension'
+import SpellcheckIcon from '@material-ui/icons/Spellcheck'
+import HealingIcon from '@material-ui/icons/Healing'
+import DashboardIcon from '@material-ui/icons/Dashboard'
+import DepartureBoardIcon from '@material-ui/icons/DepartureBoard'
+import DirectionsBusIcon from '@material-ui/icons/DirectionsBus'
+import DirectionsWalkIcon from '@material-ui/icons/DirectionsWalk'
+import CategoryIcon from '@material-ui/icons/Category'
+import ListarOperaciones from './OPERACIONES/listaOperaciones'
+import ListaAreas from './AREAS/listaAreas'
+import ChromeReaderModeIcon from '@material-ui/icons/ChromeReaderMode'
+import ListaPuestos from './PUESTOS/listaPuestos'
+import PeopleIcon from '@material-ui/icons/People';
 
 const Ingenieria = ( props ) => {
     const [value , setValue] = React.useState ( 0 )
@@ -41,13 +45,16 @@ const Ingenieria = ( props ) => {
             textColor="primary"
             aria-label="scrollable force tabs example"
         >
-            <Tab label="Piezas" icon={<PhoneIcon />} {...a11yProps(0)} />
-            <Tab label="Procesos" icon={<FavoriteIcon />} {...a11yProps(1)} />
-            <Tab label="Defectos" icon={<PersonPinIcon />} {...a11yProps(2)} />
-            <Tab label="Moldes" icon={<HelpIcon />} {...a11yProps(3)} />
-            <Tab label="Paradas de maquina" icon={<ShoppingBasket />} {...a11yProps(4)} />
-            <Tab label="Maquina" icon={<ThumbDown />} {...a11yProps(5)} />
-            <Tab label="Trabajadores" icon={<ThumbUp />} {...a11yProps(6)} />
+            <Tab label="Piezas" icon={<ExtensionIcon />} {...a11yProps(0)} />
+            <Tab label="Procesos" icon={<SpellcheckIcon />} {...a11yProps(1)} />
+            <Tab label="Defectos" icon={<HealingIcon />} {...a11yProps(2)} />
+            <Tab label="Moldes" icon={<DashboardIcon />} {...a11yProps(3)} />
+            <Tab label="Paradas de maquina" icon={<DepartureBoardIcon />} {...a11yProps(4)} />
+            <Tab label="Maquinas" icon={<DirectionsBusIcon />} {...a11yProps(5)} />
+            <Tab label="Trabajadores" icon={<DirectionsWalkIcon />} {...a11yProps(6)} />
+            <Tab label="Operaciones" icon={<CategoryIcon />} {...a11yProps(7)} />
+            <Tab label="Areas" icon={<ChromeReaderModeIcon />} {...a11yProps(8)} />
+            <Tab label="Puestos" icon={<PeopleIcon />} {...a11yProps(9)} />
         </Tabs>
         </AppBar>
         <TabPanel value={value} index={0}>
@@ -70,6 +77,15 @@ const Ingenieria = ( props ) => {
         </TabPanel>
         <TabPanel value={value} index={6}>
             <ListarTrabajadores/>
+        </TabPanel>
+        <TabPanel value={value} index={7}>
+            <ListarOperaciones/>
+        </TabPanel>
+        <TabPanel value={value} index={8}>
+            <ListaAreas/>
+        </TabPanel>
+        <TabPanel value={value} index={9}>
+            <ListaPuestos/>
         </TabPanel>
     </div>
     )

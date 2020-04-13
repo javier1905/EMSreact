@@ -21,6 +21,7 @@ import findPlanillaUpdate from '../../../Redux/Actions/findPlanillaUpdate'
 import jsPDF from 'jspdf'
 import $ from 'jquery'
 import 'jspdf-autotable'
+import FilterListIcon from '@material-ui/icons/FilterList'
 
 const ListaPlanilasProduccion = ( props ) => {
     var classes = estilos (  )
@@ -163,7 +164,11 @@ const ListaPlanilasProduccion = ( props ) => {
             <Paper className = { classes.root } >
                 <div style = { { background : 'white' , padding : 20 } } >
                     <h2>Listado Planilla Produccion</h2>
-                    <h6 style = { { marginTop : 15 } } >Filtros</h6>
+                    {/* <h6 style = { { marginTop : 15 } } >Filtros</h6> */}
+                    <div  style = { { paddingTop : 10 , width : '100%' } } >
+                        <FilterListIcon style = { { float : 'right'  } } />
+                    </div>
+                    <div style = { { height : 40 } } ></div>
                     <MuiPickersUtilsProvider utils = { DateFnsUtils } className={classes.formControl } >
                         <KeyboardDatePicker
                             style= { { marginRight : '10px' , width : '220px' } }
