@@ -6,6 +6,7 @@ import Produccion from '../PRODUCCION/indexPRODUCCION'
 import Compras from '../COMPRAS/compras'
 import VerificaLOGIN from '../../credenciales/verificaLOGIN'
 import Ingenieria from '../INGENIERIA/ingenieria'
+import Reportes from '../REPORTES/reportes'
 
 const Management = ( props ) => {
     const match = useRouteMatch (  )
@@ -24,6 +25,9 @@ const Management = ( props ) => {
                 </Route>
                 <Route path = {`${match.path}/ingenieria`} >
                     <Ingenieria/>
+                </Route>
+                <Route path = {`${match.path}/reportes`}>
+                    <Reportes/>
                 </Route>
             </>
             <VerificaLOGIN/>

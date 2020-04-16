@@ -22,7 +22,10 @@ import ListarOperaciones from './OPERACIONES/listaOperaciones'
 import ListaAreas from './AREAS/listaAreas'
 import ChromeReaderModeIcon from '@material-ui/icons/ChromeReaderMode'
 import ListaPuestos from './PUESTOS/listaPuestos'
-import PeopleIcon from '@material-ui/icons/People';
+import PeopleIcon from '@material-ui/icons/People'
+import ListaPlantas from './PLANTAS/listaPlantas'
+import LocationCityIcon from '@material-ui/icons/LocationCity'
+import ListaTiposMaquina from './TIPOSMAQUINA/listaTiposMaquina'
 
 const Ingenieria = ( props ) => {
     const [value , setValue] = React.useState ( 0 )
@@ -55,6 +58,8 @@ const Ingenieria = ( props ) => {
             <Tab label="Operaciones" icon={<CategoryIcon />} {...a11yProps(7)} />
             <Tab label="Areas" icon={<ChromeReaderModeIcon />} {...a11yProps(8)} />
             <Tab label="Puestos" icon={<PeopleIcon />} {...a11yProps(9)} />
+            <Tab label="Plantas" icon={<LocationCityIcon />} {...a11yProps(10)} />
+            <Tab label="Tipos de maquina" icon={<LocationCityIcon />} {...a11yProps(11)} />
         </Tabs>
         </AppBar>
         <TabPanel value={value} index={0}>
@@ -86,6 +91,12 @@ const Ingenieria = ( props ) => {
         </TabPanel>
         <TabPanel value={value} index={9}>
             <ListaPuestos/>
+        </TabPanel>
+        <TabPanel value={value} index={10}>
+            <ListaPlantas/>
+        </TabPanel>
+        <TabPanel value={value} index={11}>
+            <ListaTiposMaquina/>
         </TabPanel>
     </div>
     )

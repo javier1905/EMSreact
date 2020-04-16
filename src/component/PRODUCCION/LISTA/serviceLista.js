@@ -1,4 +1,5 @@
 import Moment from 'moment'
+
 var consultas = {  }
 consultas.operaciones = async  (  ) => {
     var operaciones = []
@@ -138,14 +139,32 @@ consultas.tipoProcesos = async  (  ) => {
 consultas.planillasProduccion = async ( fDesdeProduccion ,  fHastaProduccion ,
     fDesdeFundicion , fHastaFundicon , idMaq , idPie , idMol , idTipoPro ,  idOp ) => {
     var planillasProduccion = []
-    const filtros = { fechaDesdeProduccion: new Moment(fDesdeProduccion).format("DD/MM/YYYY") ,
-    fechaHastaProduccion: new Moment(fHastaProduccion).format("DD/MM/YYYY") ,
-        fechaDesdeFundicion: new Moment(fDesdeFundicion).format("DD/MM/YYYY") ,
-        fechaHastaFundicon: new Moment(fHastaFundicon).format("DD/MM/YYYY") ,
+    // const filtros = { fechaDesdeProduccion: new Moment(fDesdeProduccion).format("DD/MM/YYYY") ,
+    // fechaHastaProduccion: new Moment(fHastaProduccion).format("DD/MM/YYYY") ,
+    //     fechaDesdeFundicion: new Moment(fDesdeFundicion).format("DD/MM/YYYY") ,
+    //     fechaHastaFundicon: new Moment(fHastaFundicon).format("DD/MM/YYYY") ,
+    //     idMaquina: idMaq === '' ? null : idMaq , idPieza: idPie === '' ? null : idPie ,
+    //     idMolde: idMol === '' ? null : idMol , idTipoProceso : idTipoPro === '' ?null : idTipoPro  ,
+    //     idOperacion : idOp === '' ? null : idOp
+    // }
+        const filtros = { fechaDesdeProduccion: new Moment(fDesdeProduccion).format('YYYY-MM-DDTHH:MM:ss.sss') ,
+        fechaHastaProduccion: new Moment(fHastaProduccion).format('YYYY-MM-DDTHH:MM:ss.sss') ,
+        fechaDesdeFundicion: new Moment(fDesdeFundicion).format('YYYY-MM-DDTHH:MM:ss.sss') ,
+        fechaHastaFundicon: new Moment(fHastaFundicon).format('YYYY-MM-DDTHH:MM:ss.sss') ,
         idMaquina: idMaq === '' ? null : idMaq , idPieza: idPie === '' ? null : idPie ,
         idMolde: idMol === '' ? null : idMol , idTipoProceso : idTipoPro === '' ?null : idTipoPro  ,
         idOperacion : idOp === '' ? null : idOp
     }
+    // const filtros = { fechaDesdeProduccion: new Moment(fDesdeProduccion).format('YYYY-MM-DD') ,
+    //     fechaHastaProduccion: new Moment(fHastaProduccion).format('YYYY-MM-DD') ,
+    //     fechaDesdeFundicion: new Moment(fDesdeFundicion).format('YYYY-MM-DD') ,
+    //     fechaHastaFundicon: new Moment(fHastaFundicon).format('YYYY-MM-DD') ,
+    //     idMaquina: idMaq === '' ? null : idMaq , idPieza: idPie === '' ? null : idPie ,
+    //     idMolde: idMol === '' ? null : idMol , idTipoProceso : idTipoPro === '' ?null : idTipoPro  ,
+    //     idOperacion : idOp === '' ? null : idOp
+    // }
+
+    console.log ( filtros , new Date (  ))
     try {
         // const response = await fetch( `http://localhost:5000/api/planillasProduccion/listar`,  {
         const response = await fetch( `https://ems-node-api.herokuapp.com/api/planillasProduccion/listar`,  {
@@ -156,8 +175,9 @@ consultas.planillasProduccion = async ( fDesdeProduccion ,  fHastaProduccion ,
                 'Content-Type' : 'Application/json'
             })
         })
+        
         if(! response.ok ) { planillasProduccion = [  ] }
-        else { planillasProduccion = await response.json (  ) }
+        else { planillasProduccion = await response.json (  ) ; console.log (planillasProduccion) }
     }
     catch ( e ) { planillasProduccion = [  ] }
     return  planillasProduccion

@@ -73,8 +73,8 @@ const PlanillaProduccion = ( props ) => {
             {
                 ! modeDelete ?
                     <>
-                        <td> {`${ new Moment ( props.planilla.fechaFundicion ).format( "DD/MM/YYYY") }`} </td>
-                        <td> {`${ new Moment ( props.planilla.fechaProduccion ).format( "DD/MM/YYYY") }`} </td>
+                        <td> {`${ new Moment ( props.planilla.fechaFundicion ).add ( 1 , 'd' ).format( "DD/MM/YYYY") }`} </td>
+                        <td> {`${ new Moment ( props.planilla.fechaProduccion ).add ( 1 , 'd' ).format( "DD/MM/YYYY") }`} </td>
                         <td> { props.planilla.nombreMaquina } </td>
                         <td> { props.planilla.nombrePieza  } </td>
                         <td> { props.planilla.nombreMolde } </td>

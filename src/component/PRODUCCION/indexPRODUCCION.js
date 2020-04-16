@@ -1,47 +1,43 @@
-import React from 'react'
-import { withRouter , Route } from 'react-router-dom'
-import MenuPRODUCCION from './MENUPRODUCCION/indexMENUPRODUCCION'
-import Alta from './ALTA/indexALTA'
-import Baja from './BAJA/indexBAJA'
-import Lista from './LISTA/indexLISTA'
+import ListaPlanillaProduccion from './LISTA/indexLISTA'
 import { SnackbarProvider } from 'notistack'
+import TabPanel from './tabPanelProduccion'
+import React from 'react'
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import CallToActionIcon from '@material-ui/icons/CallToAction';
 
-class indexPRODUCCION extends React.Component {
-    constructor ( props ) {
-        super ( props )
-        this.state = {
-            ancho : window.innerWidth
+const ListaProduccion = ( props ) => {
+    const [value , setValue] = React.useState ( 0 )
+    function a11yProps(index) {
+        return {
+        id: `scrollable-force-tab-${index}`,
+        'aria-controls': `scrollable-force-tabpanel-${index}`,
         }
-        window.addEventListener ( 'resize' , (  ) => { this.setState ( { ancho : window.innerWidth } ) } )
-        this.controller = new AbortController ( )
     }
-    componentWillUnmount (  ) {
-        this.controller.abort( )
-    }
-    render (  ) {
-        return (<div style = { { width : '100%' } } >
-                        <div style = { { width : '180px' , float : 'left' , boxSizing : 'border-box' } } >
-                            <MenuPRODUCCION/>
-                        </div>
-                        <div style = { { width :  this.state.ancho - 200 , float : 'right' , boxSizing : 'border-box' } } >
-                            <Route path = {`${this.props.match.path}/alta`} >
-                                <SnackbarProvider maxSnack = { 3 }>
-                                    <Alta/>
-                                </SnackbarProvider>
-                            </Route>
-                            <Route path = {`${this.props.match.path}/baja`} >
-                                <Baja/>
-                            </Route>
-                            <Route path = {`${this.props.match.path}/lista`} >
-                                <SnackbarProvider maxSnack = { 3 } >
-                                    <Lista/>
-                                </SnackbarProvider>
-                            </Route>
-                        </div>
-                        <div style = { { clear : 'both' } } ></div>
-                    </div>
-        )
-    }
+    const handleChange = ( event , newValue ) => { setValue ( newValue ) }
+    return (
+    <div >
+        <AppBar position="static" color="default">
+        <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="on"
+            indicatorColor="primary"
+            textColor="primary"
+            aria-label="scrollable force tabs example"
+        >
+            <Tab label="Planilla Producion" icon={<CallToActionIcon />} {...a11yProps(0)} />
+        </Tabs>
+        </AppBar>
+        <TabPanel value={value} index={0}>
+            <SnackbarProvider maxSnack = { 3 } >
+                <ListaPlanillaProduccion/>
+            </SnackbarProvider>
+        </TabPanel>
+    </div>
+    )
 }
 
-export default withRouter ( indexPRODUCCION )
+export default ListaProduccion

@@ -212,6 +212,9 @@ function PrimarySearchAppBar(props) {
             <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/management/ingenieria`)}}>
               <span>Ingenieria</span>
             </IconButton>
+            <IconButton aria-label="show 4 new mails" color="inherit"  onClick={e=>{props.history.push(`/management/reportes`)}}>
+              <span>Reportes</span>
+            </IconButton>
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>

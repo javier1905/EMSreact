@@ -1,6 +1,5 @@
 import React , { useEffect , useState } from 'react'
 import { useDispatch } from 'react-redux'
-import Paper from '@material-ui/core/Paper'
 import PlanillaProduccion from './planillaProduccion'
 import Moment from 'moment'
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
@@ -161,10 +160,9 @@ const ListaPlanilasProduccion = ( props ) => {
         <div>
             <ModalAltaPlanilla  show = { show } handleClose = { handleClose } />
             <ModalAltaPlanilla  show = { showUpdate } handleClose = { handleCloseUpdate } />
-            <Paper className = { classes.root } >
-                <div style = { { background : 'white' , padding : 20 } } >
+            <div>
+                <div>
                     <h2>Listado Planilla Produccion</h2>
-                    {/* <h6 style = { { marginTop : 15 } } >Filtros</h6> */}
                     <div  style = { { paddingTop : 10 , width : '100%' } } >
                         <FilterListIcon style = { { float : 'right'  } } />
                     </div>
@@ -386,8 +384,8 @@ const ListaPlanilasProduccion = ( props ) => {
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td>{ new Moment ( planillaSeleccionada.fechaFundicion ).format ( "DD/MM/YYYY" ) }</td>
-                                                            <td>{ new Moment ( planillaSeleccionada.fechaProduccion ).format ( "DD/MM/YYYY" ) }</td>
+                                                            <td>{ new Moment ( planillaSeleccionada.fechaFundicion ).add ( 1 , 'd' ).format ( "DD/MM/YYYY" ) }</td>
+                                                            <td>{ new Moment ( planillaSeleccionada.fechaProduccion ).add ( 1 , 'd' ).format ( "DD/MM/YYYY" ) }</td>
                                                         </tr>
                                                     </tbody>
                                                 </Table>
@@ -549,7 +547,7 @@ const ListaPlanilasProduccion = ( props ) => {
                     </div>
                     <div style = {{clear : 'both'}}></div>
                 </div>
-            </Paper>
+            </div>
         </div>
     )
 }
