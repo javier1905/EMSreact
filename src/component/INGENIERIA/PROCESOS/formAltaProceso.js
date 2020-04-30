@@ -27,7 +27,6 @@ const FormProcesos =  ( props ) => {
     const [descipcionProceso , setDescipcionProceso] = useState ( '' )
     const [idProceso , setIdProceso] = useState ( '' )
     const [vecPiezasXhora , setVecPiezasXhora] = useState ( [  ] )
-
     useEffect ( (  ) => {
         const getVecPiezas = async (  ) => {
             const resTipoPro = await Servicios.listaTiposProceso (  )
@@ -35,7 +34,7 @@ const FormProcesos =  ( props ) => {
             const response = await Servicios.listPiezas (  )
             props.proceso !== undefined && setIdProceso ( parseInt ( props.proceso.idProceso ) )
             props.proceso !== undefined && setDescipcionProceso ( props.proceso.descipcionProceso )
-            if ( response ) { setVecPiezas ( response ) ; props.proceso !== undefined && setIdPieza ( props.proceso.idProceso )  }
+            if ( response ) { setVecPiezas ( response ) ; props.proceso !== undefined && setIdPieza ( props.proceso.idPieza )  }
             if ( resMaq ) { setVecMaquinas ( resMaq ) ; props.proceso !== undefined && setIdMaquina ( props.proceso.idMaquina )}
             if ( resTipoPro ) { setVecTiposProceso ( resTipoPro ) ; props.proceso !== undefined && setIdTipoProceso ( props.proceso.idTipoProceso )  }
             if ( props.open ) { props.proceso !== undefined && setVecPiezasXhora ( props.proceso.vecPiezasXhora ) }
@@ -67,12 +66,10 @@ const FormProcesos =  ( props ) => {
         if ( Array.isArray ( vec ) && vec.length > 0 ) {
             vec[vec.length - 1].hastaPiezasXhs = new Moment (  piezaXhora.desdePiezasXhs ).add ( -1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
         }
-
         vec = [...vec , piezaXhora ]
         setVecPiezasXhora ( vec )
     }
     const MethodDeletePiezaXhora = ( idPiezasXhs , index ) => {
-
         var vec = vecPiezasXhora
         if ( vec.length === 1 ) { vec.splice ( index , 1 ) }
         else if ( index === 0 && vec.length > 1) {
@@ -114,7 +111,6 @@ const FormProcesos =  ( props ) => {
         }
         else {
             if ( props.proceso === undefined ) {
-
                 const isertPro = async (  ) => {
                     const result = await Servicios.insertProceso ( descipcionProceso , idPieza , idMaquina , idTipoProceso , vecPiezasXhora )
                     if ( result ) {

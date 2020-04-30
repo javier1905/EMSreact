@@ -24,6 +24,36 @@ servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundi
     return response
 }
 
+servicios.listaOeeGranallado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
+var response = { vecOeeGranallado : [  ] , status : '' }
+    try {
+        const resultFetch = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/granallado`  , {
+            method : 'POST' ,
+            body : JSON.stringify ( { idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json',
+                'Content-Type' : 'Application/json'
+            } )
+        })
+        if ( resultFetch ) {
+            const json = await resultFetch.json (  )
+            if ( json.status && json.status === 403 ) {
+                response.vecOeeGranallado = [  ]
+                response.status = 403
+            }
+            else {
+                response.vecOeeGranallado = json
+                response.status = 200
+            }
+        }
+    }
+    catch ( e ) {
+        response.vecOeeGranallado = [  ]
+        response.status = 403
+    }
+    return response
+}
+
 servicios.listaMaquinas = async (  ) => {
     var vecMaquinas = [  ]
     try {
@@ -45,10 +75,10 @@ servicios.listaMaquinas = async (  ) => {
     return vecMaquinas
 }
 
-servicios.listaMoldes = async (  ) => {
+servicios.listaMoldes = async ( idPieza ) => {
     var vecMoldes = [  ]
     try {
-        const result = await fetch (`https://ems-node-api.herokuapp.com/api/moldes` , {
+        const result = await fetch (`https://ems-node-api.herokuapp.com/api/moldes/xpieza/${idPieza === '' ? null : idPieza}` , {
             method : 'GET' ,
             headers : new Headers ( {
                 'Accept' : 'Application/json' ,

@@ -20,19 +20,35 @@ const OeeFundicion = ( props ) => {
     const [vecMoldes , setVecMoldes] = useState ( '' )
     const [loading , setLoading] = useState ( true )
     const [vecDatosOee , setVecDatosOee] = useState ( [  ] )
-
+    const [idAgrupar , setIdAgrupar] = useState( 1 )
     useEffect ( (  ) => {
-        const getListas= async (  ) => {
+        const getListas = async (  ) => {
             const listaMaq = await Servicios.listaMaquinas (  )
             const listaPie = await Servicios.listaPiezas (  )
-            const listaMol = await Servicios.listaMoldes (  )
-            if ( listaMaq) {  setVecMaquinas ( listaMaq )  }
-            if ( listaPie) {  setVecPiezas ( listaPie )  }
-            if ( listaMol) {  setVecMoldes ( listaMol )  }
+            if ( listaMaq) {
+                listaMaq.unshift ( { idMaquina : '' , nombreMaquina : 'NONE' } )
+                setVecMaquinas ( listaMaq )
+            }
+            if ( listaPie) {
+                listaPie.unshift ( { idPieza : '' , nombrePieza : 'NONE' } )
+                setVecPiezas ( listaPie )
+            }
         }
         getListas (  )
     }  , [ props ]  )
-
+    useEffect ( (  ) => {
+        const getMoldes =  async (  ) => {
+            const listaMoldes = await Servicios.listaMoldes ( idPieza )
+            if (  listaMoldes ) {
+                if (Array.isArray ( listaMoldes ) ) {
+                    listaMoldes.unshift (  { idMolde : '' , nombreMolde : 'NONE' } )
+                }
+                setIdMolde ( '' )
+                setVecMoldes ( listaMoldes )
+            }
+        }
+        getMoldes (  )
+    } , [ idPieza ] )
     useEffect ( (  ) => {
         setLoading ( true )
         const getListaOee = async (  ) => {
@@ -42,6 +58,21 @@ const OeeFundicion = ( props ) => {
                     var vecP1 = listaOee.vecOeefundicion.filter ( items => items.idPlanta === 1 )
                     var vecP2 = listaOee.vecOeefundicion.filter ( items => items.idPlanta === 2 )
                 const unificadorVecP1 = ( vecP1 ) => {
+                    if ( idAgrupar === 2 ) {
+                        vecP1.forEach ( ( e , i ) => {
+                            vecP1[i].fechaFundicion = `SEM${new Moment (e.fechaFundicion).add(1 , 'd').week()}/${new Moment (e.fechaFundicion).year()}`
+                        } )
+                    }
+                    else if ( idAgrupar === 3 ) {
+                        vecP1.forEach ( ( e , i ) => {
+                            vecP1[i].fechaFundicion = `${new Moment (e.fechaFundicion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaFundicion).year()}`
+                        } )
+                    }
+                    else if ( idAgrupar === 4 ) {
+                        vecP1.forEach ( ( e , i ) => {
+                            vecP1[i].fechaFundicion = new Moment (e.fechaFundicion).year()
+                        } )
+                    }
                     var vecUnificadoP1 = [  ]
                     vecP1.forEach ( ( items , i ) => {
                         var newItems = {
@@ -102,6 +133,21 @@ const OeeFundicion = ( props ) => {
                 }
                 const unificadorVecP2 = ( vecP2 ) => {
                     var vecUnificadoP2 = [  ]
+                    if ( idAgrupar === 2 ) {
+                        vecP2.forEach ( ( e , i ) => {
+                            vecP2[i].fechaFundicion = `SEM${new Moment (e.fechaFundicion).add(1 , 'd').week()}/${new Moment (e.fechaFundicion).year()}`
+                        } )
+                    }
+                    else if ( idAgrupar === 3 ) {
+                        vecP2.forEach ( ( e , i ) => {
+                            vecP2[i].fechaFundicion = `${new Moment (e.fechaFundicion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaFundicion).year()}`
+                        } )
+                    }
+                    else if ( idAgrupar === 4 ) {
+                        vecP2.forEach ( ( e , i ) => {
+                            vecP2[i].fechaFundicion = new Moment (e.fechaFundicion).year()
+                        } )
+                    }
                     vecP2.forEach ( ( items , i ) => {
                         var newItems = {
                             fechaFundicion : null ,
@@ -160,9 +206,22 @@ const OeeFundicion = ( props ) => {
                         } )
                     } )
                     var vecNoEncontrados =[ ]
+                    // vecPlantaDos.forEach ( ( p2 , i ) => {
+                    //     var element = vecPlantaUno.find ( e => ( p2.fechaFundicion === e.fechaFundicion && e.idMaquina === e.idMaquina && p2.idPieza === e.idPieza && p2.idMolde === e.idMolde ) )
+                    //     if ( element === undefined ) {
+                    //         if ( p2.totalrechazosPlanta2 > 0 ) {
+                    //             vecNoEncontrados.push ( p2 )
+                    //         }
+                    //     }
+                    // } )
                     vecPlantaDos.forEach ( ( p2 , i ) => {
-                        var element = vecPlantaUno.find ( e => ( p2.fechaFundicion === e.fechaFundicion && e.idMaquina === e.idMaquina && p2.idPieza === e.idPieza && p2.idMolde === e.idMolde ) )
-                        if ( element === undefined ) {
+                        var elemento = undefined
+                        vecPlantaUno.forEach ( ( p1 , indexp1 ) => {
+                            if ( p2.fechaFundicion === p1.fechaFundicion  && p2.idPieza === p1.idPieza && p2.idMolde === p1.idMolde ) {
+                                elemento = p2
+                            }
+                        } )
+                        if ( elemento === undefined ) {
                             if ( p2.totalrechazosPlanta2 > 0 ) {
                                 vecNoEncontrados.push ( p2 )
                             }
@@ -213,7 +272,6 @@ const OeeFundicion = ( props ) => {
                     }
                     newItems2.minNoCalidad += ( parseInt ( e.totalrechazosPlanta2 === null ? 0 : e.totalrechazosPlanta2 ) + parseInt ( e.totalrechazosPlanta1 === null ? 0 : e.totalrechazosPlanta1 ) ) * 60 / parseInt ( e.piezasXhora )
                     newItems2.totalrechazosPlanta2 += parseInt ( e.totalrechazosPlanta2 === null ? 0 : e.totalrechazosPlanta2 )
-                    // newItems2.minNoCalidad =
                 } )
                 if ( vecP1MasvecP2.length > 0 ) {
                 vecP1MasvecP2.push ( newItems2 )
@@ -223,8 +281,13 @@ const OeeFundicion = ( props ) => {
             }
         }
         getListaOee (  )
-    }  , [ fechaFundicionDesde , fechaFundicionHasta , idMaquina , idPieza ,  idMolde ]  )
-
+    }  , [ fechaFundicionDesde , fechaFundicionHasta , idMaquina , idPieza ,  idMolde , idAgrupar ]  )
+    const vecAgrupar = [
+        { idAgrupar : 1 , nombreAgrupar : 'DIA'} ,
+        { idAgrupar : 2 , nombreAgrupar : 'SEMANA'} ,
+        { idAgrupar : 3 , nombreAgrupar : 'MES'} ,
+        { idAgrupar : 4 , nombreAgrupar : 'AÑO'} ,
+    ]
     return (
         <div>
             <Typography style = { { marginTop : 15 , marginBottom : 20 } }  variant ='h3'>OEE Fundicion</Typography>
@@ -234,9 +297,10 @@ const OeeFundicion = ( props ) => {
                 <MyComponent.listaDesplegable label = 'Maquina' value = { idMaquina } onChange = { e => setIdMaquina ( e.target.value ) } array = { vecMaquinas } member = { { valueMember : 'idMaquina' , displayMember : 'nombreMaquina' } } />
                 <MyComponent.listaDesplegable label = 'Pieza' value = { idPieza } onChange = { e => setIdPieza ( e.target.value ) } array = { vecPiezas } member = { { valueMember : 'idPieza' , displayMember : 'nombrePieza' } } />
                 <MyComponent.listaDesplegable label = 'Molde' value = { idMolde } onChange = { e => setIdMolde ( e.target.value ) } array = { vecMoldes } member = { { valueMember : 'idMolde' , displayMember : 'nombreMolde' } } />
+                <MyComponent.listaDesplegable label = 'Agrupar' value = { idAgrupar } onChange = { e => setIdAgrupar ( e.target.value ) } array = { vecAgrupar } member = { { valueMember : 'idAgrupar' , displayMember : 'nombreAgrupar' } } />
             </div>
             <div id = 'containerTabla'>
-                <Table>
+                <Table responsive >
                     <thead id = 'cabezera' >
                         <tr style = { { background : '#4141B3' , color : 'white' , boxShadow : '1px 1px  1px grey ' } }>
                             <th >Fecha</th>
@@ -273,7 +337,7 @@ const OeeFundicion = ( props ) => {
                             Array.isArray ( vecDatosOee ) && vecDatosOee.length > 0 ?
                             vecDatosOee.map ( ( items , i ) => {
                                 return (
-                                    <Items key = { i } items = { items } ultimo = { ( vecDatosOee.length -1 ) === i  ? true : false} />
+                                    <Items idAgrupar = { idAgrupar } key = { i } items = { items } ultimo = { ( vecDatosOee.length -1 ) === i  ? true : false} />
                                 )
                             } )
                             :

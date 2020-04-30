@@ -1,6 +1,6 @@
 import React  from 'react'
 import Moment from 'moment'
-import './styleOeeFun.css'
+import './styleOeeGra.css'
 
 const Items = ( props ) => {
     var styletr = {}
@@ -15,7 +15,6 @@ const Items = ( props ) => {
         Rfooter = 'Rfooter'
         Qfooter = 'Qfooter'
         OEEfooter = 'OEEfooter'
-
         styletr = { background : '#4141B3' , color : 'white' , boxShadow : '1px 1px  1px grey ' }
     }
     const calculoDisponibilidad= (  ) => {
@@ -62,26 +61,34 @@ const Items = ( props ) => {
     }
     return (
         <tr className = { claseTr } style = { styletr } >
-            <td>{ props.ultimo ? 'Total' : props.idAgrupar === 1 ? new Moment ( props.items.fechaFundicion).add(1 , 'd').format ( 'DD/MM/YYYY' ) : props.items.fechaFundicion}</td>
+            <td>{ props.ultimo ? 'Total' : props.idAgrupar === 1 ? new Moment ( props.items.fechaProduccion).add(1 , 'd').format ( 'DD/MM/YYYY' ) : props.items.fechaProduccion}</td>
             <td>{props.items.nombreMaquina}</td>
             <td>{props.items.nombrePieza}</td>
             <td>{props.items.nombreMolde}</td>
             <td>{props.items.piezasXhora}</td>
             <td>{props.items.produccion}</td>
-            <td>{props.items.totalrechazosPlanta1}</td>
-            <td>{props.items.totalrechazosPlanta2}</td>
+            <td>{props.items.totalRechazos}</td>
             <td>{props.items.pmMatrizeria}</td>
             <td>{props.items.pmMantenimiento}</td>
             <td>{props.items.pmProduccion}</td>
             <td>{props.items.totalPNP}</td>
             <td>{props.items.pmProgramada}</td>
-            <td>{props.items.idPlanta === 2 ? '' : props.items.minTotal - props.items.pmProgramada - props.items.totalPNP}  </td>
-            <td>{props.items.idPlanta === 2 ? '' : props.items.minTotal - props.items.pmProgramada}</td>
+            <td>{ props.items.minTotal - props.items.pmProgramada - props.items.totalPNP}  </td>
+            <td>{ props.items.minTotal - props.items.pmProgramada}</td>
             <td>{props.items.minTotal}</td>
-            <td className = { Dfooter }>{props.items.idPlanta === 2 ? '' : `${calculoDisponibilidad (  )}%` }</td>
-            <td className = { Rfooter }>{props.items.idPlanta === 2 ? '' : `${ calculoRendimiento (  ) }%`}</td>
-            <td className = { Qfooter } >{props.items.idPlanta === 2 ? '' : `${calculoCalidad (  )}%`}</td>
-            <td className = { OEEfooter }>{props.items.idPlanta === 2 ? '' : `${ calculoOEE (  ) }%` }</td>
+            {/* <td className = { Dfooter }>{ `${( (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) / (props.items.minTotal - props.items.pmProgramada)  * 100 ).toFixed ( 2 )}%` }</td>
+            <td className = { Rfooter }>{ `${ (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP )* 100  ).toFixed(2) }%`}</td>
+            <td className = { Qfooter } >{`${( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ))*100).toFixed(2)}%`}</td>
+            <td className = { OEEfooter }>
+                { `${ ( ( ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) / (props.items.minTotal - props.items.pmProgramada)) *
+                (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP ) ) *
+                ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ) ) ) * 100 ).toFixed ( 2 )
+                }%` }
+            </td> */}
+            <td className = { Dfooter }>{`${calculoDisponibilidad (  )}%` }</td>
+            <td className = { Rfooter }>{`${ calculoRendimiento (  ) }%`}</td>
+            <td className = { Qfooter } >{ `${calculoCalidad (  )}%`}</td>
+            <td className = { OEEfooter }>{ `${ calculoOEE (  ) }%` }</td>
         </tr>
     )
 }
