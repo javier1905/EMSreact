@@ -2,14 +2,14 @@ import React, { useEffect , useState } from 'react'
 import Servicios from '../serviceReportes'
 import MyComponent from '../../AAprimary/misComponentes'
 import { Table } from 'react-bootstrap'
-import './styleOeeGra.css'
+import './styleOeeMec.css'
 import Loading from '@material-ui/core/CircularProgress'
 import NoFound from '../../../Imagenes/noFound.png'
 import Items from './items'
 import Moment from 'moment'
 import Typography from '@material-ui/core/Typography'
 
-const OeeGranallado = ( props ) => {
+const OeeMecanizado = ( props ) => {
     const [idMaquina , setIdMaquina] = useState ( '' )
     const [idPieza , setIdPieza] = useState ( '' )
     const [idMolde , setIdMolde] = useState ( '' )
@@ -45,10 +45,10 @@ const OeeGranallado = ( props ) => {
     useEffect ( (  ) => {
         setLoading ( true )
         const getListaOee = async (  ) => {
-            const listaOee = await Servicios.listaOeeGranallado (  idMaquina === '' ? null : idMaquina ,
+            const listaOee = await Servicios.listaOeeMecanizado (  idMaquina === '' ? null : idMaquina ,
             idPieza === '' ? null : idPieza ,  idMolde === '' ? null : idMolde , fechaProduccionDesde , fechaProduccionHasta  )
-            if ( listaOee.vecOeeGranallado && Array.isArray ( listaOee.vecOeeGranallado )) {
-                var datosOEE = listaOee.vecOeeGranallado
+            if ( listaOee.vecOeeMecanizado && Array.isArray ( listaOee.vecOeeMecanizado )) {
+                var datosOEE = listaOee.vecOeeMecanizado
                 const agrupador = (  ) => {
                     if ( idAgrupar === 2 ) {
                         datosOEE.forEach ( ( e , i ) => {
@@ -173,7 +173,7 @@ const OeeGranallado = ( props ) => {
     ]
     return (
         <div>
-            <Typography style = { { marginTop : 15 , marginBottom : 20 } }  variant ='h3'>OEE Granallado</Typography>
+            <Typography style = { { marginTop : 15 , marginBottom : 20 } }  variant ='h3'>OEE Mecanizado</Typography>
             <div>
                 <MyComponent.fecha id = 'fechaDesde' label = 'Fecha Produccion Desde' value = { fechaProduccionDesde } onChange = { e => setFechaProduccionDesde ( e ) } />
                 <MyComponent.fecha id = 'fechaHasta' label = 'Fecha Produccion Hasta' value = { fechaProduccionHasta } onChange = { e => setFechaProduccionHasta ( e ) } />
@@ -236,4 +236,4 @@ const OeeGranallado = ( props ) => {
     )
 }
 
-export default OeeGranallado
+export default OeeMecanizado

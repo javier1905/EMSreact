@@ -36,7 +36,6 @@ const Items = ( props ) => {
         }
     }
     const calculoCalidad = (  ) => {
-        console.log ( ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ))*100).toFixed(2) )
         if ( isNaN ( ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ))*100).toFixed(2) ) ) {
             return 0
         }

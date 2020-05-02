@@ -54,6 +54,38 @@ var response = { vecOeeGranallado : [  ] , status : '' }
     return response
 }
 
+servicios.listaOeeMecanizado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
+    var response = { vecOeeMecanizado : [  ] , status : '' }
+    try {
+        const result = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/mecanizado` , {
+            method : 'POST' ,
+            body : JSON.stringify ( { idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json',
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json ) {
+                if ( json.status  && json.status === 403 ) {
+                    response.vecOeeMecanizado = [  ]
+                    response.status = json.status
+                }
+                else {
+                    response.vecOeeMecanizado = json
+                    response.status = 200
+                }
+            }
+        }
+    }
+    catch ( e ) {
+        response.vecOeeMecanizado = [  ]
+        response.status = 403
+    }
+    return response
+}
+
 servicios.listaMaquinas = async (  ) => {
     var vecMaquinas = [  ]
     try {

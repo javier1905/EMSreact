@@ -11,7 +11,6 @@ const Proceso = ( props ) => {
     const [nombreMaquina , setNombreMaquina] = useState ( '' )
     const [nombreTipoProceso , setNombreTipoProceso] = useState ( '' )
     const [open , setOpen] = useState ( false )
-
     useEffect ( (  ) => {
         setIdProceso ( props.proceso.idProceso )
         setDescipcionProceso ( props.proceso.descipcionProceso )
@@ -60,7 +59,7 @@ const Proceso = ( props ) => {
             <td colSpan = { 7 }>
                     ¿ Esta seguro de eliminar a  { descipcionProceso }  ?
                     <MyComponent.botonAcept texto =  'Delete procesos' onClick = { e => deletePoceso (  ) } />
-                    <MyComponent.botonCancel texto =  'Cancel delete'/>
+                    <MyComponent.botonCancel texto =  'Cancel delete' onClick = { e => props.actualizaModo ( 'normal' ,  props.proceso ) }/>
             </td>
         </tr>
     )
