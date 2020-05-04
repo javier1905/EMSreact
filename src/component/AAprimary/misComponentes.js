@@ -227,7 +227,7 @@ componente.botonDelete = React.forwardRef ( ( props , ref ) => {
             className = { props.className ? props.className : 'text' }
             ref = { ref }
             name = { props.name ? props.name : 'deleteIcon' }
-            id = { props.id ? props.id : 'btnUpdate' }
+            id = { props.id ? props.id : 'btnDelete' }
             style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
             onClick =   {  e => { props.onClick ( info ) } }
             aria-label="Delete" >
@@ -237,15 +237,15 @@ componente.botonDelete = React.forwardRef ( ( props , ref ) => {
 } )
 componente.botonAdd = React.forwardRef ( ( props , ref ) => {
     const [info] = React.useState (props.info ? props.info : '')
-    return ( <Tooltip title = { props.texto ? props.texto : "Update"}>
+    return ( <Tooltip title = { props.texto ? props.texto : "Add"}>
     <IconButton
             className = { props.className ? props.className : 'text' }
             ref = { ref }
-            name = { props.name ? props.name : 'updateIcon' }
-            id = { props.id ? props.id : 'btnUpdate' }
+            name = { props.name ? props.name : 'addIcon' }
+            id = { props.id ? props.id : 'btnAdd' }
             style ={ { padding : 0 , margin : 0 , width : props.size ? props.size : 30  , height : props.size ? props.size : 30}  }
             onClick =   {  e => { props.onClick ( info , e ) } }
-            aria-label={ props.texto ? props.texto : "Update"} >
+            aria-label={ props.texto ? props.texto : "Add"} >
         <AddlIcon fontSize = { props.fontSize ? props.fontSize : 'small' } />
     </IconButton>
 </Tooltip> )

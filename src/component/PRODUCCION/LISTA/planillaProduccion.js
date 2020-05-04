@@ -83,7 +83,7 @@ const PlanillaProduccion = ( props ) => {
                         <td> { calculaProduccion(  ).totalScrap } </td>
                         <td>
                         <Tooltip title="Update">
-                            <IconButton style ={ { padding : 0 , margin : 0 } } onClick={ e => { dispatch ( findPlanillaUpdate ( props.planilla ) ) ; props.showModalUpdate (  ) } } aria-label="update" >
+                            <IconButton id = { `btn_update ${props.planilla.idPlanilla}` } style ={ { padding : 0 , margin : 0 } } onClick={ e => { dispatch ( findPlanillaUpdate ( props.planilla ) ) ; props.showModalUpdate (  ) } } aria-label="update" >
                                 <UpdateIcon />
                             </IconButton>
                         </Tooltip>

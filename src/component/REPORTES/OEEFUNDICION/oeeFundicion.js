@@ -90,8 +90,10 @@ const OeeFundicion = ( props ) => {
                             pmMatrizeria : 0 ,
                             pmMantenimiento : 0 ,
                             pmProduccion : 0 ,
+                            pmOtros : 0 ,
                             totalPNP : 0 ,
                             pmProgramada : 0 ,
+                            setup : 0 ,
                             totalrechazosPlanta2 : 0 ,
                             totalrechazosPlanta1 : 0 ,
                             minTotal : 0
@@ -123,9 +125,11 @@ const OeeFundicion = ( props ) => {
                                 newItems.pmMatrizeria += elem.pmMatrizeria === null ? 0 : parseInt ( elem.pmMatrizeria )
                                 newItems.pmMantenimiento += elem.pmMantenimiento === null ? 0 : parseInt ( elem.pmMantenimiento )
                                 newItems.pmProduccion += elem.pmProduccion === null ? 0 : parseInt ( elem.pmProduccion )
+                                newItems.pmOtros += elem.pmOtros === null ? 0 : parseInt ( elem.pmOtros )
                                 newItems.totalPNP += elem.totalPNP === null ? 0 : parseInt ( elem.totalPNP )
                                 newItems.pmProgramada += elem.pmProgramada === null ? 0 : parseInt ( elem.pmProgramada )
                                 newItems.minTotal += elem.minTotal === null ? 0 : parseInt ( elem.minTotal )
+                                newItems.setup += elem.setup === null ? 0 : parseInt ( elem.setup )
                             })
                             vecUnificadoP1.push ( newItems )
                         }
@@ -164,8 +168,10 @@ const OeeFundicion = ( props ) => {
                             pmMatrizeria : null ,
                             pmMantenimiento : null ,
                             pmProduccion : null ,
+                            pmOtros : null ,
                             totalPNP : null ,
                             pmProgramada : null ,
+                            setup : null ,
                             totalrechazosPlanta2 : 0 ,
                             totalrechazosPlanta1 : null ,
                             minTotal : null
@@ -246,8 +252,10 @@ const OeeFundicion = ( props ) => {
                     pmMatrizeria : 0 ,
                     pmMantenimiento : 0 ,
                     pmProduccion : 0 ,
+                    pmOtros : 0 ,
                     totalPNP : 0 ,
                     pmProgramada : 0 ,
+                    setup : 0 ,
                     totalrechazosPlanta2 : 0 ,
                     totalrechazosPlanta1 : 0 ,
                     minTotal : 0 ,
@@ -260,8 +268,10 @@ const OeeFundicion = ( props ) => {
                         newItems2.pmMatrizeria += parseInt ( e.pmMatrizeria )
                         newItems2.pmMantenimiento += parseInt ( e.pmMantenimiento )
                         newItems2.pmProduccion += parseInt ( e.pmProduccion )
+                        newItems2.pmOtros += parseInt ( e.pmOtros )
                         newItems2.totalPNP += parseInt ( e.totalPNP )
                         newItems2.pmProgramada += parseInt ( e.pmProgramada )
+                        newItems2.setup += parseInt ( e.setup )
                         newItems2.minTotal += parseInt ( e.minTotal )
                         newItems2.totalrechazosPlanta1 += parseInt ( e.totalrechazosPlanta1 )
                         vecP1MasvecP2[i].minNoCalidad = ( parseInt ( e.totalrechazosPlanta2 ) + parseInt ( e.totalrechazosPlanta1 ) ) * 60 / parseInt ( e.piezasXhora )
@@ -315,8 +325,10 @@ const OeeFundicion = ( props ) => {
                             <th>PM matri</th>
                             <th>PM mante</th>
                             <th>PM produc</th>
+                            <th>PM otros</th>
                             <th>Total PNP</th>
                             <th>Total PM prog</th>
+                            <th>Setup</th>
                             <th>min dispon</th>
                             <th>min prog</th>
                             <th>min Totales</th>
@@ -330,7 +342,7 @@ const OeeFundicion = ( props ) => {
                         {
                             loading ?
                             <tr>
-                                <td colSpan ={ 20 }  >
+                                <td colSpan ={ 22 }  >
                                     <Loading/>
                                 </td>
                             </tr>
@@ -343,7 +355,7 @@ const OeeFundicion = ( props ) => {
                             } )
                             :
                             <tr>
-                                <td colSpan ={ 20 }  >
+                                <td colSpan ={ 22 }  >
                                     <img src = { NoFound } alt = 'imgNoFound' />
                                 </td>
                         </tr>

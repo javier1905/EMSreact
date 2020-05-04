@@ -1,6 +1,6 @@
 import React , { useState , useEffect , useRef } from 'react'
 import { Bar } from 'react-chartjs-2'
-import Typography from '@material-ui/core/Typography'
+// import Typography from '@material-ui/core/Typography'
 import Moment from 'moment'
 import Loading from '@material-ui/core/CircularProgress'
 import Servicios from '../serviceReportes'
@@ -103,8 +103,10 @@ const GraficoOeeFun = ( props ) => {
                             pmMatrizeria : 0 ,
                             pmMantenimiento : 0 ,
                             pmProduccion : 0 ,
+                            pmOtros : 0 ,
                             totalPNP : 0 ,
                             pmProgramada : 0 ,
+                            setup : 0 ,
                             totalrechazosPlanta2 : 0 ,
                             totalrechazosPlanta1 : 0 ,
                             minTotal : 0
@@ -136,8 +138,10 @@ const GraficoOeeFun = ( props ) => {
                                 newItems.pmMatrizeria += elem.pmMatrizeria === null ? 0 : parseInt ( elem.pmMatrizeria )
                                 newItems.pmMantenimiento += elem.pmMantenimiento === null ? 0 : parseInt ( elem.pmMantenimiento )
                                 newItems.pmProduccion += elem.pmProduccion === null ? 0 : parseInt ( elem.pmProduccion )
+                                newItems.pmOtros += elem.pmOtros === null ? 0 : parseInt ( elem.pmOtros )
                                 newItems.totalPNP += elem.totalPNP === null ? 0 : parseInt ( elem.totalPNP )
                                 newItems.pmProgramada += elem.pmProgramada === null ? 0 : parseInt ( elem.pmProgramada )
+                                newItems.setup += elem.setup === null ? 0 : parseInt ( elem.setup )
                                 newItems.minTotal += elem.minTotal === null ? 0 : parseInt ( elem.minTotal )
                             })
                             vecUnificadoP1.push ( newItems )
@@ -177,8 +181,10 @@ const GraficoOeeFun = ( props ) => {
                             pmMatrizeria : null ,
                             pmMantenimiento : null ,
                             pmProduccion : null ,
+                            pmOtros : null ,
                             totalPNP : null ,
                             pmProgramada : null ,
+                            setup : null ,
                             totalrechazosPlanta2 : 0 ,
                             totalrechazosPlanta1 : null ,
                             minTotal : null
@@ -254,9 +260,10 @@ const GraficoOeeFun = ( props ) => {
                 vecFechas.sort (  )
                 vecFechas.forEach ( ( e , i ) => {
                     var ele = {
-                        fecha : idAgrupar === 1 ? new Moment ( e ).add( 1 , 'd' ) .format ( 'DD/MM/YYYY' ) : e ,
+                        fecha : idAgrupar === 1 ? new Moment ( e ).add( 1 , 'd' ).format('DD/MM/YYYY') : e ,
                         minTotal : 0 ,
                         pmProgramada : 0 ,
+                        setup : 0 ,
                         totalPNP : 0 ,
                         minNoCalidad : 0 ,
                         minPorPiezaProducidas : 0
@@ -266,6 +273,7 @@ const GraficoOeeFun = ( props ) => {
                             if ( elementos.idPlanta === 1 ) {
                                 ele.minTotal += elementos.minTotal === null ? 0 : parseInt ( elementos.minTotal )
                                 ele.pmProgramada += elementos.pmProgramada === null ? 0 : parseInt ( elementos.pmProgramada )
+                                ele.setup += elementos.setup === null ? 0 : parseInt ( elementos.setup )
                                 ele.totalPNP += elementos.totalPNP === null ? 0 : parseInt ( elementos.totalPNP )
                                 ele.minNoCalidad += ele.minNoCalidad === null ? 0 : ( parseInt ( elementos.totalrechazosPlanta2 ) + parseInt ( elementos.totalrechazosPlanta1 ) ) * 60 / parseInt ( elementos.piezasXhora )
                                 ele.minPorPiezaProducidas += ele.minPorPiezaProducidas === null ? 0 : ( parseInt ( elementos.produccion ) * 60 / parseInt ( elementos.piezasXhora ) )
@@ -282,6 +290,7 @@ const GraficoOeeFun = ( props ) => {
                         fecha : 'Acumulado' ,
                         minTotal : 0 ,
                         pmProgramada : 0 ,
+                        setup : 0 ,
                         totalPNP : 0 ,
                         minNoCalidad : 0 ,
                         minPorPiezaProducidas : 0
@@ -289,6 +298,7 @@ const GraficoOeeFun = ( props ) => {
                     vecFinal.forEach ( ( dato , indexDatos ) => {
                         ele.minTotal += dato.minTotal
                         ele.pmProgramada += dato.pmProgramada
+                        ele.setup += dato.setup
                         ele.totalPNP += dato.totalPNP
                         ele.minNoCalidad += dato.minNoCalidad
                         ele.minPorPiezaProducidas += dato.minPorPiezaProducidas
@@ -304,14 +314,14 @@ const GraficoOeeFun = ( props ) => {
                 var vecObjetivoMinn = [  ]
                 var vecObjetivoMaxx = [  ]
                 vecFinal.forEach ( ( e , i ) => {
-                    var dato =  ( ( ( e.minTotal - e.pmProgramada - e.totalPNP) / (e.minTotal - e.pmProgramada)) *
-                    (e.minPorPiezaProducidas / ( e.minTotal - e.pmProgramada - e.totalPNP ) ) *
-                    ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.totalPNP) ) ) ) * 100 ).toFixed ( 2 )
+                    var dato =  ( ( ( e.minTotal - e.pmProgramada - e.setup - e.totalPNP) / (e.minTotal - e.pmProgramada - e.setup )) *
+                    (e.minPorPiezaProducidas / ( e.minTotal - e.pmProgramada - e.setup - e.totalPNP ) ) *
+                    ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.setup - e.totalPNP) ) ) ) * 100 ).toFixed ( 2 )
                         vecFech.push ( e.fecha )
-                        vecD.push ( isNaN ( ( ( e.minTotal - e.pmProgramada - e.totalPNP ) / (e.minTotal - e.pmProgramada)  * 100 ).toFixed ( 2 ) ) ? 0 :  ( ( e.minTotal - e.pmProgramada - e.totalPNP ) / (e.minTotal - e.pmProgramada)  * 100 ).toFixed ( 2 ) )
-                        vecR.push ( isNaN ( (e.minPorPiezaProducidas / ( e.minTotal - e.pmProgramada - e.totalPNP )* 100  ).toFixed(2) ) ? 0 : (e.minPorPiezaProducidas / ( e.minTotal - e.pmProgramada - e.totalPNP )* 100  ).toFixed(2) )
-                        vecQ.push ( isNaN ( ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.totalPNP) ))*100).toFixed(2) ) ? 0 : ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.totalPNP) ))*100) === - Infinity ? 0 : ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.totalPNP) ))*100).toFixed(2) )
-                        vecOEE .push ( isNaN ( dato ) ? 0 : dato )
+                        vecD.push ( isNaN ( ( ( e.minTotal - e.pmProgramada - e.setup - e.totalPNP ) / (e.minTotal - e.pmProgramada - e.setup)  * 100 ).toFixed ( 2 ) ) ? 0 :  ( ( e.minTotal - e.pmProgramada - e.setup - e.totalPNP ) / (e.minTotal - e.pmProgramada - e.setup)  * 100 ).toFixed ( 2 ) )
+                        vecR.push ( isNaN ( (e.minPorPiezaProducidas / ( e.minTotal - e.pmProgramada - e.setup - e.totalPNP )* 100  ).toFixed(2) ) ? 0 : (e.minPorPiezaProducidas / ( e.minTotal - e.pmProgramada - e.setup - e.totalPNP )* 100  ).toFixed(2) )
+                        vecQ.push ( isNaN ( ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.setup - e.totalPNP) ))*100).toFixed(2) ) ? 0 : ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.setup - e.totalPNP) ))*100) === - Infinity ? 0 : ( (1 - ( e.minNoCalidad / (e.minTotal - e.pmProgramada - e.setup - e.totalPNP) ))*100).toFixed(2) )
+                        vecOEE.push ( isNaN ( dato ) ? 0 : dato )
                         vecObjetivoMinn.push ( 50 )
                         vecObjetivoMaxx.push ( 70 )
                         vecColoress.push ( i === vecFinal.length -1 ? 'grey' : 'rgb(55, 49, 138)' )

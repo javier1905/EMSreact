@@ -8,6 +8,7 @@ import NoFound from '../../../Imagenes/noFound.png'
 import Items from './items'
 import Moment from 'moment'
 import Typography from '@material-ui/core/Typography'
+import GraficoOeeGra from './graficoOeeGra'
 
 const OeeGranallado = ( props ) => {
     const [idMaquina , setIdMaquina] = useState ( '' )
@@ -231,6 +232,9 @@ const OeeGranallado = ( props ) => {
                         }
                     </tbody>
                 </Table>
+            </div>
+            <div>
+                <GraficoOeeGra/>
             </div>
         </div>
     )

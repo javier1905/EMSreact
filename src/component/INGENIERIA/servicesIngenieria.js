@@ -535,12 +535,13 @@ servicios.deleteParadaMaquina = async ( idParadaMaquina ) => {
     }
     return response
 }
-servicios.updateParadaMaquina = async ( idParadaMaquina , nombreParadaMaquina , tipoParadaMaquina , idArea ) => {
+servicios.updateParadaMaquina = async ( idParadaMaquina , nombreParadaMaquina , tipoParadaMaquina , idArea , setupParadaMaquina ) => {
     var response = { mensaje : '' ,  status : 0 }
+    console.log ( setupParadaMaquina )
     try {
         const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/paradasMaquina/update' , {
             method : 'PUT' ,
-            body : JSON.stringify ( { idParadaMaquina , nombreParadaMaquina , tipoParadaMaquina , idArea } ) ,
+            body : JSON.stringify ( { idParadaMaquina , nombreParadaMaquina , tipoParadaMaquina , idArea , setupParadaMaquina } ) ,
             headers : new Headers ( {
                 'Accept' : 'Application/json' ,
                 'Content-Type' : 'Application/json'
@@ -564,12 +565,12 @@ servicios.updateParadaMaquina = async ( idParadaMaquina , nombreParadaMaquina , 
     }
     return response
 }
-servicios.insertParadaMaquina = async ( nombreParadaMaquina , tipoParadaMaquina , idArea ) => {
+servicios.insertParadaMaquina = async ( nombreParadaMaquina , tipoParadaMaquina , idArea , setupParadaMaquina ) => {
     var response = { mensaje : '' ,  status : 0 }
     try {
         const result = await fetch ( 'https://ems-node-api.herokuapp.com/api/paradasMaquina/insert' , {
             method : 'POST' ,
-            body : JSON.stringify ( { nombreParadaMaquina , tipoParadaMaquina , idArea } ) ,
+            body : JSON.stringify ( { nombreParadaMaquina , tipoParadaMaquina , idArea , setupParadaMaquina } ) ,
             headers : new Headers ( {
                 'Accept' : 'Application/json' ,
                 'Content-Type' : 'Application/json'

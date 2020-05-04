@@ -11,6 +11,7 @@ const ParadaMaquina = ( props ) => {
     const [idArea , setIdArea] = useState ( '' )
     const [nombreArea , setNombreArea] = useState ( '' )
     const [tipoParadaMaquina , setTipoParadaMaquina] = useState ( false )
+    const [setupParadaMaquina , setSetupParadaMaquina] = useState ( '' )
     const [vecAreas , setVecAreas] = useState ( [  ] )
 
     useEffect ( (  ) => {
@@ -20,6 +21,7 @@ const ParadaMaquina = ( props ) => {
             setIdArea ( props.paradaMaquina.idArea )
             setNombreArea ( props.paradaMaquina.nombreArea )
             setTipoParadaMaquina ( props.paradaMaquina.tipoParadaMaquina )
+            setSetupParadaMaquina ( props.paradaMaquina.setupParadaMaquina )
             setVecAreas ( props.vecAreas )
         }
     } , [ props ] )
@@ -34,7 +36,7 @@ const ParadaMaquina = ( props ) => {
         }
         else {
             const updatePM = async (  ) => {
-                const result = await Servicios.updateParadaMaquina ( parseInt ( idParadaMaquina ) , nombreParadaMaquina , tipoParadaMaquina , parseInt ( idArea ) )
+                const result = await Servicios.updateParadaMaquina ( parseInt ( idParadaMaquina ) , nombreParadaMaquina , tipoParadaMaquina , parseInt ( idArea ) , setupParadaMaquina === '' || setupParadaMaquina === 0 ? null : parseInt ( setupParadaMaquina ) )
                 if ( result ) {
                     if ( result.status === 200 ) {
                         props.enqueueSnackbar( result.mensaje,
@@ -101,31 +103,21 @@ const ParadaMaquina = ( props ) => {
         props.modo === 'normal' ?
         <tr>
             <td>{idParadaMaquina}</td>
-            {/* <td>
-                <select value = { idArea } onChange = { e => setIdArea ( e.target.value ) }>
-                    {
-                        ( Array.isArray ( vecAreas ) && vecAreas.length > 0 ) ?
-                        vecAreas.map ( ( a , i ) => {
-                        return ( <option key = { i } value = { a.idArea }>{a.nombreArea}</option> )
-                        } )
-                        :
-                        <option> none</option>
-                    }
-                </select>
-            </td> */}
             <td>{nombreParadaMaquina}</td>
             <td>{tipoParadaMaquina === true ? 'NO PROGRAMADA' : 'PROGRAMADA'}</td>
             <td>{nombreArea}</td>
+            <td>{setupParadaMaquina === null || setupParadaMaquina === 0 ? '' : setupParadaMaquina}</td>
             <td><MyComponent.botonUpdate texto = 'Update defect'  onClick = { e => props.cambiaModo ( 'update' , props.paradaMaquina ) } /></td>
             <td><MyComponent.botonDelete texto = 'Delete defect' onClick = { e => props.cambiaModo ( 'delete' , props.paradaMaquina ) } /></td>
         </tr>
         :
         props.modo === 'update' ?
         <tr>
-            <td colSpan = { 5 } >
+            <td colSpan = { 7 } >
                 <MyComponent.texto id = { `${idParadaMaquina}` } label = 'Nombre' value = { nombreParadaMaquina } onChange = { e => setNombreParadaMaquina ( e.target.value ) } />
                 <MyComponent.boolean label = 'PM no programada' checked = { tipoParadaMaquina } onChange = { e => setTipoParadaMaquina ( e.target.checked ) } />
                 <MyComponent.listaDesplegable onChange = { e => setIdArea ( e.target.value ) } value = { idArea }  array = { vecAreas } member = { { valueMember : 'idArea' , displayMember : 'nombreArea' } } label = 'Area' />
+                <MyComponent.numero label = 'setUp' value = { setupParadaMaquina } onChange = { e => setSetupParadaMaquina ( e.target.value ) } />
                 <MyComponent.botonAcept texto = 'Update Parada Maquina'  onClick = { e=> updateParadaMaquina (  ) } />
                 <MyComponent.botonCancel texto = 'Cancel'  onClick = { e=> props.cambiaModo ( 'normal'  , undefined ) } />
                 <Alert id = 'myAlert' variant = 'danger' style = { { display : 'none' , marginTop : 20 } } />
@@ -133,7 +125,7 @@ const ParadaMaquina = ( props ) => {
         </tr>
         :
         <tr>
-            <td colSpan = { 5 } >
+            <td colSpan = { 7 } >
                 ¿Esta seguro de eliminar el Parada de Maquina { nombreParadaMaquina }
                 <MyComponent.botonDelete texto = 'Delete parada de maquina'  onClick = { e=> deleteParadaMaquina (  ) } />
                 <MyComponent.botonCancel texto = 'Cancel'  onClick = { e=> props.cambiaModo ( 'normal'  , undefined ) } />

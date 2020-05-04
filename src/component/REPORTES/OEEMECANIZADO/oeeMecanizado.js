@@ -8,6 +8,7 @@ import NoFound from '../../../Imagenes/noFound.png'
 import Items from './items'
 import Moment from 'moment'
 import Typography from '@material-ui/core/Typography'
+import GraficoOeeMec from './graficoOeeMec'
 
 const OeeMecanizado = ( props ) => {
     const [idMaquina , setIdMaquina] = useState ( '' )
@@ -26,7 +27,7 @@ const OeeMecanizado = ( props ) => {
             const listaMaq = await Servicios.listaMaquinas (  )
             const listaPie = await Servicios.listaPiezas (  )
             listaMaq.unshift ( { idMaquina : '' , nombreMaquina : 'NONE' , idTipoMaquina : 1 } )
-            if ( listaMaq) {  setVecMaquinas ( listaMaq.filter ( mq => mq.idTipoMaquina === 1 ) )  }
+            if ( listaMaq) {  setVecMaquinas ( listaMaq.filter ( mq => mq.idTipoMaquina === 4 ) )  }
             listaPie.unshift ( { idPieza : '' , nombrePieza : 'NONE' } )
             if ( listaPie) {  setVecPiezas ( listaPie )  }
         }
@@ -231,6 +232,9 @@ const OeeMecanizado = ( props ) => {
                         }
                     </tbody>
                 </Table>
+            </div>
+            <div>
+                <GraficoOeeMec />
             </div>
         </div>
     )

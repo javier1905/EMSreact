@@ -18,40 +18,40 @@ const Items = ( props ) => {
 
         styletr = { background : '#4141B3' , color : 'white' , boxShadow : '1px 1px  1px grey ' }
     }
-    const calculoDisponibilidad= (  ) => {
+    const calculoDisponibilidad = (  ) => {
         if ( props.items) {
-            if ( isNaN ( ( ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP ) / (props.items.minTotal - props.items.pmProgramada)  * 100 ).toFixed ( 2 ) )  ) {
+            if ( isNaN ( ( ( props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP ) / (props.items.minTotal - props.items.pmProgramada - props.items.setup )  * 100 ).toFixed ( 2 ) )  ) {
                 return 0
             }
             else {
-                return ( ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP ) / (props.items.minTotal - props.items.pmProgramada)  * 100 ).toFixed ( 2 )
+                return ( ( props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP ) / (props.items.minTotal - props.items.setup - props.items.pmProgramada)  * 100 ).toFixed ( 2 )
             }
         }
     }
     const calculoRendimiento = (  ) => {
-        if ( isNaN ( (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP )* 100  ).toFixed(2) ) ) {
+        if ( isNaN ( (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP )* 100  ).toFixed(2) ) ) {
             return 0
         }
         else {
-            return (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP )* 100  ).toFixed(2)
+            return (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP )* 100  ).toFixed(2)
         }
     }
     const calculoCalidad = (  ) => {
-        if ( isNaN ( ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ))*100).toFixed(2) ) ) {
+        if ( isNaN ( ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP) ))*100).toFixed(2) ) ) {
             return 0
         }
-        else if (  ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ))*100) === - Infinity  ) {
+        else if (  ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP) ))*100) === - Infinity  ) {
             return 0
         }
         else
         {
-            return ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ))*100).toFixed(2)
+            return ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP) ))*100).toFixed(2)
         }
     }
     const calculoOEE = (  ) => {
-        var dato =  ( ( ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) / (props.items.minTotal - props.items.pmProgramada)) *
-        (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.totalPNP ) ) *
-        ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada - props.items.totalPNP) ) ) ) * 100 ).toFixed ( 2 )
+        var dato =  ( ( ( props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP) / (props.items.minTotal - props.items.pmProgramada - props.items.setup ) ) *
+        (props.items.minPorPiezaProducidas / ( props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP ) ) *
+        ( (1 - ( props.items.minNoCalidad / (props.items.minTotal - props.items.pmProgramada  - props.items.setup - props.items.totalPNP) ) ) ) * 100 ).toFixed ( 2 )
         if ( isNaN ( dato ) ) {
             return 0
         }
@@ -72,10 +72,12 @@ const Items = ( props ) => {
             <td>{props.items.pmMatrizeria}</td>
             <td>{props.items.pmMantenimiento}</td>
             <td>{props.items.pmProduccion}</td>
+            <td>{props.items.pmOtros}</td>
             <td>{props.items.totalPNP}</td>
             <td>{props.items.pmProgramada}</td>
-            <td>{props.items.idPlanta === 2 ? '' : props.items.minTotal - props.items.pmProgramada - props.items.totalPNP}  </td>
-            <td>{props.items.idPlanta === 2 ? '' : props.items.minTotal - props.items.pmProgramada}</td>
+            <td>{props.items.setup}</td>
+            <td>{props.items.idPlanta === 2 ? '' : props.items.minTotal - props.items.pmProgramada - props.items.setup - props.items.totalPNP}  </td>
+            <td>{props.items.idPlanta === 2 ? '' : props.items.minTotal - props.items.pmProgramada - props.items.setup }</td>
             <td>{props.items.minTotal}</td>
             <td className = { Dfooter }>{props.items.idPlanta === 2 ? '' : `${calculoDisponibilidad (  )}%` }</td>
             <td className = { Rfooter }>{props.items.idPlanta === 2 ? '' : `${ calculoRendimiento (  ) }%`}</td>

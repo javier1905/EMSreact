@@ -6,11 +6,12 @@ import $ from 'jquery'
 import Servicios from '../servicesIngenieria'
 import { withSnackbar } from 'notistack'
 
-const FormAltaMolde = ( props ) => {
+const FormAltaParadaMaquina = ( props ) => {
     const [vecAreas , setVecAreas] = useState ( [  ] )
     const [nombreParadaMaquina , setNombreParadaMaquina] = useState ( '' )
     const [tipoParadaMaquina , setTipoParadaMaquina] = useState ( false )
     const [idArea , setIdArea] = useState ( '' )
+    const [setupParadaMaquina , setSetupParadaMaquina] = useState ( '' )
 
     useEffect ( (  ) => {
         setVecAreas ( props.vecAreas )
@@ -27,7 +28,7 @@ const FormAltaMolde = ( props ) => {
         }
         else {
             const insertParadaMaquinia = async (  ) => {
-                const result = await Servicios.insertParadaMaquina ( nombreParadaMaquina , tipoParadaMaquina , parseInt ( idArea ) )
+                const result = await Servicios.insertParadaMaquina ( nombreParadaMaquina , tipoParadaMaquina , parseInt ( idArea ) , setupParadaMaquina === '' || setupParadaMaquina === 0 ? null : parseInt ( setupParadaMaquina ) )
                 if (  result ) {
                     if ( result.status === 200 ) {
                         props.enqueueSnackbar ( result.mensaje,
@@ -65,10 +66,11 @@ const FormAltaMolde = ( props ) => {
                 <MyComponent.texto label = 'Nombre' value = { nombreParadaMaquina } onChange = { e => setNombreParadaMaquina ( e.target.value ) } />
                 <MyComponent.boolean label = 'PM no programada' checked = { tipoParadaMaquina } onChange = { e => setTipoParadaMaquina ( e.target.checked ) } />
                 <MyComponent.listaDesplegable onChange = { e => setIdArea ( e.target.value ) } value = { idArea }  array = { vecAreas } member = { { valueMember : 'idArea' , displayMember : 'nombreArea' } } label = 'Area' />
+                <MyComponent.numero label = 'setUp' value = { setupParadaMaquina } onChange = { e => setSetupParadaMaquina ( e.target.value ) } />
                 <MyComponent.botonSave/>
                 <Alert id = 'myAlert2' variant = 'danger' style = { { display : 'none' , marginTop : 20 } } />
             </Form>
         </div>
     )
 }
-export default  withSnackbar ( FormAltaMolde )
+export default  withSnackbar ( FormAltaParadaMaquina )

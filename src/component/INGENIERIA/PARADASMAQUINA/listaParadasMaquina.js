@@ -64,6 +64,7 @@ const ListaParadasMaquina = ( props ) => {
                                 <th>Para Maquina</th>
                                 <th>Tipo</th>
                                 <th>Area</th>
+                                <th>SetUp</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>
                             </tr>

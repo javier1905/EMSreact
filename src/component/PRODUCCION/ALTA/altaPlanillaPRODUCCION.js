@@ -16,6 +16,7 @@ import { connect } from 'react-redux'
 import servicios from './serviceAltaPlanilla'
 import MyComponent from '../../AAprimary/misComponentes'
 import Typography from '@material-ui/core/Typography'
+import Moment from 'moment'
 
 class AltaPlanillaPRODUCCION extends React.Component {
     constructor ( props ) {
@@ -50,7 +51,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
             mensajeAlertZona : '' ,
             campoIdParaMaquina : '' ,
             campoNombreParadaMaquina:'',
-            showModalPM:false
+            showModalPM:false ,
+            setup : undefined
         }
         this.inputLabel = React.createRef()
         this.cbx_paradasMaquina = React.createRef()
@@ -172,7 +174,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.setState({vecOperarios:newVecOperarios})
     }
     addRechazo = info => {
-        console.log (info)
         let indexOperario = parseInt ( info )
         let newRechazo = { idRechazo : '' , nombreRechazo : '' , tipo : '' , cantidadRechazo : '' , vecZonas : [  ]  }
         if ( this.state.vecOperarios[ indexOperario ] ) {
@@ -331,7 +332,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     vecOperariosCache[ indexOperario ].nombre = ''
                 }
                 else {
-                    console.log( this.state.vecOperariosCombo.find ( o => o.idTrabajador === parseInt ( value ) ) )
                     vecOperariosCache[ indexOperario ].idOperario = parseInt ( value )
                     vecOperariosCache[ indexOperario ].nombre = parseInt ( value )
                 }
@@ -423,6 +423,20 @@ class AltaPlanillaPRODUCCION extends React.Component {
         else { campoPM = parseInt ( e ) }
         if ( nomParadaMaquina === '' || campoPM === '' ) { this.setState ( { showModalPM : false } ) }
         else{  this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina } ) }
+        console.log ( 'evento close' , )
+        try {
+            var setUP = this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina === parseInt ( e ) ).setupParadaMaquina
+            var horaHastaPM = document.getElementById ( 'txt_horaHastaParadaMaquina' )
+            if ( setUP !== null ) {
+                horaHastaPM.disabled = true
+                this.setState ( { campoDesdeParadaMaquina : '' , campoHastaParadaMaquina : '' , setup : parseInt ( setUP )  } )
+            }
+            else {
+                horaHastaPM.disabled = false
+                this.setState ( { setup : undefined } )
+            }
+        }
+        catch ( er ) { }
     }
     miSubmit = e => {
         const  { fechaProduccion , fechaFundicion  , HoraInicioProduccion , HoraFinProduccion , idOperacion , idMaquina , idPieza, idMolde, idTipoProceso , vecOperarios  , vecParadasMaquinaSeleccionada } = this.state
@@ -436,9 +450,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             vecOperarios ,
             vecParadasMaquinaSeleccionada
         }
-        console.log ( dato )
         const validacion = (  ) => {
-            console.log ( HoraInicioProduccion , HoraFinProduccion ,  HoraInicioProduccion === HoraFinProduccion )
             var dtp_fechaProduccion = document.getElementById ( 'dtp_fechaProduccion' )
             if ( fechaProduccion === null ) {
                 this.props.enqueueSnackbar ( 'Ingrese la fecha de Procesado ', { variant: 'error' , preventDuplicate : true } )
@@ -635,7 +647,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 })
                 .then ( dato => { return dato.json (  ) } )
                 .then ( json => {
-                    console.log ( json )
                     this.props.enqueueSnackbar(`${json.mensaje}`,
                     {
                         variant: 'success',
@@ -669,8 +680,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
     completaDatosUpdate = (  ) => {
         const plaUpdate = this.props.planillaUpdate
         if ( plaUpdate !== '' ) {
-            console.log( 'update ' )
-            console.log ( plaUpdate )
             this.setState ( { fechaProduccion : new Date ( plaUpdate.fechaProduccion ) , fechaFundicion : new Date ( plaUpdate.fechaFundicion ) ,
                 HoraInicioProduccion : plaUpdate.horaInicio , HoraFinProduccion : plaUpdate.horaFin ,
                 vecOperarios : plaUpdate.vecOperarios , vecParadasMaquinaSeleccionada : plaUpdate.vecParadasMaquinaSeleccionada
@@ -811,7 +820,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                     <Grid item xs={12}> {/* INICIO OPERARIOS*/}
                                         <Typography variant = 'h2' style = { { marginBottom : 15 } } >Operarios</Typography>
                                         <div style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px'}}>
-                                            <MyComponent.botonAdd texto = 'Add operario'  onClick  = { this.addOperario } fontSize = 'large'  size = { 50 } />
+                                            <MyComponent.botonAdd id = 'btnAddOperario' texto = 'Add operario'  onClick  = { this.addOperario } fontSize = 'large'  size = { 50 } />
                                             {
                                                 this.state.vecOperarios.map((o,i)=>{  // ! RECORRE VECTOR OPERARIOS
                                                     return <div key={i} style={{borderRadius:'7px',border:'#D5DBDB solid 1px',padding:'10px',marginTop:'10px'}}>
@@ -1009,11 +1018,28 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     ref = { this.txt_campoIdParadaMaquina }
                                                     onChange = {
                                                         e => {
-                                                            var PMselect=''
-                                                            try{ PMselect =this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina===parseInt(e.target.value)).nombreParadaMaquina }
+                                                            var PMselect = ''
+                                                            try {
+                                                                PMselect = this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina === parseInt ( e.target.value) ).nombreParadaMaquina
+                                                                this.setState({campoNombreParadaMaquina:PMselect } )
+                                                            }
                                                             catch(e){ this.setState({campoNombreParadaMaquina:''}) }
-                                                            this.setState({campoIdParaMaquina:e.target.value})
-                                                            if(PMselect !== ''){ this.setState({campoNombreParadaMaquina:PMselect})  }
+                                                            this.setState ( { campoIdParaMaquina : e.target.value } )
+                                                            if ( PMselect !== '' && this.state.campoNombreParadaMaquina !== '' ) {
+                                                                try {
+                                                                    var setUP = this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina === parseInt ( e.target.value) ).setupParadaMaquina
+                                                                    var horaHastaPM = document.getElementById ( 'txt_horaHastaParadaMaquina' )
+                                                                    if ( setUP !== null ) {
+                                                                        horaHastaPM.disabled = true
+                                                                        this.setState ( {campoDesdeParadaMaquina : '' , campoHastaParadaMaquina : '' ,  setup : parseInt ( setUP ) } )
+                                                                    }
+                                                                    else {
+                                                                        horaHastaPM.disabled = false
+                                                                        this.setState ( { setup : undefined } )
+                                                                    }
+                                                                }
+                                                                catch ( e ) {  }
+                                                            }
                                                         }
                                                     }
                                                 />
@@ -1030,14 +1056,19 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     id="txt_horaDesdeParadaMaquina"
                                                     name="txt_horaDesdeParadaMaquina"
                                                     value = { this.state.campoDesdeParadaMaquina }
-                                                    onChange = { e => {
+                                                    onChange = { e => { console.log ( e.target.value )
                                                         if ( e.target.value !== '06:00' && this.state.campoHastaParadaMaquina !== '06:00' && e.target.value === this.state.campoHastaParadaMaquina){
-                                                            this.setState({campoDesdeParadaMaquina:''})
+                                                            this.setState ( { campoDesdeParadaMaquina : '' } )
                                                         }
                                                         else{
-                                                            this.setState({campoDesdeParadaMaquina:e.target.value})
+                                                            try {
+                                                                if ( e.target.value.length === 5 ) {
+                                                                    this.setState ( { campoDesdeParadaMaquina:e.target.value , campoHastaParadaMaquina : new Moment ( `2020-04-18T${e.target.value}:00.000` ).add ( this.state.setup , 'minutes' ).format ("HH:mm") } )
+                                                                }
+                                                            }
+                                                            catch ( e ) {  }
                                                         }
-                                                    }}
+                                                    } }
                                                 />
                                                 <MyComponent.hora
                                                     id="txt_horaHastaParadaMaquina"

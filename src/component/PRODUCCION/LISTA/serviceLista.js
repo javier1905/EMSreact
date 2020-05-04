@@ -163,8 +163,6 @@ consultas.planillasProduccion = async ( fDesdeProduccion ,  fHastaProduccion ,
     //     idMolde: idMol === '' ? null : idMol , idTipoProceso : idTipoPro === '' ?null : idTipoPro  ,
     //     idOperacion : idOp === '' ? null : idOp
     // }
-
-    console.log ( filtros , new Date (  ))
     try {
         // const response = await fetch( `http://localhost:5000/api/planillasProduccion/listar`,  {
         const response = await fetch( `https://ems-node-api.herokuapp.com/api/planillasProduccion/listar`,  {
