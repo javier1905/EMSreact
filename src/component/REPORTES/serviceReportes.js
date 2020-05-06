@@ -1,3 +1,4 @@
+import Moment from 'moment'
 var servicios = {}
 
 servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta ) => {
@@ -147,7 +148,38 @@ servicios.listaPiezas = async (  ) => {
     }
     return vecPiezas
 }
-
+servicios.listaReporteRechazosPrimeraVuelta = async ( fechaFundicionDesde , fechaFundicionHasta , idMaquina , idPieza , idMolde ) => {
+    var vectores = { vecFechas : [  ] , vecProduccion : [  ] , vecRechazos : [  ] , vecPorcentaje : [  ] }
+    const result = await fetch ( `https://ems-node-api.herokuapp.com/api/reportes/rechazosPrimeraVuelta` , {
+        method : 'POST' ,
+        body : JSON.stringify ( { fechaFundicionDesde , fechaFundicionHasta , idMaquina , idPieza , idMolde } ) ,
+        headers : new Headers ( {
+            'Accept' : 'Application/json' ,
+            'Content-Type' : 'Application/json'
+        } )
+    } )
+    if ( result ) {
+        const json = await result.json (  )
+        if ( json ) {
+            if ( Array.isArray ( json ) ) {
+                json.forEach ( ( items , index ) => {
+                    vectores.vecFechas.push ( new Moment ( items['fechaFundicion'] ).format ( 'DD/MM/YYYY' ) )
+                    vectores.vecProduccion.push ( items['produccion'] )
+                    vectores.vecRechazos.push ( items['rechazos'] )
+                    var por = 0
+                    if ( ( items['rechazos'] / items['produccion'] ) === Infinity || isNaN ( ( items['rechazos'] / items['produccion'] )) ) {
+                        por = 0
+                    }
+                    else {
+                        por = ( items['rechazos'] / items['produccion'] * 100).toFixed ( 2 )
+                    }
+                    vectores.vecPorcentaje.push ( por )
+                }  )
+            }
+        }
+    }
+    return vectores
+}
 
 
 export default servicios
