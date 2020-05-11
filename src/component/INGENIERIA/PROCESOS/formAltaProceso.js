@@ -175,7 +175,7 @@ const FormProcesos =  ( props ) => {
             </Toolbar>
             </AppBar>
             <Form onSubmit = { mySubmit } style = { { padding : 20 } }>
-                <MyComponent.texto label = 'descripcion' value = { descipcionProceso }  onChange = { e => setDescipcionProceso ( e.target.value ) }/>
+                <MyComponent.texto width={400} label = 'descripcion' value = { descipcionProceso }  onChange = { e => setDescipcionProceso ( e.target.value ) }/>
                 <MyComponent.listaDesplegable value = { idPieza }  onChange = { e => setIdPieza ( e.target.value ) } label = 'pieza' array = { vecPiezas } member = { { valueMember : 'idPieza' , displayMember : 'nombrePieza'} } />
                 <MyComponent.listaDesplegable value = { idMaquina }  onChange = { e => setIdMaquina ( e.target.value ) } label = 'maquina' array = { vecMaquinas } member = { { valueMember : 'idMaquina' , displayMember : 'nombreMaquina' } } />
                 <MyComponent.listaDesplegable value = { idTipoProceso }  onChange = { e => setIdTipoProceso ( e.target.value ) } label = 'tipo proceso'  array = { vecTiposProceso } member = { { valueMember : 'idTipoProceso' , displayMember : 'nombreTipoProceso' } } />

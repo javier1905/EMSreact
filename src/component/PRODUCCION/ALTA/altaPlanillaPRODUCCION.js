@@ -15,6 +15,7 @@ import { withSnackbar } from 'notistack'
 import { connect } from 'react-redux'
 import servicios from './serviceAltaPlanilla'
 import MyComponent from '../../AAprimary/misComponentes'
+import Fechas from '../../AAprimary/fechas'
 import Typography from '@material-ui/core/Typography'
 import Moment from 'moment'
 
@@ -480,9 +481,18 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 return false
             }
             const comparaIgualdadFechas = ( fechaUno, FechaDos ) => {
-                var fe_uno = `${fechaUno.getDate()}${fechaUno.getMonth()+1}${fechaUno.getFullYear()}`
-                var fe_dos = `${FechaDos.getDate()}${FechaDos.getMonth()+1}${FechaDos.getFullYear()}`
-                if(fe_uno === fe_dos) { return true} else { return false}
+                if (this.props.planillaUpdate) {
+                    if ( new Moment( fechaUno ).isSame(new Moment( FechaDos)) ) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                }else{
+                    var fe_uno = `${fechaUno.getDate()}${fechaUno.getMonth()+1}${fechaUno.getFullYear()}`
+                    var fe_dos = `${FechaDos.getDate()}${FechaDos.getMonth()+1}${FechaDos.getFullYear()}`
+                    if(fe_uno === fe_dos) { return true} else { return false}
+                }
             }
             if(!comparaIgualdadFechas(fechaProduccion, fechaFundicion )){
                 if((fechaProduccion - fechaFundicion) < 0 ){
@@ -679,8 +689,9 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     completaDatosUpdate = (  ) => {
         const plaUpdate = this.props.planillaUpdate
+        console.log(Fechas.SQL_DataTimePicker( this.props.planillaUpdate.fechaProduccion) )
         if ( plaUpdate !== '' ) {
-            this.setState ( { fechaProduccion : new Date ( plaUpdate.fechaProduccion ) , fechaFundicion : new Date ( plaUpdate.fechaFundicion ) ,
+            this.setState ( { fechaProduccion : Fechas.SQL_DataTimePicker ( plaUpdate.fechaProduccion ) , fechaFundicion : Fechas.SQL_DataTimePicker ( plaUpdate.fechaFundicion ) ,
                 HoraInicioProduccion : plaUpdate.horaInicio , HoraFinProduccion : plaUpdate.horaFin ,
                 vecOperarios : plaUpdate.vecOperarios , vecParadasMaquinaSeleccionada : plaUpdate.vecParadasMaquinaSeleccionada
             } )
@@ -881,8 +892,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                             onChange = { this.capturaDatos }
                                                                             value = { this.state.vecOperarios[i].calorias }
                                                                         />
-                                                                        <MyComponent.botonAdd info = {`${i}`} onClick = { this.addRechazo } texto = 'Add Rechazo' />
-                                                                        <MyComponent.botonDelete info = {`${i} id_Operario`} onClick =   { this.myDeleteOperario } />
+                                                                        <MyComponent.botonAdd id={`btn_addRechazo ${i}`} info = {`${i}`} onClick = { this.addRechazo } texto = 'Add Rechazo' />
+                                                                        <MyComponent.botonDelete id={`${i} id_Operario`} info = {`${i} id_Operario`} onClick =   { this.myDeleteOperario } />
                                                                 </Grid>
                                                                 <Typography  variant = 'h4' style = { { marginBottom : 10 } } >Rechazos</Typography>
                                                                 { // !RECORRE VECTOR RECHAZOS
@@ -937,7 +948,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         value = { this.state.vecOperarios[i].vecRechazo[indexRechazo].cantidadRechazo }
                                                                                         onBlur = { this.verificaRechazoCoincidente }
                                                                                     />
-                                                                                    <MyComponent.botonDelete info = {`${i} ${indexRechazo} id_rechazo`} onClick = { this.myDeleteRechazo } />
+                                                                                    <MyComponent.botonDelete id={`${i} ${indexRechazo} id_rechazo`} info = {`${i} ${indexRechazo} id_rechazo`} onClick = { this.myDeleteRechazo } />
                                                                                 </Grid>
                                                                                 <Grid item xs={12}>
                                                                                     <TextField
@@ -965,6 +976,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                         texto = 'Add Zona'
                                                                                         info = {`btnAddZona ${i} ${indexRechazo}`}
                                                                                         onClick = {this.addZona }
+                                                                                        id={`btnAddZona ${i} ${indexRechazo}`}
                                                                                     />
                                                                                     <Alert id={`alert ${i} ${indexRechazo}`} style={{display:'none'}} severity="error">
                                                                                         {this.state.mensajeAlertZona}
@@ -988,7 +1000,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                                                         <td>{z.numero}</td>
                                                                                                         <td>{z.cantidad}</td>
                                                                                                         <td>
-                                                                                                        <MyComponent.botonDelete info = {`${i} ${indexRechazo} ${indexZona} id_txtZona`} onClick = { this.myDeleteZona } />
+                                                                                                        <MyComponent.botonDelete id={`${i} ${indexRechazo} ${indexZona} id_txtZona`} info = {`${i} ${indexRechazo} ${indexZona} id_txtZona`} onClick = { this.myDeleteZona } />
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 })

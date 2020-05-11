@@ -69,7 +69,8 @@ const RechazosPrimeraVuelta = ( props ) => {
                 yAxisID : 'id_escala_derecha' ,
                 backgroundColor : '#34B84E' ,
                 borderColor : '#34B84E' ,
-                label : 'Prosentajes'
+                label : 'Prosentajes' ,
+                fill : false
             } ,
             {
                 datalabels: {
@@ -83,7 +84,8 @@ const RechazosPrimeraVuelta = ( props ) => {
                 data : vecProduccion ,
                 label : 'Producion' ,
                 backgroundColor : 'rgb(55, 49, 138)' ,
-                yAxisID : 'id_escala_izquierda'
+                yAxisID : 'id_escala_izquierda' ,
+                fill : false
             },
             {
                 datalabels: {
@@ -97,7 +99,8 @@ const RechazosPrimeraVuelta = ( props ) => {
                 data : vecRechazos ,
                 yAxisID : 'id_escala_izquierda' ,
                 backgroundColor : '#C42722' ,
-                label : 'Rechazos'
+                label : 'Rechazos' ,
+                fill : false
             }
         ]
     }
@@ -109,7 +112,7 @@ const RechazosPrimeraVuelta = ( props ) => {
             }
         } ,
         tooltips : {
-            model : 'label'
+            mode : 'label'
         } ,
         title : {
             text : 'Rechazos de primera vuelta' ,

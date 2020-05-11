@@ -1,7 +1,288 @@
 import Moment from 'moment'
 var servicios = {}
 
-servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta ) => {
+servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta , idAgrupar ) => {
+    console.log (idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta , idAgrupar , 'fetc')
+    var response = { vecOeefundicion : [  ] , status : '' }
+    try {
+        const result = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/fundicion` , {
+            method : 'POST' ,
+            body : JSON.stringify ( { idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+                if ( json && Array.isArray ( json )) {
+                    json.sort(dato => dato.fechaFundicion)
+                        var vecP1 = json.filter ( items => items.idPlanta === 1 )
+                        var vecP2 = json.filter ( items => items.idPlanta === 2 )
+                    const unificadorVecP1 = ( vecP1 ) => {
+                        if ( idAgrupar === 2 ) {
+                            vecP1.forEach ( ( e , i ) => {
+                                vecP1[i].fechaFundicion = `SEM${new Moment (e.fechaFundicion).add(1 , 'd').week()}/${new Moment (e.fechaFundicion).year()}`
+                            } )
+                        }
+                        else if ( idAgrupar === 3 ) {
+                            vecP1.forEach ( ( e , i ) => {
+                                // vecP1[i].fechaFundicion = `${new Moment (e.fechaFundicion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaFundicion).year()}`
+                                vecP1[i].fechaFundicion = `${String(e.fechaFundicion).substring(5,7)}/${String(e.fechaFundicion).substring(0,4)}`
+                            } )
+                        }
+                        else if ( idAgrupar === 4 ) {
+                            vecP1.forEach ( ( e , i ) => {
+                                console.log (vecP1[i].fechaFundicion , 'hhhhhhh')
+                                vecP1[i].fechaFundicion = parseInt ( String(e.fechaFundicion).substring(0,4) )
+                            } )
+                        }
+                        var vecUnificadoP1 = [  ]
+                        vecP1.forEach ( ( items , i ) => {
+                            var newItems = {
+                                fechaFundicion : null ,
+                                idPlanta : 1 ,
+                                idMaquina : undefined ,
+                                nombreMaquina : null ,
+                                idPieza : undefined ,
+                                nombrePieza : null ,
+                                idMolde : undefined ,
+                                nombreMolde : null ,
+                                piezasXhora : null ,
+                                produccion : 0 ,
+                                pmMatrizeria : 0 ,
+                                pmMantenimiento : 0 ,
+                                pmProduccion : 0 ,
+                                pmOtros : 0 ,
+                                totalPNP : 0 ,
+                                pmProgramada : 0 ,
+                                setup : 0 ,
+                                totalrechazosPlanta2 : 0 ,
+                                totalrechazosPlanta1 : 0 ,
+                                minTotal : 0
+                            }
+                            var encontro = false
+                            if ( Array.isArray ( vecUnificadoP1 ) && vecUnificadoP1.length > 0 ) {
+                            vecUnificadoP1.forEach ( ( e , i ) => {
+                                if ( items.fechaFundicion === e.fechaFundicion && items.idMaquina === e.idMaquina &&
+                                    items.idPieza === e.idPieza && items.idMolde === e.idMolde && items.piezasXhora === e.piezasXhora ) {
+                                        encontro = true
+                                    }
+                            } ) }
+                            if ( encontro === false  ) {
+                                var vecFiltrado = vecP1
+                                vecFiltrado = vecFiltrado.filter ( d => ( items.fechaFundicion === d.fechaFundicion && items.idMaquina === d.idMaquina
+                                    && items.idPieza === d.idPieza && items.idMolde === d.idMolde && items.piezasXhora === d.piezasXhora ) )
+                                newItems.fechaFundicion = items.fechaFundicion
+                                newItems.idMaquina = items.idMaquina
+                                newItems.nombreMaquina = items.nombreMaquina
+                                newItems.idPieza = items.idPieza
+                                newItems.nombrePieza = items.nombrePieza
+                                newItems.idMolde = items.idMolde
+                                newItems.nombreMolde = items.nombreMolde
+                                newItems.piezasXhora = items.piezasXhora
+                                vecFiltrado.forEach ( ( elem , i ) => {
+                                    newItems.produccion += elem.produccion === null ? 0 : parseInt ( elem.produccion )
+                                    newItems.totalrechazosPlanta1 += elem.totalrechazosPlanta1 === null ? 0 : parseInt ( elem.totalrechazosPlanta1 )
+                                    newItems.totalrechazosPlanta2 += elem.totalrechazosPlanta2 === null ? 0 : parseInt ( elem.totalrechazosPlanta2 )
+                                    newItems.pmMatrizeria += elem.pmMatrizeria === null ? 0 : parseInt ( elem.pmMatrizeria )
+                                    newItems.pmMantenimiento += elem.pmMantenimiento === null ? 0 : parseInt ( elem.pmMantenimiento )
+                                    newItems.pmProduccion += elem.pmProduccion === null ? 0 : parseInt ( elem.pmProduccion )
+                                    newItems.pmOtros += elem.pmOtros === null ? 0 : parseInt ( elem.pmOtros )
+                                    newItems.totalPNP += elem.totalPNP === null ? 0 : parseInt ( elem.totalPNP )
+                                    newItems.pmProgramada += elem.pmProgramada === null ? 0 : parseInt ( elem.pmProgramada )
+                                    newItems.minTotal += elem.minTotal === null ? 0 : parseInt ( elem.minTotal )
+                                    newItems.setup += elem.setup === null ? 0 : parseInt ( elem.setup )
+                                })
+                                vecUnificadoP1.push ( newItems )
+                            }
+                        } )
+                        return vecUnificadoP1
+                    }
+                    const unificadorVecP2 = ( vecP2 ) => {
+                        var vecUnificadoP2 = [  ]
+                        if ( idAgrupar === 2 ) {
+                            vecP2.forEach ( ( e , i ) => {
+                                vecP2[i].fechaFundicion = `SEM${new Moment (e.fechaFundicion).add(1 , 'd').week()}/${new Moment (e.fechaFundicion).year()}`
+                            } )
+                        }
+                        else if ( idAgrupar === 3 ) {
+                            vecP2.forEach ( ( e , i ) => {
+                                vecP2[i].fechaFundicion = `${String(e.fechaFundicion).substring(5,7)}/${String(e.fechaFundicion).substring(0,4)}`
+                            } )
+                        }
+                        else if ( idAgrupar === 4 ) {
+                            vecP2.forEach ( ( e , i ) => {
+                                vecP2[i].fechaFundicion = parseInt ( String(e.fechaFundicion).substring(0,4) )
+                            } )
+                        }
+                        vecP2.forEach ( ( items , i ) => {
+                            var newItems = {
+                                fechaFundicion : null ,
+                                idPlanta : 2 ,
+                                idMaquina : undefined ,
+                                nombreMaquina : null ,
+                                idPieza : undefined ,
+                                nombrePieza : null ,
+                                idMolde : undefined ,
+                                nombreMolde : null ,
+                                piezasXhora : items.piezasXhora ,
+                                produccion : null ,
+                                pmMatrizeria : null ,
+                                pmMantenimiento : null ,
+                                pmProduccion : null ,
+                                pmOtros : null ,
+                                totalPNP : null ,
+                                pmProgramada : null ,
+                                setup : null ,
+                                totalrechazosPlanta2 : 0 ,
+                                totalrechazosPlanta1 : null ,
+                                minTotal : null
+                            }
+                            var encontro = false
+                            if ( Array.isArray ( vecUnificadoP2 ) && vecUnificadoP2.length > 0 ) {
+                            vecUnificadoP2.forEach ( ( e , i ) => {
+                                if ( items.fechaFundicion === e.fechaFundicion && items.idMaquina === e.idMaquina &&
+                                    items.idPieza === e.idPieza && items.idMolde === e.idMolde ) {
+                                        encontro = true
+                                    }
+                            } ) }
+                            if ( encontro === false  ) {
+                                var vecFiltrado = vecP2
+                                vecFiltrado = vecFiltrado.filter ( d => ( items.fechaFundicion === d.fechaFundicion && items.idMaquina === d.idMaquina
+                                    && items.idPieza === d.idPieza && items.idMolde === d.idMolde  ) )
+                                newItems.fechaFundicion = items.fechaFundicion
+                                newItems.idMaquina = items.idMaquina
+                                newItems.nombreMaquina = items.nombreMaquina
+                                newItems.idPieza = items.idPieza
+                                newItems.nombrePieza = items.nombrePieza
+                                newItems.idMolde = items.idMolde
+                                newItems.nombreMolde = items.nombreMolde
+                                vecFiltrado.forEach ( ( elem , i ) => {
+                                    newItems.totalrechazosPlanta2 += elem.totalrechazosPlanta2 === null ? 0 : parseInt ( elem.totalrechazosPlanta2 )
+                                })
+                                vecUnificadoP2.push ( newItems )
+                            }
+                        } )
+                        return vecUnificadoP2
+                    }
+                    const unificadorP1conP2 = ( vecPlantaUno , vecPlantaDos ) => {
+                        var vecFinal = vecPlantaUno
+                        vecPlantaDos.forEach ( ( p2 , i ) => {
+                            vecPlantaUno.forEach ( ( p1 , index ) => {
+                                if ( p2.fechaFundicion === p1.fechaFundicion  && p2.idPieza === p1.idPieza && p2.idMolde === p1.idMolde ) {
+                                    vecFinal[index].totalrechazosPlanta2 += p2.totalrechazosPlanta2 === null ? 0 : parseInt ( p2.totalrechazosPlanta2 )
+                                }
+                            } )
+                        } )
+                        var vecNoEncontrados =[ ]
+                        vecPlantaDos.forEach ( ( p2 , i ) => {
+                            var elemento = undefined
+                            vecPlantaUno.forEach ( ( p1 , indexp1 ) => {
+                                if ( p2.fechaFundicion === p1.fechaFundicion  && p2.idPieza === p1.idPieza && p2.idMolde === p1.idMolde ) {
+                                    elemento = p2
+                                }
+                            } )
+                            if ( elemento === undefined ) {
+                                if ( p2.totalrechazosPlanta2 > 0 ) {
+                                    vecNoEncontrados.push ( p2 )
+                                }
+                            }
+                        } )
+                        vecFinal = vecFinal.concat ( vecNoEncontrados )
+                        return vecFinal
+                    }
+                    var vecP1MasvecP2 = unificadorP1conP2 ( unificadorVecP1( vecP1 ) , unificadorVecP2( vecP2 ) )
+                    var newItems2 = {
+                        fechaFundicion : null ,
+                        idPlanta : null  ,
+                        idMaquina : undefined ,
+                        nombreMaquina : null ,
+                        idPieza : undefined ,
+                        nombrePieza : null ,
+                        idMolde : undefined ,
+                        nombreMolde : null ,
+                        piezasXhora : null ,
+                        produccion : 0 ,
+                        pmMatrizeria : 0 ,
+                        pmMantenimiento : 0 ,
+                        pmProduccion : 0 ,
+                        pmOtros : 0 ,
+                        totalPNP : 0 ,
+                        pmProgramada : 0 ,
+                        setup : 0 ,
+                        totalrechazosPlanta2 : 0 ,
+                        totalrechazosPlanta1 : 0 ,
+                        minTotal : 0 ,
+                        minNoCalidad : 0 ,
+                        minPorPiezaProducidas : 0
+                    }
+                    vecP1MasvecP2.forEach ( ( e , i ) => {
+                        if ( e.idPlanta === 1  ) {
+                            newItems2.produccion += parseInt ( e.produccion )
+                            newItems2.pmMatrizeria += parseInt ( e.pmMatrizeria )
+                            newItems2.pmMantenimiento += parseInt ( e.pmMantenimiento )
+                            newItems2.pmProduccion += parseInt ( e.pmProduccion )
+                            newItems2.pmOtros += parseInt ( e.pmOtros )
+                            newItems2.totalPNP += parseInt ( e.totalPNP )
+                            newItems2.pmProgramada += parseInt ( e.pmProgramada )
+                            newItems2.setup += parseInt ( e.setup )
+                            newItems2.minTotal += parseInt ( e.minTotal )
+                            newItems2.totalrechazosPlanta1 += parseInt ( e.totalrechazosPlanta1 )
+                            vecP1MasvecP2[i].minNoCalidad = ( parseInt ( e.totalrechazosPlanta2 ) + parseInt ( e.totalrechazosPlanta1 ) ) * 60 / parseInt ( e.piezasXhora )
+                            vecP1MasvecP2[i].minPorPiezaProducidas = ( parseInt ( e.produccion ) * 60 / parseInt ( e.piezasXhora ) )
+                            newItems2.minPorPiezaProducidas += ( parseInt ( e.produccion ) * 60 / parseInt ( e.piezasXhora ) )
+                        }
+                        else {
+                            vecP1MasvecP2[i].minNoCalidad = 0
+                        }
+                        newItems2.minNoCalidad += ( parseInt ( e.totalrechazosPlanta2 === null ? 0 : e.totalrechazosPlanta2 ) + parseInt ( e.totalrechazosPlanta1 === null ? 0 : e.totalrechazosPlanta1 ) ) * 60 / parseInt ( e.piezasXhora )
+                        newItems2.totalrechazosPlanta2 += parseInt ( e.totalrechazosPlanta2 === null ? 0 : e.totalrechazosPlanta2 )
+                    } )
+                    if ( vecP1MasvecP2.length > 0 ) {
+                    vecP1MasvecP2.push ( newItems2 )
+                    }
+
+                    response.vecOeefundicion = vecP1MasvecP2
+                    response.status = 200
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // response.vecOeefundicion = json
+                // response.status = 200
+        }
+    }
+    catch ( e ) {
+        response.vecOeefundicion = [  ]
+        response.status = 403
+    }
+    return response
+}
+
+
+
+
+
+
+
+
+servicios.listaOeeFundicionGrafico = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta  ) => {
     var response = { vecOeefundicion : [  ] , status : '' }
     try {
         const result = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/fundicion` , {
@@ -24,6 +305,18 @@ servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundi
     }
     return response
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 servicios.listaOeeGranallado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
 var response = { vecOeeGranallado : [  ] , status : '' }
@@ -162,8 +455,36 @@ servicios.listaReporteRechazosPrimeraVuelta = async ( fechaFundicionDesde , fech
         const json = await result.json (  )
         if ( json ) {
             if ( Array.isArray ( json ) ) {
-                json.forEach ( ( items , index ) => {
-                    vectores.vecFechas.push ( new Moment ( items['fechaFundicion'] ).format ( 'DD/MM/YYYY' ) )
+                var vecMesAnio = [  ]
+                json.forEach ( ( e , i ) => {
+                    var fecha = `${ new Moment ( e.fechaFundicion ).add ( 12 , 'hour' ).month (  )+1}/${new Moment ( e.fechaFundicion ).add ( 12 , 'hour' ).year (  )}`
+                    json[i].fechaFundicion = fecha
+                    if ( vecMesAnio.length === 0 ) {
+                        vecMesAnio.push ( { fechaFundicion : fecha , produccion : 0 , rechazos : 0 } )
+                    }
+                    else {
+                        var encontro = false
+                        vecMesAnio.forEach ( ( ma , inde ) => {
+                            if ( ma.fechaFundicion === fecha ) {
+                                encontro = true
+                            }
+                        } )
+                        if ( encontro === false ) {
+                            vecMesAnio.push ( { fechaFundicion : fecha , produccion : 0 , rechazos : 0 } )
+                        }
+                    }
+                } )
+                vecMesAnio.forEach ( ( fe , indice ) => {
+                    json.forEach ( ( elem , inn ) => {
+                        if ( fe.fechaFundicion === elem.fechaFundicion  ) {
+                            vecMesAnio[indice].produccion += elem['produccion'] === null || isNaN ( elem['produccion'] ) ? 0 : elem['produccion']
+                            vecMesAnio[indice].rechazos += elem.rechazos === null || isNaN ( elem.rechazos ) ? 0 : elem.rechazos
+                        }
+                    } )
+                } )
+                vecMesAnio.forEach ( ( items , index ) => {
+                    // vectores.vecFechas.push ( new Moment ( items['fechaFundicion'] ).add ( 12 , 'hour'  ).format ( 'DD/MM/YYYY' ) )
+                    vectores.vecFechas.push ( items['fechaFundicion'] )
                     vectores.vecProduccion.push ( items['produccion'] )
                     vectores.vecRechazos.push ( items['rechazos'] )
                     var por = 0

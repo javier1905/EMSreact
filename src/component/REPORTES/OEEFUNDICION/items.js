@@ -1,6 +1,6 @@
 import React  from 'react'
-import Moment from 'moment'
 import './styleOeeFun.css'
+import fechas from '../../AAprimary/fechas'
 
 const Items = ( props ) => {
     var styletr = {}
@@ -15,7 +15,6 @@ const Items = ( props ) => {
         Rfooter = 'Rfooter'
         Qfooter = 'Qfooter'
         OEEfooter = 'OEEfooter'
-
         styletr = { background : '#4141B3' , color : 'white' , boxShadow : '1px 1px  1px grey ' }
     }
     const calculoDisponibilidad = (  ) => {
@@ -61,7 +60,7 @@ const Items = ( props ) => {
     }
     return (
         <tr className = { claseTr } style = { styletr } >
-            <td>{ props.ultimo ? 'Total' : props.idAgrupar === 1 ? new Moment ( props.items.fechaFundicion).add(1 , 'd').format ( 'DD/MM/YYYY' ) : props.items.fechaFundicion}</td>
+            <td>{ props.ultimo ? 'Total' : props.idAgrupar === 1 ? fechas.SQL_a_DD_MM_YYYY ( props.items.fechaFundicion) : props.items.fechaFundicion}</td>
             <td>{props.items.nombreMaquina}</td>
             <td>{props.items.nombrePieza}</td>
             <td>{props.items.nombreMolde}</td>
