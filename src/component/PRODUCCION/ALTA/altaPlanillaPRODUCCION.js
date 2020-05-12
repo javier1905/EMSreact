@@ -115,6 +115,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 nombreParadaMaquina:campoNombreParadaMaquina,
                 desdeParadaMaquina:campoDesdeParadaMaquina,
                 hastaParadaMaquina:campoHastaParadaMaquina,
+                idParadaMaquinaXplanilla:0,
                 duracionParadaMaquina:direrenciaEnMinutos(campoDesdeParadaMaquina,campoHastaParadaMaquina),
                 tipoParadaMaquina:vecParadasMaquina.find(pm=>pm.idParadaMaquina === parseInt(campoIdParaMaquina)).tipoParadaMaquina
             }
@@ -164,7 +165,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
         this.setState({vecOperarios:vecOperariosTemp})
     }
     addOperario = ( info , e ) => {
-        let Op = { idOperario : '' , nombre : '' , apellido : '' , idTurno : '' , horaInicio : '' , horaFin : '' , produccion : '' , calorias : '' , vecRechazo : [  ] }
+        let Op = { idOperario : '' , nombre : '' , apellido : '' , idTurno : '' , idTrabajadorXplanilla: 0 , horaInicio : '' , horaFin : '' , produccion : '' , calorias : '' , vecRechazo : [  ] }
         if(Array.isArray(this.state.vecTurnos)){
             if(this.state.vecTurnos.length === 0 ){ this.getTurnos (  ) }
         }
@@ -176,7 +177,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     addRechazo = info => {
         let indexOperario = parseInt ( info )
-        let newRechazo = { idRechazo : '' , nombreRechazo : '' , tipo : '' , cantidadRechazo : '' , vecZonas : [  ]  }
+        let newRechazo = { idRechazo : '' , nombreRechazo : '', idRechazoXtrabajadorYplanilla:0 , tipo : '' , cantidadRechazo : '' , vecZonas : [  ]  }
         if ( this.state.vecOperarios[ indexOperario ] ) {
             let newVecOperarios = this.state.vecOperarios
             newVecOperarios[indexOperario].vecRechazo = [...newVecOperarios[indexOperario].vecRechazo,newRechazo]
@@ -219,15 +220,16 @@ class AltaPlanillaPRODUCCION extends React.Component {
             txt_cantidad.select()
             return
         }
-        var letra,numero,cantidad;
+        var letra,numero,cantidad,idZona;
         var cacheVecOperario = this.state.vecOperarios
         try{
             letra = String(txt_letra.value).toLocaleUpperCase();
             numero = txt_numero.value
             cantidad = txt_cantidad.value
+            idZona = 0
             var vecZONA = cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas
             if(vecZONA.length === 0){
-                var newZona = { letra,numero,cantidad }
+                var newZona = { letra,numero,cantidad,idZona }
                 cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas = [...cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas,newZona]
                 this.setState({vecOperarios:cacheVecOperario})
             }
@@ -240,7 +242,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                     }
                 }
                 else{
-                    var newZonaS = { letra,numero,cantidad }
+                    var newZonaS = { letra,numero,cantidad,idZona }
                     cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas = [...cacheVecOperario[indexOperario].vecRechazo[indexRechazo].vecZonas,newZonaS]
                     this.setState({vecOperarios:cacheVecOperario})
                 }
@@ -284,11 +286,8 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                         return <React.Fragment></React.Fragment>
                                     })
                                 }
-                                // sumar cantidad de rechazo
-                                // console.log(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo,'cantidad original ',cantidadRechazo, ' cantidad a sumar')
                                 cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo = parseInt(cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo) + parseInt(cantidadRechazo)
                                 cacheVecOp[indexOperario].vecRechazo.splice(indexRechazo,1)
-                                // document.getElementById(`cantidadRechazo ${indexOperario} ${indice}`).value = cacheVecOp[indexOperario].vecRechazo[indice].cantidadRechazo
                                 this.setState({vecOperarios:cacheVecOp})
                                 return undefined
                             }
@@ -298,7 +297,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 })
             }
         }
-        catch(e){ console.log(e)}
+        catch(e){ }
     }
     capturaDatos = e =>{
             let nombre = e.target.name
@@ -349,13 +348,13 @@ class AltaPlanillaPRODUCCION extends React.Component {
                 }
             }
             if(nombre.split(' ')[0] === 'nombreOperario'){ vecOperariosCache[indexOperario].nombre = value; vecOperariosCache[indexOperario].idOperario = parseInt(value) }
-            if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = value }
+            if(nombre.split(' ')[0] === 'produccionOperario'){ vecOperariosCache[indexOperario].produccion = parseInt(value) }
             if(nombre.split(' ')[0] === 'caloriasOperario'){
                 if(value > 12){
                     vecOperariosCache[indexOperario].calorias = ''
                 }
                 else{
-                    vecOperariosCache[indexOperario].calorias = value
+                    vecOperariosCache[indexOperario].calorias = parseInt(value)
                 }
             }
             if(nombre.split(' ')[0] === 'idRechazo'){
@@ -382,7 +381,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             if(nombre.split(' ')[0] === 'cantidadRechazo'){vecOperariosCache[indexOperario].vecRechazo[indexRechazo].cantidadRechazo = value}
             this.setState ( { vecOperarios : vecOperariosCache } )
         }
-        catch ( e ) { console.log ( e ) }
+        catch ( e ) {  }
     }
     getOperaciones = async (  ) =>{ this.setState ( { vecOperaciones : await servicios.listaOperaciones ( this.controller ) , idOperacion : '' } )  }
     getMaquinasXoperacion = async  idOperacion => {
@@ -424,7 +423,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
         else { campoPM = parseInt ( e ) }
         if ( nomParadaMaquina === '' || campoPM === '' ) { this.setState ( { showModalPM : false } ) }
         else{  this.setState({showModalPM:false,campoIdParaMaquina:campoPM,campoNombreParadaMaquina:nomParadaMaquina } ) }
-        console.log ( 'evento close' , )
         try {
             var setUP = this.state.vecParadasMaquina.find ( pm => pm.idParadaMaquina === parseInt ( e ) ).setupParadaMaquina
             var horaHastaPM = document.getElementById ( 'txt_horaHastaParadaMaquina' )
@@ -689,7 +687,6 @@ class AltaPlanillaPRODUCCION extends React.Component {
     }
     completaDatosUpdate = (  ) => {
         const plaUpdate = this.props.planillaUpdate
-        console.log(Fechas.SQL_DataTimePicker( this.props.planillaUpdate.fechaProduccion) )
         if ( plaUpdate !== '' ) {
             this.setState ( { fechaProduccion : Fechas.SQL_DataTimePicker ( plaUpdate.fechaProduccion ) , fechaFundicion : Fechas.SQL_DataTimePicker ( plaUpdate.fechaFundicion ) ,
                 HoraInicioProduccion : plaUpdate.horaInicio , HoraFinProduccion : plaUpdate.horaFin ,
@@ -717,7 +714,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
             getTipoPro (  )
         }
         else {
-            console.log ( ' new ')
+
         }
     }
     componentDidMount (  ) {
@@ -1068,7 +1065,7 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                     id="txt_horaDesdeParadaMaquina"
                                                     name="txt_horaDesdeParadaMaquina"
                                                     value = { this.state.campoDesdeParadaMaquina }
-                                                    onChange = { e => { console.log ( e.target.value )
+                                                    onChange = { e => {
                                                         if ( e.target.value !== '06:00' && this.state.campoHastaParadaMaquina !== '06:00' && e.target.value === this.state.campoHastaParadaMaquina){
                                                             this.setState ( { campoDesdeParadaMaquina : '' } )
                                                         }
@@ -1127,10 +1124,10 @@ class AltaPlanillaPRODUCCION extends React.Component {
                                                                     <td>{parMaq.duracionParadaMaquina + ' min'}</td>
                                                                     <td>{parMaq.tipoParadaMaquina ? 'No programa' : 'programada'}</td>
                                                                     <td>
-                                                                        <MyComponent.botonUpdate info = {`${indexParadaMaq} id_PMseleccionada`} onClick =  { this.myUpdate } />
+                                                                        <MyComponent.botonUpdate id={` btn_update_pm ${indexParadaMaq}`} info = {`${indexParadaMaq} id_PMseleccionada`} onClick =  { this.myUpdate } />
                                                                     </td>
                                                                     <td>
-                                                                    <MyComponent.botonDelete info = {indexParadaMaq} onClick =   { this.myDelete } />
+                                                                    <MyComponent.botonDelete id={` btn_delet_pm ${indexParadaMaq}`} info = {indexParadaMaq} onClick =   { this.myDelete } />
                                                                     </td>
                                                                 </tr>
                                                             })

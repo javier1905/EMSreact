@@ -67,24 +67,27 @@ const GraficoOeeGra = ( props ) => {
         setLoading ( true )
 
         const getListaOee = async (  ) => {
-            const listaOee = await Servicios.listaOeeGranallado (  idMaquina === '' ? null : idMaquina ,
+            const listaOee = await Servicios.listaOeeGranalladoGrafico (  idMaquina === '' ? null : idMaquina ,
             idPieza === '' ? null : idPieza ,  idMolde === '' ? null : idMolde , fechaProduccionDesde , fechaProduccionHasta  )
             if ( listaOee.vecOeeGranallado && Array.isArray ( listaOee.vecOeeGranallado )) {
                 var datosOEE = listaOee.vecOeeGranallado
                 const agrupador = (  ) => {
                     if ( idAgrupar === 2 ) {
                         datosOEE.forEach ( ( e , i ) => {
-                            datosOEE[i].fechaProduccion = `SEM${new Moment (e.fechaProduccion).add(1 , 'd').week()}/${new Moment (e.fechaProduccion).year()}`
+                            // datosOEE[i].fechaProduccion = `SEM${new Moment (e.fechaProduccion).add(1 , 'd').week()}/${new Moment (e.fechaProduccion).year()}`
+                            datosOEE[i].fechaProduccion =`SEM${new Moment (e.fechaProduccion).add(1 , 'd').week()}/${new Moment (e.fechaProduccion).year()}`
                         } )
                     }
                     else if ( idAgrupar === 3 ) {
                         datosOEE.forEach ( ( e , i ) => {
-                            datosOEE[i].fechaProduccion = `${new Moment (e.fechaProduccion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaProduccion).year()}`
+                        //   datosOEE[i].fechaProduccion = `${new Moment (e.fechaProduccion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaProduccion).year()}`
+                            datosOEE[i].fechaProduccion = `${String(e.fechaProduccion).substring(5,7)}/${String(e.fechaProduccion).substring(0,4)}`
                         } )
                     }
                     else if ( idAgrupar === 4 ) {
                         datosOEE.forEach ( ( e , i ) => {
-                            datosOEE[i].fechaProduccion = new Moment (e.fechaProduccion).year()
+                            // datosOEE[i].fechaProduccion = new Moment (e.fechaProduccion).year()
+                            datosOEE[i].fechaProduccion = parseInt ( String(e.fechaProduccion).substring(0,4) )
                         } )
                     }
                     var vecUnificado = [  ]
@@ -177,7 +180,6 @@ const GraficoOeeGra = ( props ) => {
                         } )
                         vecFinal.push ( ele )
                     } )
-                    console.log ( vecFinal )
                     if ( vecFinal.length > 0 ) {
                         var ele = {
                             fecha : 'Acumulado' ,

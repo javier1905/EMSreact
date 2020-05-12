@@ -94,6 +94,7 @@ const OeeFundicion = props => {
 	const onClickGrafico = (fecha, idMaq, idPie, idMol, idFiltro) => {
 		if (idFiltro === 1) {
 			var bandera = true
+			setIdAgrupar(idFiltro)
 			setFechaFundicionDesde(Fechas.DD_MM_YYYY_a_DataTimePicker(fecha))
 			setFechaFundicionHasta(Fechas.DD_MM_YYYY_a_DataTimePicker(fecha))
 			setIdMaquina(idMaq)
