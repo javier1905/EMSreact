@@ -433,11 +433,10 @@ const GraficoOeeGra = ( props ) => {
 
     function clickHandler(evt) {
         var firstPoint = grafico.current.chartInstance.getElementAtEvent(evt)[0];
-    
         if (firstPoint) {
-            var label = grafico.current.chartInstance.data.labels[firstPoint._index];
-            var value = grafico.current.chartInstance.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
-            console.log ( value , label )
+            var fecha = grafico.current.chartInstance.data.labels[firstPoint._index];
+            // var value = grafico.current.chartInstance.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
+            if(fecha !== 'Acumulado') { props.filtraGrafico(fecha, idMaquina, idPieza,idMolde , idAgrupar)  }
         }
     }
     return (

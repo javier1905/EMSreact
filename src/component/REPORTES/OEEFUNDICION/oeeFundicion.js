@@ -197,7 +197,6 @@ const OeeFundicion = props => {
 		else if ( idFiltro === 4 ) {
 			var bb = true
 			const a = parseInt ( fecha )
-			console.log(a , 'anio')
 			var feInicio = `${new Moment( { y: a , M : 0 , d:1 , h:0 , m:0, s:0 } ).format('ddd MMM DD YYYY')} 00:00:00 GMT-0300`
 			var feFin = `${new Moment( { y: a , M : 11 , d:31 , h:0 , m:0, s:0 } ).format('ddd MMM DD YYYY')} 00:00:00 GMT-0300`
 			setFechaFundicionDesde(feInicio)

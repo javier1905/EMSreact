@@ -317,6 +317,7 @@ servicios.listaOeeFundicionGrafico = async ( idMaquina , idPieza , idMolde , fec
 
 
 servicios.listaOeeGranallado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar ) => {
+    console.log(idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar , 'servise')
 var response = { vecOeeGranallado : [  ] , status : '' }
     try {
         const resultFetch = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/granallado`  , {
