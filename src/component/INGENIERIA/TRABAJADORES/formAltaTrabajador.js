@@ -5,7 +5,7 @@ import { Alert } from 'react-bootstrap'
 import $ from 'jquery'
 import Servicios from '../servicesIngenieria'
 import { withSnackbar } from 'notistack'
-import Moment from 'moment'
+import Fechas from '../../AAprimary/fechas'
 
 const FormAltaTrabajador = ( props ) => {
     const [vecPuestos , setVecPuestos] = useState ( [  ] )
@@ -29,7 +29,7 @@ const FormAltaTrabajador = ( props ) => {
         }
         else {
             const insertTrabajador = async (  ) => {
-                const result = await Servicios.insertTrabajador ( nombreTrabajador , apellidoTrabajador , new Moment ( nacimientoTrabajador ).format ( 'DD/MM/YYYY' ) , new Moment ( ingresoTrabajador ).format ( 'DD/MM/YYYY' ) , idPuesto )
+                const result = await Servicios.insertTrabajador ( nombreTrabajador , apellidoTrabajador ,  nacimientoTrabajador  , ingresoTrabajador  , idPuesto )
                 if (  result ) {
                     if ( result.status === 200 ) {
                         props.enqueueSnackbar ( result.mensaje,
@@ -66,8 +66,8 @@ const FormAltaTrabajador = ( props ) => {
             <Form onSubmit = { miSubmit } >
                 <MyComponent.texto id = 'nombre' label = 'Nombre' value = { nombreTrabajador } onChange = { e => setNombreTrabajador ( e.target.value ) } />
                 <MyComponent.texto id = 'apellido' label = 'Apellido' value = { apellidoTrabajador } onChange = { e => setApellidoTrabajador ( e.target.value ) } />
-                <MyComponent.fecha id = 'nacimiento' label = 'Nacimiento' value = { nacimientoTrabajador } onChange = { e => setNacimientoTrabajador ( e ) } />
-                <MyComponent.fecha id = 'ingreso'  label = 'Ingreso' value = { ingresoTrabajador } onChange = { e => setIngresoTrabajador ( e ) } />
+                <MyComponent.fecha id = 'nacimiento' label = 'Nacimiento' value = { nacimientoTrabajador } onChange = { e => setNacimientoTrabajador ( Fechas.DataTimePicker_a_SQL( e ) ) } />
+                <MyComponent.fecha id = 'ingreso'  label = 'Ingreso' value = { ingresoTrabajador } onChange = { e => setIngresoTrabajador ( Fechas.DataTimePicker_a_SQL( e ) ) } />
                 <MyComponent.listaDesplegable onChange = { e => setIdPuesto ( e.target.value ) } value = { idPuesto }  array = { vecPuestos } member = { { valueMember : 'idPuesto' , displayMember : 'nombrePuesto' } } label = 'Puesto' />
                 <MyComponent.botonSave/>
                 <Alert id = 'myAlert2' variant = 'danger' style = { { display : 'none' , marginTop : 20 } } />

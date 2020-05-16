@@ -67,7 +67,7 @@ const GraficoOeeMec = ( props ) => {
     useEffect ( (  ) => {
         setLoading ( true )
         const getListaOee = async (  ) => {
-            const listaOee = await Servicios.listaOeeMecanizado (  idMaquina === '' ? null : idMaquina ,
+            const listaOee = await Servicios.listaOeeMecanizadoGrafico (  idMaquina === '' ? null : idMaquina ,
             idPieza === '' ? null : idPieza ,  idMolde === '' ? null : idMolde , fechaProduccionDesde , fechaProduccionHasta  )
             if ( listaOee.vecOeeMecanizado && Array.isArray ( listaOee.vecOeeMecanizado )) {
                 var datosOEE = listaOee.vecOeeMecanizado
@@ -433,9 +433,11 @@ const GraficoOeeMec = ( props ) => {
         var firstPoint = grafico.current.chartInstance.getElementAtEvent(evt)[0];
     
         if (firstPoint) {
-            var label = grafico.current.chartInstance.data.labels[firstPoint._index];
-            var value = grafico.current.chartInstance.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
-            console.log ( value , label )
+            var fecha = grafico.current.chartInstance.data.labels[firstPoint._index];
+            // var value = grafico.current.chartInstance.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
+            if(fecha !== 'Acumulado') {
+                props.onClickGrafico ( fecha , idMaquina , idPieza , idMolde , idAgrupar )
+            }
         }
     }
     return (

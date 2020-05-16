@@ -506,7 +506,7 @@ servicios.listaOeeGranalladoGrafico = async ( idMaquina , idPieza , idMolde , fe
         return response
     }
 
-servicios.listaOeeMecanizado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
+servicios.listaOeeMecanizadoGrafico = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
     var response = { vecOeeMecanizado : [  ] , status : '' }
     try {
         const result = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/mecanizado` , {
@@ -527,6 +527,155 @@ servicios.listaOeeMecanizado = async ( idMaquina , idPieza , idMolde , fechaProd
                 else {
                     response.vecOeeMecanizado = json
                     response.status = 200
+                }
+            }
+        }
+    }
+    catch ( e ) {
+        response.vecOeeMecanizado = [  ]
+        response.status = 403
+    }
+    return response
+}
+
+
+servicios.listaOeeMecanizado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar ) => {
+    var response = { vecOeeMecanizado : [  ] , status : '' }
+    try {
+        const result = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/mecanizado` , {
+            method : 'POST' ,
+            body : JSON.stringify ( { idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta } ) ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json',
+                'Content-Type' : 'Application/json'
+            } )
+        } )
+        if ( result ) {
+            const json = await result.json (  )
+            if ( json ) {
+                if ( json.status  && json.status === 403 ) {
+                    response.vecOeeMecanizado = [  ]
+                    response.status = json.status
+                }
+                else {
+                    if ( json && Array.isArray ( json )) {
+                        var datosOEE = json
+                        const agrupador = (  ) => {
+                            if ( idAgrupar === 2 ) {
+                                datosOEE.forEach ( ( e , i ) => {
+                                    // datosOEE[i].fechaProduccion = `SEM${new Moment (e.fechaProduccion).add(1 , 'd').week()}/${new Moment (e.fechaProduccion).year()}`
+                                    datosOEE[i].fechaProduccion =`SEM${new Moment (e.fechaProduccion).add(1 , 'd').week()}/${new Moment (e.fechaProduccion).year()}`
+                                } )
+                            }
+                            else if ( idAgrupar === 3 ) {
+                                datosOEE.forEach ( ( e , i ) => {
+                                    // datosOEE[i].fechaProduccion = `${new Moment (e.fechaProduccion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaProduccion).year()}`
+                                    datosOEE[i].fechaProduccion = `${String(e.fechaProduccion).substring(5,7)}/${String(e.fechaProduccion).substring(0,4)}`
+                                } )
+                            }
+                            else if ( idAgrupar === 4 ) {
+                                datosOEE.forEach ( ( e , i ) => {
+                                    // datosOEE[i].fechaProduccion = new Moment (e.fechaProduccion).year()
+                                    datosOEE[i].fechaProduccion = parseInt ( String(e.fechaProduccion).substring(0,4) )
+                                } )
+                            }
+                            var vecUnificado = [  ]
+                            datosOEE.forEach ( ( items , i ) => {
+                                var newItems = {
+                                    fechaProduccion : null ,
+                                    idMaquina : undefined ,
+                                    nombreMaquina : null ,
+                                    idPieza : undefined ,
+                                    nombrePieza : null ,
+                                    idMolde : undefined ,
+                                    nombreMolde : null ,
+                                    piezasXhora : null ,
+                                    produccion : 0 ,
+                                    pmMatrizeria : 0 ,
+                                    pmMantenimiento : 0 ,
+                                    pmProduccion : 0 ,
+                                    totalPNP : 0 ,
+                                    pmProgramada : 0 ,
+                                    totalRechazos : 0 ,
+                                    minTotal : 0
+                                }
+                                var encontro = false
+                                if ( Array.isArray ( vecUnificado ) && vecUnificado.length > 0 ) {
+                                    vecUnificado.forEach ( ( e , i ) => {
+                                        if ( items.fechaProduccion === e.fechaProduccion && items.idMaquina === e.idMaquina &&
+                                            items.idPieza === e.idPieza && items.idMolde === e.idMolde && items.piezasXhora === e.piezasXhora ) {
+                                                encontro = true
+                                            }
+                                    } )
+                                }
+                                if ( encontro === false  ) {
+                                    var vecFiltrado = datosOEE
+                                    vecFiltrado = vecFiltrado.filter ( d => ( items.fechaProduccion === d.fechaProduccion && items.idMaquina === d.idMaquina
+                                        && items.idPieza === d.idPieza && items.idMolde === d.idMolde && items.piezasXhora === d.piezasXhora ) )
+                                    newItems.fechaProduccion = items.fechaProduccion
+                                    newItems.idMaquina = items.idMaquina
+                                    newItems.nombreMaquina = items.nombreMaquina
+                                    newItems.idPieza = items.idPieza
+                                    newItems.nombrePieza = items.nombrePieza
+                                    newItems.idMolde = items.idMolde
+                                    newItems.nombreMolde = items.nombreMolde
+                                    newItems.piezasXhora = items.piezasXhora
+                                    vecFiltrado.forEach ( ( elem , i ) => {
+                                        newItems.produccion += elem.produccion === null ? 0 : parseInt ( elem.produccion )
+                                        newItems.totalRechazos += elem.totalRechazos === null ? 0 : parseInt ( elem.totalRechazos )
+                                        newItems.pmMatrizeria += elem.pmMatrizeria === null ? 0 : parseInt ( elem.pmMatrizeria )
+                                        newItems.pmMantenimiento += elem.pmMantenimiento === null ? 0 : parseInt ( elem.pmMantenimiento )
+                                        newItems.pmProduccion += elem.pmProduccion === null ? 0 : parseInt ( elem.pmProduccion )
+                                        newItems.totalPNP += elem.totalPNP === null ? 0 : parseInt ( elem.totalPNP )
+                                        newItems.pmProgramada += elem.pmProgramada === null ? 0 : parseInt ( elem.pmProgramada )
+                                        newItems.minTotal += elem.minTotal === null ? 0 : parseInt ( elem.minTotal )
+                                    } )
+                                    vecUnificado.push ( newItems )
+                                }
+                            } )
+                            var newItems2 = {
+                                fechaProduccion : null ,
+                                idPlanta : null  ,
+                                idMaquina : undefined ,
+                                nombreMaquina : null ,
+                                idPieza : undefined ,
+                                nombrePieza : null ,
+                                idMolde : undefined ,
+                                nombreMolde : null ,
+                                piezasXhora : null ,
+                                produccion : 0 ,
+                                pmMatrizeria : 0 ,
+                                pmMantenimiento : 0 ,
+                                pmProduccion : 0 ,
+                                totalPNP : 0 ,
+                                pmProgramada : 0 ,
+                                totalRechazos : 0 ,
+                                minTotal : 0 ,
+                                minNoCalidad : 0 ,
+                                minPorPiezaProducidas : 0
+                            }
+                            vecUnificado.forEach ( ( e , i ) => {
+                                newItems2.produccion += parseInt ( e.produccion )
+                                newItems2.pmMatrizeria += parseInt ( e.pmMatrizeria )
+                                newItems2.pmMantenimiento += parseInt ( e.pmMantenimiento )
+                                newItems2.pmProduccion += parseInt ( e.pmProduccion )
+                                newItems2.totalPNP += parseInt ( e.totalPNP )
+                                newItems2.pmProgramada += parseInt ( e.pmProgramada )
+                                newItems2.minTotal += parseInt ( e.minTotal )
+                                newItems2.totalRechazos += parseInt ( e.totalRechazos )
+                                vecUnificado[i].minNoCalidad = (  parseInt ( e.totalRechazos ) ) * 60 / parseInt ( e.piezasXhora )
+                                vecUnificado[i].minPorPiezaProducidas = ( parseInt ( e.produccion ) * 60 / parseInt ( e.piezasXhora ) )
+                                newItems2.minPorPiezaProducidas += ( parseInt ( e.produccion ) * 60 / parseInt ( e.piezasXhora ) )
+                                newItems2.minNoCalidad += ( parseInt ( e.totalRechazos === null ? 0 : e.totalRechazos )  ) * 60 / parseInt ( e.piezasXhora )
+                            } )
+                            if ( vecUnificado.length > 0 ) {
+                                vecUnificado.push ( newItems2 )
+                            }
+                            response.vecOeeMecanizado = vecUnificado
+                            response.status = 200
+                        }
+                        agrupador (  )
+                    }
                 }
             }
         }

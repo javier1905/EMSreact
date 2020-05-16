@@ -9,6 +9,7 @@ import Items from './items'
 import Moment from 'moment'
 import Typography from '@material-ui/core/Typography'
 import GraficoOeeMec from './graficoOeeMec'
+import Fechas from '../../AAprimary/fechas'
 
 const OeeMecanizado = ( props ) => {
     const [idMaquina , setIdMaquina] = useState ( '' )
@@ -47,124 +48,14 @@ const OeeMecanizado = ( props ) => {
         setLoading ( true )
         const getListaOee = async (  ) => {
             const listaOee = await Servicios.listaOeeMecanizado (  idMaquina === '' ? null : idMaquina ,
-            idPieza === '' ? null : idPieza ,  idMolde === '' ? null : idMolde , fechaProduccionDesde , fechaProduccionHasta  )
-            if ( listaOee.vecOeeMecanizado && Array.isArray ( listaOee.vecOeeMecanizado )) {
-                var datosOEE = listaOee.vecOeeMecanizado
-                const agrupador = (  ) => {
-                    if ( idAgrupar === 2 ) {
-                        datosOEE.forEach ( ( e , i ) => {
-                            datosOEE[i].fechaProduccion = `SEM${new Moment (e.fechaProduccion).add(1 , 'd').week()}/${new Moment (e.fechaProduccion).year()}`
-                        } )
-                    }
-                    else if ( idAgrupar === 3 ) {
-                        datosOEE.forEach ( ( e , i ) => {
-                            datosOEE[i].fechaProduccion = `${new Moment (e.fechaProduccion).add( 1 , 'd' ).add( 1, 'months' ).month()}/${new Moment (e.fechaProduccion).year()}`
-                        } )
-                    }
-                    else if ( idAgrupar === 4 ) {
-                        datosOEE.forEach ( ( e , i ) => {
-                            datosOEE[i].fechaProduccion = new Moment (e.fechaProduccion).year()
-                        } )
-                    }
-                    var vecUnificado = [  ]
-                    datosOEE.forEach ( ( items , i ) => {
-                        var newItems = {
-                            fechaProduccion : null ,
-                            idMaquina : undefined ,
-                            nombreMaquina : null ,
-                            idPieza : undefined ,
-                            nombrePieza : null ,
-                            idMolde : undefined ,
-                            nombreMolde : null ,
-                            piezasXhora : null ,
-                            produccion : 0 ,
-                            pmMatrizeria : 0 ,
-                            pmMantenimiento : 0 ,
-                            pmProduccion : 0 ,
-                            totalPNP : 0 ,
-                            pmProgramada : 0 ,
-                            totalRechazos : 0 ,
-                            minTotal : 0
-                        }
-                        var encontro = false
-                        if ( Array.isArray ( vecUnificado ) && vecUnificado.length > 0 ) {
-                            vecUnificado.forEach ( ( e , i ) => {
-                                if ( items.fechaProduccion === e.fechaProduccion && items.idMaquina === e.idMaquina &&
-                                    items.idPieza === e.idPieza && items.idMolde === e.idMolde && items.piezasXhora === e.piezasXhora ) {
-                                        encontro = true
-                                    }
-                            } )
-                        }
-                        if ( encontro === false  ) {
-                            var vecFiltrado = datosOEE
-                            vecFiltrado = vecFiltrado.filter ( d => ( items.fechaProduccion === d.fechaProduccion && items.idMaquina === d.idMaquina
-                                && items.idPieza === d.idPieza && items.idMolde === d.idMolde && items.piezasXhora === d.piezasXhora ) )
-                            newItems.fechaProduccion = items.fechaProduccion
-                            newItems.idMaquina = items.idMaquina
-                            newItems.nombreMaquina = items.nombreMaquina
-                            newItems.idPieza = items.idPieza
-                            newItems.nombrePieza = items.nombrePieza
-                            newItems.idMolde = items.idMolde
-                            newItems.nombreMolde = items.nombreMolde
-                            newItems.piezasXhora = items.piezasXhora
-                            vecFiltrado.forEach ( ( elem , i ) => {
-                                newItems.produccion += elem.produccion === null ? 0 : parseInt ( elem.produccion )
-                                newItems.totalRechazos += elem.totalRechazos === null ? 0 : parseInt ( elem.totalRechazos )
-                                newItems.pmMatrizeria += elem.pmMatrizeria === null ? 0 : parseInt ( elem.pmMatrizeria )
-                                newItems.pmMantenimiento += elem.pmMantenimiento === null ? 0 : parseInt ( elem.pmMantenimiento )
-                                newItems.pmProduccion += elem.pmProduccion === null ? 0 : parseInt ( elem.pmProduccion )
-                                newItems.totalPNP += elem.totalPNP === null ? 0 : parseInt ( elem.totalPNP )
-                                newItems.pmProgramada += elem.pmProgramada === null ? 0 : parseInt ( elem.pmProgramada )
-                                newItems.minTotal += elem.minTotal === null ? 0 : parseInt ( elem.minTotal )
-                            } )
-                            vecUnificado.push ( newItems )
-                        }
-                    } )
-                    var newItems2 = {
-                        fechaProduccion : null ,
-                        idPlanta : null  ,
-                        idMaquina : undefined ,
-                        nombreMaquina : null ,
-                        idPieza : undefined ,
-                        nombrePieza : null ,
-                        idMolde : undefined ,
-                        nombreMolde : null ,
-                        piezasXhora : null ,
-                        produccion : 0 ,
-                        pmMatrizeria : 0 ,
-                        pmMantenimiento : 0 ,
-                        pmProduccion : 0 ,
-                        totalPNP : 0 ,
-                        pmProgramada : 0 ,
-                        totalRechazos : 0 ,
-                        minTotal : 0 ,
-                        minNoCalidad : 0 ,
-                        minPorPiezaProducidas : 0
-                    }
-                    vecUnificado.forEach ( ( e , i ) => {
-                        newItems2.produccion += parseInt ( e.produccion )
-                        newItems2.pmMatrizeria += parseInt ( e.pmMatrizeria )
-                        newItems2.pmMantenimiento += parseInt ( e.pmMantenimiento )
-                        newItems2.pmProduccion += parseInt ( e.pmProduccion )
-                        newItems2.totalPNP += parseInt ( e.totalPNP )
-                        newItems2.pmProgramada += parseInt ( e.pmProgramada )
-                        newItems2.minTotal += parseInt ( e.minTotal )
-                        newItems2.totalRechazos += parseInt ( e.totalRechazos )
-                        vecUnificado[i].minNoCalidad = (  parseInt ( e.totalRechazos ) ) * 60 / parseInt ( e.piezasXhora )
-                        vecUnificado[i].minPorPiezaProducidas = ( parseInt ( e.produccion ) * 60 / parseInt ( e.piezasXhora ) )
-                        newItems2.minPorPiezaProducidas += ( parseInt ( e.produccion ) * 60 / parseInt ( e.piezasXhora ) )
-                        newItems2.minNoCalidad += ( parseInt ( e.totalRechazos === null ? 0 : e.totalRechazos )  ) * 60 / parseInt ( e.piezasXhora )
-                    } )
-                    if ( vecUnificado.length > 0 ) {
-                        vecUnificado.push ( newItems2 )
-                    }
-                    setVecDatosOee ( vecUnificado )
-                }
-                agrupador (  )
-                setLoading ( false )
-            } }
+            idPieza === '' ? null : idPieza ,  idMolde === '' ? null : idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar  )
+            if(listaOee.vecOeeMecanizado && Array.isArray(listaOee.vecOeeMecanizado)) {
+                setVecDatosOee(listaOee.vecOeeMecanizado)
+                setLoading(false)
+            }
+        }
         getListaOee (  )
-        }  , [ fechaProduccionDesde , fechaProduccionHasta , idMaquina , idPieza ,  idMolde , idAgrupar ]  )
+    }  , [ fechaProduccionDesde , fechaProduccionHasta , idMaquina , idPieza ,  idMolde , idAgrupar ]  )
 
     const vecAgrupar = [
         { idAgrupar : 1 , nombreAgrupar : 'DIA'} ,
@@ -172,6 +63,138 @@ const OeeMecanizado = ( props ) => {
         { idAgrupar : 3 , nombreAgrupar : 'MES'} ,
         { idAgrupar : 4 , nombreAgrupar : 'AÑO'} ,
     ]
+    const onClickGrafico = ( fecha , idMaq , idPie , idMol , idFiltro ) => {
+        console.log(fecha , idMaq , idPie , idMol , idFiltro)
+        if (idFiltro === 1) {
+            setLoading(true)
+            var ban = true
+            const fe = Fechas.DD_MM_YYYY_a_DataTimePicker(fecha)
+            const getDatosOee = async () => {
+                if(ban) {
+                    ban = false
+                const datosOeeMec = await Servicios.listaOeeMecanizado (
+                    idMaq === '' ? null : idMaq ,
+                    idPie === '' ? null : idPie,
+                    idMol === '' ? null : idMol,
+                    Fechas.DD_MM_YYYY_a_DataTimePicker(fecha) ,
+                    Fechas.DD_MM_YYYY_a_DataTimePicker(fecha) ,
+                    idFiltro )
+                if ( datosOeeMec ) {
+                    setVecDatosOee(datosOeeMec.vecOeeMecanizado)
+                    setLoading(false)
+                    setIdMolde (idMol)
+                }
+            }
+            }
+                setIdAgrupar(idFiltro)
+                setFechaProduccionDesde( fe )
+                setFechaProduccionHasta ( fe )
+                setIdMaquina(idMaq)
+                setIdPieza(idPie)
+                getDatosOee()
+        }
+        else if (idFiltro === 2 ) {
+            var semana = undefined
+			var anio = undefined
+			if (String(fecha).length === 10) {
+				semana = parseInt ( String (fecha).substring( 3,5 ) )
+				anio = parseInt ( String (fecha).substring( 6,10 ) )
+			}
+			else {
+				semana = parseInt ( String (fecha).substring( 3,4 ) )
+				anio = parseInt ( String (fecha).substring( 5,9 ) )
+			}
+            const feSem = Fechas.numeroSemana_1reFecha_ultimaFecha( semana , anio )
+            console.log(feSem)
+            setLoading(true)
+            var banSem = true
+            const getDatosOee = async () => {
+                if(banSem) {
+                    banSem = false
+                const datosOeeMec= await Servicios.listaOeeMecanizado (
+                    idMaq === '' ? null : idMaq ,
+                    idPie === '' ? null : idPie,
+                    idMol === '' ? null : idMol,
+                    feSem.inicio ,
+                    feSem.fin ,
+                    idFiltro )
+                if ( datosOeeMec ) {
+                    setVecDatosOee(datosOeeMec.vecOeeMecanizado)
+                    setLoading(false)
+                    setIdMolde (idMol)
+                }
+            }
+            }
+                setIdAgrupar(idFiltro)
+                setFechaProduccionDesde( feSem.inicio)
+                setFechaProduccionHasta ( feSem.fin )
+                setIdMaquina(idMaq)
+                setIdPieza(idPie)
+                getDatosOee()
+
+        }
+        else if (idFiltro === 3 ) {
+            setLoading(true)
+            var ban3 = true
+            const mes = parseInt(String(fecha).substring(0,3)) - 1
+            const anio = parseInt(String(fecha).substring(3,7))
+            var desde = `${new Moment({ y: anio, M: mes , d:1 ,	h: 0 ,	m: 0 ,	s:0 , ms : 0 }).format( 'ddd MMM DD YYYY')} 00:00:00 GMT-0300` ;
+            var hasta = `${new Moment({y:anio, M:mes , d:1 , h:0,m:0,s:0,ms:0}).endOf('month').format('ddd MMM DD YYYY')} 00:00:00 GMT-0300` ;
+            const getDatosOee = async () => {
+                if(ban3) {
+                    ban3 = false
+                    const datosOeeMec = await Servicios.listaOeeMecanizado (
+                        idMaq === '' ? null : idMaq ,
+                        idPie === '' ? null : idPie,
+                        idMol === '' ? null : idMol,
+                        desde ,
+                        hasta ,
+                        idFiltro )
+                    if ( datosOeeMec ) {
+                        setVecDatosOee(datosOeeMec.vecOeeMecanizado)
+                        setLoading(false)
+                        setIdMolde (idMol)
+                    }
+                }
+            }
+                setIdAgrupar(idFiltro)
+                setFechaProduccionDesde( desde )
+                setFechaProduccionHasta ( hasta )
+                setIdMaquina(idMaq)
+                setIdPieza(idPie)
+                getDatosOee()
+        }
+        else if ( idFiltro === 4 ) {
+            setLoading(true)
+            var ban4 = true
+			const a = parseInt ( fecha )
+			var feInicio = `${new Moment( { y: a , M : 0 , d:1 , h:0 , m:0, s:0 } ).format('ddd MMM DD YYYY')} 00:00:00 GMT-0300`
+			var feFin = `${new Moment( { y: a , M : 11 , d:31 , h:0 , m:0, s:0 } ).format('ddd MMM DD YYYY')} 00:00:00 GMT-0300`
+            const getDatosOee = async () => {
+                if(ban4) {
+                    ban4 = false
+                    const datosOeeMec = await Servicios.listaOeeMecanizado (
+                        idMaq === '' ? null : idMaq ,
+                        idPie === '' ? null : idPie,
+                        idMol === '' ? null : idMol,
+                        feInicio ,
+                        feFin ,
+                        idFiltro )
+                    if ( datosOeeMec ) {
+                        setVecDatosOee(datosOeeMec.vecOeeMecanizado)
+                        setLoading(false)
+                        setIdMolde (idMol)
+                    }
+                }
+            }
+                setIdAgrupar(idFiltro)
+                setFechaProduccionDesde( feInicio )
+                setFechaProduccionHasta ( feFin )
+                setIdMaquina(idMaq)
+                setIdPieza(idPie)
+                getDatosOee()
+        }
+    }
     return (
         <div>
             <Typography style = { { marginTop : 15 , marginBottom : 20 } }  variant ='h3'>OEE Mecanizado</Typography>
@@ -234,7 +257,7 @@ const OeeMecanizado = ( props ) => {
                 </Table>
             </div>
             <div>
-                <GraficoOeeMec />
+                <GraficoOeeMec onClickGrafico = { onClickGrafico } />
             </div>
         </div>
     )
