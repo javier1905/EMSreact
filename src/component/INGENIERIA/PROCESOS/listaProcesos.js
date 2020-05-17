@@ -15,6 +15,9 @@ const ListaProcesos= (  ) => {
     const [open , setOpen] = useState ( false )
     const [modo , setModo] = useState ( 'normal' )
     const [procesosSeleccionado , setProcesoSeleccionado] = useState ( undefined )
+    const [vecTipoPro,setVecTipoPro] = useState ( [ ] )
+    const [vecMaq,setVecMaq] = useState ( [ ] )
+    const [vecPie,setVecPie] = useState ( [ ] )
 
     useEffect ( (  ) => {
         const getListaProcesos = async (  ) => {
@@ -25,6 +28,21 @@ const ListaProcesos= (  ) => {
             }
         }
         getListaProcesos (  )
+        const getCombos = async () => {
+            const resTipoPro = await Servicios.listaTiposProceso (  )
+            const resMaq = await Servicios.listaMaquinas (  )
+            const resPie = await Servicios.listPiezas (  )
+            if(resTipoPro) {
+                setVecTipoPro(resTipoPro)
+            }
+            if(resMaq) {
+                setVecMaq(resMaq)
+            }
+            if(resPie) {
+                setVecPie(resPie)
+            }
+        }
+        getCombos()
     } , [ loading ] )
     const actualizaLista = (  ) => {
         setLoading ( true )
@@ -68,7 +86,12 @@ const ListaProcesos= (  ) => {
                                 :
                                 Array.isArray ( vecProcesos ) && vecProcesos.length > 0 ?
                                     vecProcesos.map ( ( p , i ) => {
-                                        return (<Proceso actualizaModo = { actualizaModo }   modo = { p === procesosSeleccionado ? modo : 'normal' } actualizaLista = { actualizaLista } proceso = { p }  key = { i } />)
+                                        return (<Proceso
+                                                        listasCombos = { {listaTiposProceso : vecTipoPro , listaMaquinas : vecMaq , listaPiezas : vecPie}}
+                                                        actualizaModo = { actualizaModo }
+                                                        modo = { p === procesosSeleccionado ? modo : 'normal' }
+                                                        actualizaLista = { actualizaLista } proceso = { p }  key = { i }
+                                                    />)
                                     } )
                                     :
                                     <tr>

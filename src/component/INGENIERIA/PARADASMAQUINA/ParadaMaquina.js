@@ -23,6 +23,13 @@ const ParadaMaquina = ( props ) => {
             setTipoParadaMaquina ( props.paradaMaquina.tipoParadaMaquina )
             setSetupParadaMaquina ( props.paradaMaquina.setupParadaMaquina )
             setVecAreas ( props.vecAreas )
+            const txt_setUp = $(`#txt_setUp${props.paradaMaquina.idParadaMaquina}`)
+            if(props.paradaMaquina.tipoParadaMaquina ) {
+                txt_setUp.prop('disabled', true)
+            }
+            else {
+                txt_setUp.prop('disabled' , false)
+            }
         }
     } , [ props ] )
     const updateParadaMaquina= (  ) => {
@@ -99,6 +106,17 @@ const ParadaMaquina = ( props ) => {
         }
         deleteMol (  )
     }
+    const onChangeTipo = e => {
+        const txt_setUp = $(`#txt_setUp${props.paradaMaquina.idParadaMaquina}`)
+        setTipoParadaMaquina ( e.target.checked )
+        if(e.target.checked ) {
+            setSetupParadaMaquina('')
+            txt_setUp.prop('disabled', true)
+        }
+        else {
+            txt_setUp.prop('disabled' , false)
+        }
+    }
     return (
         props.modo === 'normal' ?
         <tr>
@@ -114,10 +132,10 @@ const ParadaMaquina = ( props ) => {
         props.modo === 'update' ?
         <tr>
             <td colSpan = { 7 } >
-                <MyComponent.texto id = { `${idParadaMaquina}` } label = 'Nombre' value = { nombreParadaMaquina } onChange = { e => setNombreParadaMaquina ( e.target.value ) } />
-                <MyComponent.boolean label = 'PM no programada' checked = { tipoParadaMaquina } onChange = { e => setTipoParadaMaquina ( e.target.checked ) } />
+                <MyComponent.texto width = {500 } id = { `${idParadaMaquina}` } label = 'Nombre' value = { nombreParadaMaquina } onChange = { e => setNombreParadaMaquina ( e.target.value ) } />
+                <MyComponent.boolean label = 'No programada' checked = { tipoParadaMaquina } onChange = { e => onChangeTipo ( e )} />
                 <MyComponent.listaDesplegable onChange = { e => setIdArea ( e.target.value ) } value = { idArea }  array = { vecAreas } member = { { valueMember : 'idArea' , displayMember : 'nombreArea' } } label = 'Area' />
-                <MyComponent.numero label = 'setUp' value = { setupParadaMaquina } onChange = { e => setSetupParadaMaquina ( e.target.value ) } />
+                <MyComponent.numero id={`txt_setUp${props.paradaMaquina.idParadaMaquina}`} label = 'setUp' value = { setupParadaMaquina } onChange = { e => setSetupParadaMaquina ( e.target.value ) } />
                 <MyComponent.botonAcept texto = 'Update Parada Maquina'  onClick = { e=> updateParadaMaquina (  ) } />
                 <MyComponent.botonCancel texto = 'Cancel'  onClick = { e=> props.cambiaModo ( 'normal'  , undefined ) } />
                 <Alert id = 'myAlert' variant = 'danger' style = { { display : 'none' , marginTop : 20 } } />

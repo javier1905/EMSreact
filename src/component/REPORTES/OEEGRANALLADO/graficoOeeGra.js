@@ -349,7 +349,7 @@ const GraficoOeeGra = ( props ) => {
             }
         } ,
         title : {
-            text : 'OEE fundicion' ,
+            text : 'OEE Granallado' ,
             display : true ,
             fontSize : 30
         } ,

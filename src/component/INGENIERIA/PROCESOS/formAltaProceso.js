@@ -29,14 +29,24 @@ const FormProcesos =  ( props ) => {
     const [vecPiezasXhora , setVecPiezasXhora] = useState ( [  ] )
     useEffect ( (  ) => {
         const getVecPiezas = async (  ) => {
-            const resTipoPro = await Servicios.listaTiposProceso (  )
-            const resMaq = await Servicios.listaMaquinas (  )
-            const response = await Servicios.listPiezas (  )
+            if(props.listasCombos) {
+                setVecPiezas (   props.listasCombos.listaPiezas )
+                setIdPieza ( props.proceso.idPieza )
+                setVecMaquinas(props.listasCombos.listaMaquinas )
+                setIdMaquina ( props.proceso.idMaquina )
+                setVecTiposProceso( props.listasCombos.listaTiposProceso )
+                setIdTipoProceso ( props.proceso.idTipoProceso )
+            }
+            else {
+                const resTipoPro = await Servicios.listaTiposProceso (  )
+                const resMaq = await Servicios.listaMaquinas (  )
+                const response = await Servicios.listPiezas (  )
+                if ( response ) { setVecPiezas ( response ) ; props.proceso !== undefined && setIdPieza ( props.proceso.idPieza )  }
+                if ( resMaq ) { setVecMaquinas ( resMaq ) ; props.proceso !== undefined && setIdMaquina ( props.proceso.idMaquina )}
+                if ( resTipoPro ) { setVecTiposProceso ( resTipoPro ) ; props.proceso !== undefined && setIdTipoProceso ( props.proceso.idTipoProceso )  }
+            }
             props.proceso !== undefined && setIdProceso ( parseInt ( props.proceso.idProceso ) )
             props.proceso !== undefined && setDescipcionProceso ( props.proceso.descipcionProceso )
-            if ( response ) { setVecPiezas ( response ) ; props.proceso !== undefined && setIdPieza ( props.proceso.idPieza )  }
-            if ( resMaq ) { setVecMaquinas ( resMaq ) ; props.proceso !== undefined && setIdMaquina ( props.proceso.idMaquina )}
-            if ( resTipoPro ) { setVecTiposProceso ( resTipoPro ) ; props.proceso !== undefined && setIdTipoProceso ( props.proceso.idTipoProceso )  }
             if ( props.open ) { props.proceso !== undefined && setVecPiezasXhora ( props.proceso.vecPiezasXhora ) }
         }
         getVecPiezas (  )
@@ -47,17 +57,17 @@ const FormProcesos =  ( props ) => {
         if ( index === 0 ) {
             vec[0] = piezaXhora
             if (vec.length >1) {
-                vec[1].desdePiezasXhs = new Moment (  piezaXhora.hastaPiezasXhs ).add ( 1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
+                vec[1].desdePiezasXhs = new Moment (  piezaXhora.hastaPiezasXhs ).utc().hour(3).add ( 1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
             }
         }
         else if ( index === vec.length - 1 ) {
             vec[index] = piezaXhora
-            vec[vec.length - 2].hastaPiezasXhs = new Moment (  piezaXhora.desdePiezasXhs ).add ( -1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
+            vec[vec.length - 2].hastaPiezasXhs = new Moment (  piezaXhora.desdePiezasXhs ).utc().hour(3).add ( -1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
         }
         else {
             vec[index] = piezaXhora
-            vec[index - 1].hastaPiezasXhs = new Moment (  piezaXhora.desdePiezasXhs ).add ( -1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
-            vec[index + 1].desdePiezasXhs = new Moment (  piezaXhora.hastaPiezasXhs ).add ( 1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
+            vec[index - 1].hastaPiezasXhs = new Moment (  piezaXhora.desdePiezasXhs ).utc().hour(3).add ( -1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
+            vec[index + 1].desdePiezasXhs = new Moment (  piezaXhora.hastaPiezasXhs ).utc().hour(3).add ( 1 , 'd' ).format ( 'YYYY-MM-DDTHH:MM:ss.sss' )
         }
         setVecPiezasXhora ( vec )
     }
@@ -135,8 +145,17 @@ const FormProcesos =  ( props ) => {
                 isertPro (  )
             }
             else {
+                var vecPiezasXhoraUpdate = vecPiezasXhora
+                vecPiezasXhora.forEach( (f , i) => {
+                    if(String(f.desdePiezasXhs).length > 33 ) {
+                        vecPiezasXhoraUpdate[i].desdePiezasXhs = new Moment(f.desdePiezasXhs).format('YYYY-MM-DDTHH:MM:ss.sss')
+                    }
+                    if(String(f.hastaPiezasXhs).length > 33) {
+                        vecPiezasXhoraUpdate[i].hastaPiezasXhs =  new Moment(f.hastaPiezasXhs).format('YYYY-MM-DDTHH:MM:ss.sss')
+                    }
+                } )
                 const updatePro = async (  ) => {
-                    const result = await Servicios.updateProceso ( idProceso , descipcionProceso , idPieza , idMaquina , idTipoProceso , vecPiezasXhora )
+                    const result = await Servicios.updateProceso ( idProceso , descipcionProceso , idPieza , idMaquina , idTipoProceso , vecPiezasXhoraUpdate )
                     if ( result ) {
                         props.enqueueSnackbar( result ,
                         {

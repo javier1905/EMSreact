@@ -4,7 +4,7 @@ import FormProceso from './formAltaProceso'
 import servicios from '../servicesIngenieria'
 import { withSnackbar } from 'notistack'
 
-const Proceso = ( props ) => {
+const Proceso1 = ( props ) => {
     const [idProceso , setIdProceso] = useState ( '' )
     const [descipcionProceso , setDescipcionProceso] = useState ( '' )
     const [nombrePieza , setNombrePieza] = useState ( '' )
@@ -49,7 +49,7 @@ const Proceso = ( props ) => {
             <td>
                 <>
                     <MyComponent.botonUpdate texto = 'Update proceso' onClick = { e => setOpen ( true ) }/>
-                    <FormProceso actualizaLista = { props.actualizaLista } proceso = { props.proceso } handleClose = { handleClose } open = { open } />
+                    <FormProceso listasCombos = { props.listasCombos } actualizaLista = { props.actualizaLista } proceso = { props.proceso } handleClose = { handleClose } open = { open } />
                 </>
             </td>
             <td><MyComponent.botonDelete texto = 'Delete proceso'  onClick = { e => props.actualizaModo ( 'delete' ,  props.proceso) } /></td>
@@ -65,4 +65,4 @@ const Proceso = ( props ) => {
     )
 }
 
-export default withSnackbar ( Proceso )
+export default withSnackbar ( Proceso1 )

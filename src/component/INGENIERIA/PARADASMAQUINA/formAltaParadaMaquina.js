@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect   } from 'react'
 import { Form } from 'react-bootstrap'
 import MyComponent from '../../AAprimary/misComponentes'
 import { Alert } from 'react-bootstrap'
@@ -12,6 +12,8 @@ const FormAltaParadaMaquina = ( props ) => {
     const [tipoParadaMaquina , setTipoParadaMaquina] = useState ( false )
     const [idArea , setIdArea] = useState ( '' )
     const [setupParadaMaquina , setSetupParadaMaquina] = useState ( '' )
+
+
 
     useEffect ( (  ) => {
         setVecAreas ( props.vecAreas )
@@ -60,13 +62,25 @@ const FormAltaParadaMaquina = ( props ) => {
         }
         e.preventDefault (  )
     }
+    const onChangeTipo = e =>{
+        const txt_setUp = $('#txt_setUp')
+        setTipoParadaMaquina ( e.target.checked )
+        if(e.target.checked) {
+            setSetupParadaMaquina('')
+            txt_setUp.prop('disabled' , true)
+        }
+        else {
+            txt_setUp.prop('disabled' , false )
+        }
+
+    }
     return (
         <div>
             <Form onSubmit = { miSubmit } >
-                <MyComponent.texto label = 'Nombre' value = { nombreParadaMaquina } onChange = { e => setNombreParadaMaquina ( e.target.value ) } />
-                <MyComponent.boolean label = 'PM no programada' checked = { tipoParadaMaquina } onChange = { e => setTipoParadaMaquina ( e.target.checked ) } />
+                <MyComponent.texto width = {500 } label = 'Nombre' value = { nombreParadaMaquina } onChange = { e => setNombreParadaMaquina ( e.target.value ) } />
+                <MyComponent.boolean label = 'No programada' checked = { tipoParadaMaquina } onChange = { e => onChangeTipo(e) } />
                 <MyComponent.listaDesplegable onChange = { e => setIdArea ( e.target.value ) } value = { idArea }  array = { vecAreas } member = { { valueMember : 'idArea' , displayMember : 'nombreArea' } } label = 'Area' />
-                <MyComponent.numero label = 'setUp' value = { setupParadaMaquina } onChange = { e => setSetupParadaMaquina ( e.target.value ) } />
+                <MyComponent.numero id='txt_setUp' label = 'setUp' value = { setupParadaMaquina } onChange = { e => setSetupParadaMaquina ( e.target.value ) } />
                 <MyComponent.botonSave/>
                 <Alert id = 'myAlert2' variant = 'danger' style = { { display : 'none' , marginTop : 20 } } />
             </Form>

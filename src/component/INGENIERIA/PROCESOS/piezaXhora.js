@@ -3,6 +3,7 @@ import MyComponent from '../../AAprimary/misComponentes'
 import Moment from 'moment'
 import $ from 'jquery'
 import { Alert } from 'react-bootstrap'
+//import Fechas from '../../AAprimary/fechas'
 
 const PiezaxHora = ( props ) => {
     const [idPiezasXhs , setIdPiezasXhs] = useState ( '' )
@@ -51,8 +52,10 @@ const PiezaxHora = ( props ) => {
         props.modo === 'normal'  ?
         <tr>
             <td>{cantidadPiezasXhs}</td>
-            <td>{new Moment ( desdePiezasXhs ).format ( 'DD/MM/YYYY' )}</td>
-            <td>{new Moment ( hastaPiezasXhs ).format ( 'DD/MM/YYYY' )}</td>
+            <td>{new Moment ( desdePiezasXhs ).utc().hour(0).format ( 'DD/MM/YYYY' )}</td>
+            <td>{new Moment ( hastaPiezasXhs ).utc().hour(0).format ( 'DD/MM/YYYY' )}</td>
+            {/* <td>{String(desdePiezasXhs).length === 24 ? Fechas.SQL_a_DD_MM_YYYY(desdePiezasXhs) : desdePiezasXhs }</td>
+            <td>{String(hastaPiezasXhs).length === 24 ? Fechas.SQL_a_DD_MM_YYYY(hastaPiezasXhs):hastaPiezasXhs}</td> */}
             <td><MyComponent.botonUpdate texto = 'Editar pieza x hora'  onClick = { e => props.actualizaModo ( 'update' , props.piezaXhora ) } /></td>
             <td><MyComponent.botonDelete texto = 'Eliminar pieza x hora'  onClick = { e => props.actualizaModo ( 'delete' , props.piezaXhora ) } /></td>
         </tr>
@@ -61,8 +64,8 @@ const PiezaxHora = ( props ) => {
         <tr>
             <td colSpan = { 5 } >
                 <MyComponent.numero value ={ parseInt ( cantidadPiezasXhs ) } onChange = { e => setCantidadPiezasXhs ( parseInt ( e.target.value ) ) }  label = 'Cantidad'/>
-                <MyComponent.fecha value ={ desdePiezasXhs } onChange = { e => setDesdePiezasXhs ( e ) } label = 'Desde' />
-                <MyComponent.fecha value ={ hastaPiezasXhs } onChange = { e => setHastaPiezasXhs ( e ) } label = 'Hasta' />
+                <MyComponent.fecha value ={ new Moment(desdePiezasXhs).utc().hour(3) } onChange = { e => setDesdePiezasXhs ( e) } label = 'Desde' />
+                <MyComponent.fecha value ={ new Moment(hastaPiezasXhs).utc().hour(3) } onChange = { e => setHastaPiezasXhs ( e ) } label = 'Hasta' />
                 <MyComponent.botonAcept texto = 'Update time' onClick = { e => { validacion (  ) } } />
                 <MyComponent.botonCancel texto = 'Cancel update ' onClick = { e => props.actualizaModo ( 'normal' , undefined ) }/>
                 <Alert variant = 'danger' style = { { display : 'none' , marginTop : 20 } } id ='myAlert2' />
