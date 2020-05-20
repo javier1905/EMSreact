@@ -1,6 +1,79 @@
 import Moment from 'moment'
 var servicios = {}
 
+servicios.listaPlantas = async () => {
+    var vecPlantas = []
+    try {
+        const result = await fetch(`https://ems-node-api.herokuapp.com/api/plantas/list` , {
+            method : 'GET' ,
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Conten-Type' : 'Application/json'
+            } )
+        })
+        if(result){
+            const json = await result.json()
+            if(json) {
+                vecPlantas = json
+            }
+        }
+    }
+    catch(e) {
+        vecPlantas = []
+    }
+    return vecPlantas
+}
+servicios.listaAreas = async () => {
+    var vecAreas = []
+    try {
+        const result = await fetch(`https://ems-node-api.herokuapp.com/api/areas` , {
+            method : 'GET' ,
+            headers : new Headers ({
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            })
+        })
+        if(result) {
+            const json = await result.json()
+            if(json) {
+                vecAreas = json
+            }
+        }
+    }
+    catch(e) {
+        vecAreas = []
+    }
+    return vecAreas
+}
+
+servicios.listaReporteParadasMaquina = async ( idArea , fechaFundicionDesde , fechaFundicionHasta ) => {
+
+    var reporte = {vecLabels : [] , vecValues : []}
+    try {
+        const result = await fetch(`https://ems-node-api.herokuapp.com/api/reportes/paradasMaquina` , {
+            method : 'POST' ,
+            body : JSON.stringify ( {  idArea , fechaFundicionDesde , fechaFundicionHasta  } ),
+            headers : new Headers ( {
+                'Accept' : 'Application/json' ,
+                'Content-type' : 'Application/json'
+            } )
+        })
+        if(result) {
+            const json = await result.json()
+            if(json) {
+                json.forEach((e,i)=> {
+                    reporte.vecLabels.push(e.nombreMaquina)
+                    reporte.vecValues.push(e.Duracion)
+                })
+            }
+        }
+    }
+    catch(e) {
+        reporte = {vecLabels : [] , vecValues : []}
+    }
+    return reporte
+}
+
 servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta , idAgrupar ) => {
     var response = { vecOeefundicion : [  ] , status : '' }
     try {

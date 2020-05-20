@@ -8,6 +8,7 @@ import OeeFundicion from './OEEFUNDICION/oeeFundicion'
 import OeeGranallado from './OEEGRANALLADO/oeeGranallado'
 import OeeMecanizado from './OEEMECANIZADO/oeeMecanizado'
 import RechazosPrimeraVuelta from './RECHAZOSPRIMERAVUELTA/rechazosPrimeraVuelta'
+import ReporteParadasMaquina from './PARADASMAQUINA/ReporteParadasMaquina'
 
 const Reportes = props => {
 	const [value, setValue] = React.useState(0)
@@ -52,6 +53,11 @@ const Reportes = props => {
 						icon={<BarChartIcon />}
 						{...a11yProps(3)}
 					/>
+					<Tab
+						label='Paradas de Maquina'
+						icon={<BarChartIcon />}
+						{...a11yProps(4)}
+					/>
 				</Tabs>
 			</AppBar>
 			<TabPanel value={value} index={0}>
@@ -65,6 +71,9 @@ const Reportes = props => {
 			</TabPanel>
 			<TabPanel value={value} index={3}>
 				<RechazosPrimeraVuelta />
+			</TabPanel>
+			<TabPanel value={value} index={4}>
+				<ReporteParadasMaquina/>
 			</TabPanel>
 		</div>
 	)

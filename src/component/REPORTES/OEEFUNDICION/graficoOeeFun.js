@@ -35,7 +35,7 @@ const GraficoOeeFun = props => {
 		const getListas = async () => {
 			const listaMaq = await Servicios.listaMaquinas()
 			const listaPie = await Servicios.listaPiezas()
-			if (listaMaq) {
+			if ( Array.isArray(listaMaq) && listaMaq) {
 				listaMaq.unshift({ idMaquina: '', nombreMaquina: 'NONE' })
 				setVecMaquinas(listaMaq)
 			}
