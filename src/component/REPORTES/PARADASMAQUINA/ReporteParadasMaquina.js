@@ -40,7 +40,6 @@ useEffect( () => {
         datasets : [
             {
                 type : 'bar' ,
-
                 data : vecValues ,
                 backgroundColor : 'rgb(55, 49, 138)' ,
                 borderColor : 'rgb(55, 49, 138)' ,
