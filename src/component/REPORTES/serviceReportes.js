@@ -45,7 +45,6 @@ servicios.listaAreas = async () => {
     }
     return vecAreas
 }
-
 servicios.listaReporteParadasMaquina = async ( idArea , fechaFundicionDesde , fechaFundicionHasta ) => {
 
     var reporte = {vecLabels : [] , vecValues : []}
@@ -73,7 +72,30 @@ servicios.listaReporteParadasMaquina = async ( idArea , fechaFundicionDesde , fe
     }
     return reporte
 }
-
+servicios.listaDetallePMxMaquina = async (fechaDesdeFundicion , fechaHastaFundicion , nombreMaquina,idArea) => {
+    var vecDetallePM = []
+    try {
+        const result = await fetch(`https://ems-node-api.herokuapp.com/api/reportes/detalleParaMaquinaXmaquina` , {
+            method: 'POST' ,
+            body : JSON.stringify ({ fechaDesdeFundicion , fechaHastaFundicion , nombreMaquina,idArea }) ,
+            headers: new Headers ({
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            })
+        })
+        if (result) {
+            const json = await result.json()
+            if(json) {
+                vecDetallePM = json
+            }
+        }
+    }
+    catch(e) {
+        console.log(e)
+        vecDetallePM = []
+    }
+    return vecDetallePM
+}
 servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta , idAgrupar ) => {
     var response = { vecOeefundicion : [  ] , status : '' }
     try {
@@ -345,14 +367,6 @@ servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundi
     }
     return response
 }
-
-
-
-
-
-
-
-
 servicios.listaOeeFundicionGrafico = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta  ) => {
     var response = { vecOeefundicion : [  ] , status : '' }
     try {
@@ -376,19 +390,6 @@ servicios.listaOeeFundicionGrafico = async ( idMaquina , idPieza , idMolde , fec
     }
     return response
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 servicios.listaOeeGranallado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar ) => {
     console.log(idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar , 'servise')
 var response = { vecOeeGranallado : [  ] , status : '' }
@@ -548,7 +549,6 @@ var response = { vecOeeGranallado : [  ] , status : '' }
     }
     return response
 }
-
 servicios.listaOeeGranalladoGrafico = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
     var response = { vecOeeGranallado : [  ] , status : '' }
         try {
@@ -578,7 +578,6 @@ servicios.listaOeeGranalladoGrafico = async ( idMaquina , idPieza , idMolde , fe
         }
         return response
     }
-
 servicios.listaOeeMecanizadoGrafico = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta ) => {
     var response = { vecOeeMecanizado : [  ] , status : '' }
     try {
@@ -610,8 +609,6 @@ servicios.listaOeeMecanizadoGrafico = async ( idMaquina , idPieza , idMolde , fe
     }
     return response
 }
-
-
 servicios.listaOeeMecanizado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar ) => {
     var response = { vecOeeMecanizado : [  ] , status : '' }
     try {
@@ -759,7 +756,6 @@ servicios.listaOeeMecanizado = async ( idMaquina , idPieza , idMolde , fechaProd
     }
     return response
 }
-
 servicios.listaMaquinas = async (  ) => {
     var vecMaquinas = [  ]
     try {
@@ -780,7 +776,6 @@ servicios.listaMaquinas = async (  ) => {
     }
     return vecMaquinas
 }
-
 servicios.listaMoldes = async ( idPieza ) => {
     var vecMoldes = [  ]
     try {
@@ -881,6 +876,5 @@ servicios.listaReporteRechazosPrimeraVuelta = async ( fechaFundicionDesde , fech
     }
     return vectores
 }
-
 
 export default servicios

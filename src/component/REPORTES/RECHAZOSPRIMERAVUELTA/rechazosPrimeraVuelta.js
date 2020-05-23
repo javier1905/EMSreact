@@ -55,11 +55,11 @@ const RechazosPrimeraVuelta = ( props ) => {
         datasets : [
             {
                 datalabels : {
-                    color : 'black' ,
+                    color : 'white' ,
                     display : true ,
-                    borderColor : {
-                        color : '#34B84E'
-                    },
+                    backgroundColor : '#34B84E',
+                    borderColor : '#199215 ',
+                    borderWidth : 2 ,
                     font : {
                         size : 18
                     }
@@ -70,7 +70,10 @@ const RechazosPrimeraVuelta = ( props ) => {
                 backgroundColor : '#34B84E' ,
                 borderColor : '#34B84E' ,
                 label : 'Prosentajes' ,
-                fill : false
+                fill : false ,
+                formatter : (value , context) => {
+                    return  `${value} %`
+                }
             } ,
             {
                 datalabels: {
@@ -78,6 +81,9 @@ const RechazosPrimeraVuelta = ( props ) => {
                     display : true ,
                     font : {
                         size : 18
+                    } ,
+                    formatter : (value , context) => {
+                        return  value
                     }
                 } ,
                 type : 'bar' ,
@@ -93,6 +99,9 @@ const RechazosPrimeraVuelta = ( props ) => {
                     display : true ,
                     font : {
                         size : 18
+                    } ,
+                    formatter : (value , context) => {
+                        return  value
                     }
                 } ,
                 type : 'bar' ,
@@ -108,7 +117,10 @@ const RechazosPrimeraVuelta = ( props ) => {
         plugins: {
             datalabels : {
                 color : 'black' ,
-                display : false
+                display : false ,
+                formatter : (value , context) => {
+                    return  `${value} %`
+                }
             }
         } ,
         tooltips : {

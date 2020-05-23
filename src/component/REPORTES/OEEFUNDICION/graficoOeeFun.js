@@ -613,7 +613,10 @@ const GraficoOeeFun = props => {
 		plugins: {
 			datalabels: {
 				color: 'black',
-				display: false
+				display: false ,
+				formatter : (value , context) => {
+					return `${value}%`
+				}
 			}
 		},
 		title: {
