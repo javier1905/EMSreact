@@ -91,10 +91,61 @@ servicios.listaDetallePMxMaquina = async (fechaDesdeFundicion , fechaHastaFundic
         }
     }
     catch(e) {
-        console.log(e)
         vecDetallePM = []
     }
     return vecDetallePM
+}
+servicios.listaReporteParadasMaquinaxPM = async (fechaDesdeFundicion , fechaHastaFundicion) => {
+    var reporte = {vecLabels : [] , vecValues : []}
+    try {
+        const result = await fetch( `https://ems-node-api.herokuapp.com/api/reportes/paradasMaquinaXpm`, {
+            method : 'POST' ,
+            body : JSON.stringify ({fechaDesdeFundicion , fechaHastaFundicion}) ,
+            headers : new Headers ({
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            })
+        })
+        if (result) {
+            const json = await result.json()
+            if(json) {
+                if(Array.isArray(json)) {
+                    json.sort((a ,b) => b.duracion -a.duracion)
+                    json.forEach((pm , i)=> {
+                        reporte.vecLabels.push(`${pm.nombreParadaMaquina} -- ${pm.nombreArea}`)
+                        reporte.vecValues.push(pm.duracion)
+                    })
+                }
+            }
+        }
+    }
+    catch(e){
+        reporte = {vecLabels : [] , vecValues : []}
+    }
+    return reporte
+}
+servicios.listaDetalleParadasMaquinaxPM = async (fechaDesdeFundicion , fechaHastaFundicion , nombreParadaMaquina) => {
+    var vecListaDetallePMxPM= []
+    try {
+        const result = await fetch( `https://ems-node-api.herokuapp.com/api/reportes/detalleParaMaquinaXpm`, {
+            method : 'POST' ,
+            body : JSON.stringify ({fechaDesdeFundicion , fechaHastaFundicion , nombreParadaMaquina}) ,
+            headers : new Headers ({
+                'Accept' : 'Application/json' ,
+                'Content-Type' : 'Application/json'
+            })
+        })
+        if (result) {
+            const json = await result.json()
+            if(json) {
+                vecListaDetallePMxPM = json
+            }
+        }
+    }
+    catch(e){
+        vecListaDetallePMxPM = []
+    }
+    return vecListaDetallePMxPM
 }
 servicios.listaOeeFundicion = async ( idMaquina , idPieza , idMolde , fechaFundicionDesde , fechaFundicionHasta , idAgrupar ) => {
     var response = { vecOeefundicion : [  ] , status : '' }
@@ -391,7 +442,6 @@ servicios.listaOeeFundicionGrafico = async ( idMaquina , idPieza , idMolde , fec
     return response
 }
 servicios.listaOeeGranallado = async ( idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar ) => {
-    console.log(idMaquina , idPieza , idMolde , fechaProduccionDesde , fechaProduccionHasta , idAgrupar , 'servise')
 var response = { vecOeeGranallado : [  ] , status : '' }
     try {
         const resultFetch = await fetch ( `https://ems-node-api.herokuapp.com/api/oee/granallado`  , {

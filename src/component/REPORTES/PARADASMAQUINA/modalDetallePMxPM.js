@@ -12,12 +12,12 @@ import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
 import { makeStyles } from '@material-ui/core/styles'
 
-const ModalDetallePMxMaquina = (props) => {
-    const [vecDetalleXmaq,setVecDetalleXmaq] = useState([])
-    const [loading,setLoading] = useState(props.loadingModalDetallexMaq)
+const ModalDetallePMxPM = (props) => {
+    const [vecDetalleXpm,setVecDetalleXpm] = useState([])
+    const [loading,setLoading] = useState(props.loadingModalDetallexpm)
     useEffect (()=> {
-        setLoading(props.loadingModalDetallexMaq)
-        setVecDetalleXmaq(props.vecDetalleXmaq)
+        setLoading(props.loadingModalDetallexpm)
+        setVecDetalleXpm(props.vecDetalleXpm)
     },[props])
     const useStyles = makeStyles ( ( theme ) => ( {
         appBar: {
@@ -31,20 +31,19 @@ const ModalDetallePMxMaquina = (props) => {
     const classes = useStyles ( )
     return (
         <Dialog
-            open = {props.openDetalleXmaquina}
-            onClose = {props.closeDetalleXmaquina}
+            open = {props.openDetalleXpm}
+            onClose = {props.closeDetalleXpm}
             fullScreen = {true}
             // maxWidth ='lg'
         >
             <AppBar className = { classes.appBar } >
                 <Toolbar>
                     <Typography variant="h4" className = { classes.title } >
-                        {`Paradas de maquina ${props.maquinaSeleccionada}
+                        {`${props.pmSeleccionada}
                         desde ${Moment(props.fechaDesdeFundicion).format('DD/MM/YYYY')}
-                        hasta ${Moment(props.fechaHastaFundicion).format('DD/MM/YYYY')}
-                        filtrado por ${props.area === undefined ? '' : props.area.nombreArea}` }
+                        hasta ${Moment(props.fechaHastaFundicion).format('DD/MM/YYYY')} ` }
                     </Typography>
-                    <IconButton  edge="start" color="inherit" onClick = {  e => props.closeDetalleXmaquina() } aria-label="close">
+                    <IconButton  edge="start" color="inherit" onClick = {  e => props.closeDetalleXpm() } aria-label="close">
                         <CloseIcon />
                     </IconButton>
                 </Toolbar>
@@ -54,9 +53,8 @@ const ModalDetallePMxMaquina = (props) => {
                     <Table responsive={true}>
                         <thead>
                             <tr>
-                                <th>id</th>
                                 <th>Fecha Fundicion</th>
-                                <th>Nombre</th>
+                                <th>Maquina</th>
                                 <th>Area</th>
                                 <th>Hora Inicio</th>
                                 <th>Hora Fin</th>
@@ -67,15 +65,14 @@ const ModalDetallePMxMaquina = (props) => {
                             {
                                 loading ?
                                 <tr>
-                                    <td colSpan ={7}><Loading/></td>
+                                    <td colSpan ={6}><Loading/></td>
                                 </tr>
                                 :
-                                Array.isArray(vecDetalleXmaq) && vecDetalleXmaq.length > 0   ?
-                                vecDetalleXmaq.map((pm,i)=>{
+                                Array.isArray(vecDetalleXpm) && vecDetalleXpm.length > 0   ?
+                                vecDetalleXpm.map((pm,i)=>{
                                         return( <tr key={i}>
-                                                <td>{pm.idParadaMaquina}</td>
                                                 <td>{Moment(pm.fechaFundicion).utc().hour(3).format('DD/MM/YYYY')}</td>
-                                                <td>{pm.nombreParadaMaquina}</td>
+                                                <td>{pm.nombreMaquina}</td>
                                                 <td>{pm.nombreArea}</td>
                                                 <td>{Moment(pm.horaInicio).format('HH:mm')}</td>
                                                 <td>{Moment(pm.horaFin).format('HH:mm')}</td>
@@ -85,7 +82,7 @@ const ModalDetallePMxMaquina = (props) => {
                                     })
                                 :
                                 <tr>
-                                    <td colSpan ={7}>
+                                    <td colSpan ={6}>
                                         nofound
                                     </td>
                                 </tr>
@@ -97,4 +94,4 @@ const ModalDetallePMxMaquina = (props) => {
         </Dialog>
     )
 }
-export default ModalDetallePMxMaquina
+export default ModalDetallePMxPM
